@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 class User extends Authenticatable
 {
@@ -23,6 +25,15 @@ class User extends Authenticatable
         'password',
         'no_telp',
     ];
+
+    public function product(): BelongsTo
+    {
+        return $this->BelongsTo(Category::class, 'product_id');
+    }
+    public function transaction(): BelongsTo
+    {
+        return $this->BelongsTo(transaction::class, 'transaction_id');
+    }
 
     /**
      * The attributes that should be hidden for serialization.
