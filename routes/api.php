@@ -33,6 +33,7 @@ Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => 'auth:s
     Route::post('/', [ProductController::class, 'store']);
     Route::put('/{product}', [ProductController::class, 'edit']);
     Route::delete('/{product}', [ProductController::class, 'delete']);
+});
 
 Route::group(['prefix' => 'category', 'as' => 'category.', 'middleware' => 'auth:sanctum'], function () {
     Route::get('/', [CategoryController::class, 'index']);
