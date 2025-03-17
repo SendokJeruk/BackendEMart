@@ -2,20 +2,20 @@
 
 ## Base URL
 ```
-http://127.0.0.1:8000/api/auth
+http://127.0.0.1:8000/api/
 ```
 
 ## Endpoints
 
 ### Login
-- **Endpoint:** `/login`
+- **Endpoint:** `auth/login`
 - **Method:** `POST`
 - **Description:** Authenticate user and return an access token.
 - **Request:** `email`, `password`
 - **Response:** Authentication token and user details
 
 ### Register
-- **Endpoint:** `/register`
+- **Endpoint:** `auth/register`
 - **Method:** `POST`
 - **Description:** Register a new user and return an access token.
 - **Request:** `name`, `email`, `password`, `no_telp`
