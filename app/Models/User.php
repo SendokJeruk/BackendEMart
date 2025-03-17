@@ -24,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'no_telp',
+        'role',
     ];
 
     public function product(): BelongsTo
