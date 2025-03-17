@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Exception;
 
 class AuthController extends Controller
 {
@@ -32,6 +33,7 @@ class AuthController extends Controller
             }
 
             $user = Auth::user();
+            $user->tokens()->delete();
             $token = $user->createToken('auth_token')->plainTextToken;
             $user->access_token = $token;
             $user->token_type = 'Bearer';
@@ -69,7 +71,7 @@ class AuthController extends Controller
             $user->name = $request->input('name');
             $user->email = $request->input('email');
             $user->no_telp = $request->input('no_telp');
-            $user->password = $request->input('password');
+            $user->password = Hash::make($request->input('password'));
             $user->save();
 
             return response()->json([
