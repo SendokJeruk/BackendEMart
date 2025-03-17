@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
 class User extends Authenticatable
@@ -27,13 +27,13 @@ class User extends Authenticatable
         'role',
     ];
 
-    public function product(): BelongsTo
+    public function product(): HasMany
     {
-        return $this->BelongsTo(Category::class, 'product_id');
+        return $this->hasMany(related: Product::class, foreignKey: 'product_id');
     }
-    public function transaction(): BelongsTo
+    public function transaction(): HasMany
     {
-        return $this->BelongsTo(transaction::class, 'transaction_id');
+        return $this->hasMany(related: Transaction::class, foreignKey: 'transaction_id');
     }
 
     /**

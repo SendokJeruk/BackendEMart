@@ -12,19 +12,18 @@ class Product extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public function user(): HasMany
+    public function detail_transaction(): HasMany
     {
-        return $this->hasMany(related: User::class, foreignKey: 'user_id');
-    }
-    public function category(): HasMany
-    {
-        return $this->hasMany(related: category::class, foreignKey: 'category_id');
+        return $this->hasMany(related: detail_transaction::class, foreignKey: 'detail-transaction_id');
     }
 
-
-    public function detail_transaction(): BelongsTo
+    public function category(): BelongsTo
     {
-        return $this->BelongsTo(Category::class, 'detail-transaction_id');
+        return $this->BelongsTo(Category::class, 'category_id');
+    }
+    public function user(): BelongsTo
+    {
+        return $this->BelongsTo(User::class, 'user_id');
     }
 }
 

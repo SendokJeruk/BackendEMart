@@ -12,13 +12,14 @@ class Transaction extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public function user(): HasMany
+
+    public function detail_transaction(): HasMany
     {
-        return $this->hasMany(related: User::class, foreignKey: 'user_id');
+        return $this->hasMany(related: detail_transaction::class, foreignKey: 'detail-transaction_id');
     }
 
-    public function detail_transaction(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->BelongsTo(Category::class, 'detail-transaction_id');
+        return $this->BelongsTo(User::class, 'user_id');
     }
 }
