@@ -41,3 +41,8 @@ Route::group(['prefix' => 'category', 'as' => 'category.', 'middleware' => 'auth
     Route::put('/{category}', [CategoryController::class, 'update']);
     Route::delete('/{category}', [CategoryController::class, 'delete']);
 });
+
+Route::group(['prefix' => 'rating', 'as' => 'rating.', 'middleware' => 'auth:sanctum'], function () {
+    Route::get('/', [RatingController::class, 'index']);
+    Route::post('/', [RatingController::class, 'store']);
+});
