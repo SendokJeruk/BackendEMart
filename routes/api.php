@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoryController;
-use App\Http\Controllers\API\RoleController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +40,11 @@ Route::group(['prefix' => 'category', 'as' => 'category.', 'middleware' => 'auth
     Route::post('/', [CategoryController::class, 'store']);
     Route::put('/{category}', [CategoryController::class, 'update']);
     Route::delete('/{category}', [CategoryController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'rating', 'as' => 'rating.', 'middleware' => 'auth:sanctum'], function () {
+    Route::get('/', [RatingController::class, 'index']);
+    Route::post('/', [RatingController::class, 'store']);
 });
 
 Route::group(['prefix' => 'role', 'as' => 'role.'], function () {
