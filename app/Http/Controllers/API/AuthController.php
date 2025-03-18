@@ -58,6 +58,7 @@ class AuthController extends Controller
                 'email' => 'required',
                 'no_telp' => 'required',
                 'password' => 'required',
+                'role_id' => 'required',
             ]);
 
             if($validate->fails()) {
@@ -71,6 +72,7 @@ class AuthController extends Controller
             $user->name = $request->input('name');
             $user->email = $request->input('email');
             $user->no_telp = $request->input('no_telp');
+            $user->role_id = $request->input('role_id');
             $user->password = Hash::make($request->input('password'));
             $user->save();
 
