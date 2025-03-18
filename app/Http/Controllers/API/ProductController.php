@@ -43,7 +43,8 @@ class ProductController extends Controller
                 'deskripsi' => 'required',
                 'harga' => 'required',
                 'stock' => 'required',
-                'foto' => 'required',
+                'foto_cover' => 'required',
+                'status_produk' => 'required|in:draft,publish',
             ]);
 
             if ($validate->fails()) {
@@ -54,7 +55,7 @@ class ProductController extends Controller
             }
 
             $data = $request->all();
-            $data['foto'] = $this->upload->save($request->file('foto'));
+            $data['foto_cover'] = $this->upload->save($request->file('foto_cover'));
             $product = Product::create($data);
 
             return response()->json([
@@ -78,7 +79,8 @@ class ProductController extends Controller
                 'deskripsi' => 'required',
                 'harga' => 'required',
                 'stock' => 'required',
-                'foto' => 'nullable',
+                'foto_cover' => 'required',
+                'status_produk' => 'required|in:draft,publish',
             ]);
 
             if ($validate->fails()) {
@@ -90,8 +92,8 @@ class ProductController extends Controller
 
             $data = $request->all();
 
-            if($request->file('foto')) {
-                $data['foto'] = $this->upload->update($product->foto, $request->file('foto'));
+            if($request->file('foto_cover')) {
+                $data['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
             }
 
             $product->update($data);
@@ -112,7 +114,7 @@ class ProductController extends Controller
     public function delete(Product $product)
     {
         try {
-            $this->upload->delete($product->foto);
+            $this->upload->delete($product->foto_cover);
             $product->delete();
             return response()->json([
                 'message' => 'Data berhasil dihapus'

@@ -46,3 +46,10 @@ Route::group(['prefix' => 'rating', 'as' => 'rating.', 'middleware' => 'auth:san
     Route::get('/', [RatingController::class, 'index']);
     Route::post('/', [RatingController::class, 'store']);
 });
+
+Route::group(['prefix' => 'role', 'as' => 'role.'], function () {
+    Route::get('/', [RoleController::class, 'index']);
+    Route::post('/', [RoleController::class, 'store']);
+    // Route::put('/{category}', [CategoryController::class, 'update']);
+    // Route::delete('/{category}', [CategoryController::class, 'delete']);
+});
