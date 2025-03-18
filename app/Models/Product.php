@@ -16,6 +16,10 @@ class Product extends Model
     {
         return $this->hasMany(related: detail_transaction::class, foreignKey: 'detail-transaction_id');
     }
+    public function rating(): HasMany
+    {
+        return $this->hasMany(related: rating::class, foreignKey: 'rating_id');
+    }
 
     public function category(): BelongsTo
     {

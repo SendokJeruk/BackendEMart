@@ -36,6 +36,10 @@ class User extends Authenticatable
         return $this->hasMany(related: Transaction::class, foreignKey: 'transaction_id');
     }
 
+    public function rating(): HasMany
+    {
+        return $this->hasMany(related: rating::class, foreignKey: 'rating_id');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
