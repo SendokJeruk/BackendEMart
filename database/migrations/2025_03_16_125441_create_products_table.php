@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('harga');
             $table->integer('stock');
             $table->string('foto_cover');
-            $table->string('status_produk');
+            $table->enum('status_produk', ['draft', 'publish']);
             $table->timestamps();
         });
     }
