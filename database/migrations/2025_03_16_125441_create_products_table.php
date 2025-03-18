@@ -19,7 +19,8 @@ return new class extends Migration
             $table->text('deskripsi');
             $table->string('harga');
             $table->integer('stock');
-            $table->string('foto');
+            $table->string('foto_cover');
+            $table->string('status_produk');
             $table->timestamps();
         });
     }
