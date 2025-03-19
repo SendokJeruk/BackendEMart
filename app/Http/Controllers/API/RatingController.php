@@ -5,16 +5,20 @@ namespace App\Http\Controllers\API;
 use App\Models\Rating;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Support\Facades\Validator;
+
 
 class RatingController extends Controller
 {
     public function index(){
         try {
-            $rating = Rating::paginate(10);
+            $ratings = Rating::when(request('product_id'), function ($query, $product_id) {
+                return $query->where('product_id', $product_id);
+            })->get();
+
             return response()->json([
                 'message' => 'Berhasil menampilkan data rating',
-                'data' => $category
+                'data' => $ratings
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -24,7 +28,7 @@ class RatingController extends Controller
         }
     }
 
-    public function store(Requets $request){
+    public function store(Request $request){
         try {
             $validate = Validator::make($request->all(),[
                 'user_id' => 'required',
