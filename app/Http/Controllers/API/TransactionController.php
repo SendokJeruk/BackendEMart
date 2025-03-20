@@ -12,7 +12,7 @@ class TransactionController extends Controller
 {
     public function index(){
         try {
-            $transaction = Transaction::paginate();
+            $transaction = Transaction::paginate(10);
             return response()->json([
                 'message' => 'Berhasil Menampilkan transaksi',
                 'data' => $transaction
