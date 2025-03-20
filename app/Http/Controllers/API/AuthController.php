@@ -3,23 +3,30 @@
 namespace App\Http\Controllers\API;
 
 use Exception;
+use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\HasApiTokens;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function login(Request $request) {
+    use HasApiTokens, Notifiable;
+    public function login(Request $request)
+    {
         try {
-            $validate = Validator::make($request->all(),[
+            $validate = Validator::make($request->all(), [
                 'email' => 'required',
                 'password' => 'required'
             ]);
 
-            if($validate->fails()) {
+            if ($validate->fails()) {
                 return response()->json([
                     'message' => 'Invalid Data',
                     'errors' => $validate->errors()
@@ -42,7 +49,6 @@ class AuthController extends Controller
                 'message' => 'Login Berhasil',
                 'data' => $user
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Internal Server Error',
@@ -51,9 +57,10 @@ class AuthController extends Controller
         }
     }
 
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         try {
-            $validate = Validator::make($request->all(),[
+            $validate = Validator::make($request->all(), [
                 'name' => 'required',
                 'email' => 'required',
                 'no_telp' => 'required',
@@ -61,7 +68,7 @@ class AuthController extends Controller
                 'role_id' => 'required',
             ]);
 
-            if($validate->fails()) {
+            if ($validate->fails()) {
                 return response()->json([
                     'message' => 'Invalid Data',
                     'errors' => $validate->errors()
@@ -87,4 +94,53 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    // GOOGLE AUTH
+    // public function redirect()
+    // {
+    //     return Socialite::driver('google')->redirect();
+    // }
+
+    // public function callback()
+    // {
+    //     try {
+    //         $socialUser = Socialite::driver('google')->user();
+    //         $registeredUser = User::where("google_id", $socialUser->id)->first();
+    //         $roleId = Role::where('nama_role', 'user')->value('id');
+
+    //         if (!$registeredUser) {
+    //             $user = User::updateOrCreate(
+    //                 ['google_id' => $socialUser->id],
+    //                 [
+    //                     'name' => $socialUser->name,
+    //                     'email' => $socialUser->email,
+    //                     'no_telp' => '000000000000',
+    //                     'password' => Hash::make(Str::random(16)),
+    //                     'role_id' => $roleId,
+    //                     'google_token' => $socialUser->token,
+    //                     'google_refresh_token' => $socialUser->refreshToken,
+    //                 ]
+    //             );
+
+    //             Auth::login($user);
+    //         } else {
+    //             Auth::login($registeredUser);
+    //         }
+
+    //         // Buat token API untuk user
+    //         $token = Auth::user()->createToken('auth_token')->plainTextToken;
+
+    //         return response()->json([
+    //             'token' => $token,
+    //             'user' => Auth::user(),
+    //         ]);
+    //     } catch (Exception $e) {
+    //         return response()->json([
+    //             'error' => 'Google login failed!',
+    //             'message' => $e->getMessage(),
+    //             'trace' => $e->getTraceAsString() // Tambahkan trace untuk melihat detail error
+    //         ], 500);
+    //     }
+    // }
+    // GOOGLE AUTH
 }
