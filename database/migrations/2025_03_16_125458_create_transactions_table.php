@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('total_harga');
             $table->string('status');
-            $table->datetime('tanggal_transaksi')->nullable();
+            $table->datetime('tanggal_transaksi');
             $table->string('kode_transaksi')->nullable();
             $table->timestamps();
         });
