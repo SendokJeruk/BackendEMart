@@ -7,6 +7,7 @@ use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\TransactionController;
 
 
 /*
@@ -54,4 +55,11 @@ Route::group(['prefix' => 'role', 'as' => 'role.'], function () {
     Route::post('/', [RoleController::class, 'store']);
     // Route::put('/{category}', [CategoryController::class, 'update']);
     // Route::delete('/{category}', [CategoryController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'transaction', 'as' => 'transaction.', 'middleware' => 'auth:sanctum'], function () {
+    Route::get('/', [TransactionController::class, 'index']);
+    Route::post('/', [TransactionController::class, 'store']);
+    Route::put('/{transaction}', [TransactionController::class, 'update']);
+    Route::delete('/{transaction}', [TransactionController::class, 'delete']);
 });
