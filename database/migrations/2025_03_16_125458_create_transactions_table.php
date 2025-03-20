@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('total_harga');
+            $table->string('total_harga')->default(0);
             $table->string('status');
             $table->datetime('tanggal_transaksi');
             $table->string('kode_transaksi');

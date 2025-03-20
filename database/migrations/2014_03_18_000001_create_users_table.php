@@ -21,6 +21,9 @@ return new class extends Migration
             $table->foreignId('role_id')->constrained()->onDelete('cascade');
             $table->text('foto_profil')->nullable();
             $table->rememberToken();
+            $table->string('google_id')->nullable();
+            $table->string('google_token')->nullable();
+            $table->string('google_refresh_token')->nullable();
             $table->timestamps();
         });
     }

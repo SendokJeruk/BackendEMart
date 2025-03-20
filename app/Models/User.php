@@ -25,6 +25,9 @@ class User extends Authenticatable
         'password',
         'no_telp',
         'role',
+        'google_id',
+        'google_token',
+        'google_refresh_token',
     ];
 
     public function product(): HasMany

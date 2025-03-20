@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -29,7 +30,6 @@ class TransactionController extends Controller
         try {
             $validate = Validator::make($request->all(),[
                 'user_id' => 'required',
-                'total_harga' => 'required',
                 'status' => 'required',
                 'tanggal_transaksi' => 'nullable',
                 'kode_transaksi' => 'nullable',
@@ -44,7 +44,6 @@ class TransactionController extends Controller
             }
             $transaction = new Transaction();
             $transaction->user_id = $request->user_id;
-            $transaction->total_harga = $request->total_harga;
             $transaction->status = $request->status;
             $transaction->tanggal_transaksi = $request->tanggal_transaksi ?? now();
             $transaction->kode_transaksi = $request->kode_transaksi ?? 'ID-' . time() . strtoupper(Str::random(5));
@@ -65,7 +64,6 @@ class TransactionController extends Controller
         try {
             $validate = Validator::make($request->all(),[
                 'user_id' => 'required',
-                'total_harga' => 'required',
                 'status' => 'required',
                 'tanggal_transaksi' => 'nullable',
                 'kode_transaksi' => 'nullable',
