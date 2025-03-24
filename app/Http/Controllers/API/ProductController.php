@@ -21,12 +21,13 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         try {
+
             $query = Product::where('status_produk', 'publish');
 
             if ($request->has('nama_product')) {
                 $query->where('nama_product', 'like', "%{$request->nama_product}%");
             }
-            
+
             $products = $query->paginate(10);
 
             return response()->json([
