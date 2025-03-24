@@ -39,7 +39,7 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 });
 
 
-Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => ['auth:sanctum', 'checkrole'] ], function () {
     Route::get('/', [ProductController::class, 'index']);
     Route::get('/draft', [ProductController::class, 'draft']);
     Route::post('/', [ProductController::class, 'store']);
@@ -47,7 +47,7 @@ Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => 'auth:s
     Route::delete('/{product}', [ProductController::class, 'delete']);
 });
 
-Route::group(['prefix' => 'category', 'as' => 'category.', 'middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix' => 'category', 'as' => 'category.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
     Route::get('/', [CategoryController::class, 'index']);
     Route::post('/', [CategoryController::class, 'store']);
     Route::put('/{category}', [CategoryController::class, 'update']);
