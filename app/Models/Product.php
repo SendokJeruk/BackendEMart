@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Product extends Model
 {
@@ -21,13 +22,14 @@ class Product extends Model
         return $this->hasMany(related: rating::class, foreignKey: 'rating_id');
     }
 
-    public function category(): BelongsTo
+    public function categories(): BelongsToMany
     {
-        return $this->BelongsTo(Category::class, 'category_id');
+        return $this->belongsToMany(Category::class, 'category_product', 'product_id', 'category_id');
     }
+
     public function user(): BelongsTo
     {
-        return $this->BelongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
 
