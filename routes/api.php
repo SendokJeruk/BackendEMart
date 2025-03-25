@@ -7,6 +7,7 @@ use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\ManageUserController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
@@ -86,4 +87,11 @@ Route::group(['prefix' => 'category-product', 'as' => 'category-product.', 'midd
     Route::post('/', [CategoryProductController::class, 'store']);
     Route::put('/{category_product}', [CategoryProductController::class, 'update']);
     Route::delete('/{category_product}', [CategoryProductController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'manage-user', 'as' => 'manage-user.', 'middleware' => 'auth:sanctum'], function () {
+    Route::get('/', [ManageUserController::class, 'index']);
+    Route::post('/', [ManageUserController::class, 'store']);
+    Route::put('/{manage_user}', [ManageUserController::class, 'update']);
+    Route::delete('/{manage_user}', [ManageUserController::class, 'delete']);
 });

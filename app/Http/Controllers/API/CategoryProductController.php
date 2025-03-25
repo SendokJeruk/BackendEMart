@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\CategoryProduct;
 use App\Http\Controllers\Controller;
