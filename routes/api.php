@@ -8,6 +8,7 @@ use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\TransactionController;
+use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
 
 
@@ -78,4 +79,11 @@ Route::group(['prefix' => 'detail-transaction', 'as' => 'detail-transaction.', '
     Route::post('/', [DetailTransactionController::class, 'store']);
     Route::put('/{detailTransaction}', [DetailTransactionController::class, 'update']);
     Route::delete('/{detailTransaction}', [DetailTransactionController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'category-product', 'as' => 'category-product.', 'middleware' => 'auth:sanctum'], function () {
+    Route::get('/', [CategoryProductController::class, 'index']);
+    Route::post('/', [CategoryProductController::class, 'store']);
+    Route::put('/{category_product}', [CategoryProductController::class, 'update']);
+    Route::delete('/{category_product}', [CategoryProductController::class, 'delete']);
 });
