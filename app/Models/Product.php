@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\User;
+use App\Models\Category;
+use App\Models\DetailTransaction;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +18,7 @@ class Product extends Model
 
     public function detail_transaction(): HasMany
     {
-        return $this->hasMany(related: detail_transaction::class, foreignKey: 'detail-transaction_id');
+        return $this->hasMany(related: DetailTransaction::class, foreignKey: 'detail-transaction_id');
     }
     public function rating(): HasMany
     {

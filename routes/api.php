@@ -82,14 +82,14 @@ Route::group(['prefix' => 'detail-transaction', 'as' => 'detail-transaction.', '
     Route::delete('/{detailTransaction}', [DetailTransactionController::class, 'delete']);
 });
 
-Route::group(['prefix' => 'category-product', 'as' => 'category-product.', 'middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix' => 'category-product', 'as' => 'category-product.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
     Route::get('/', [CategoryProductController::class, 'index']);
     Route::post('/', [CategoryProductController::class, 'store']);
     Route::put('/{category_product}', [CategoryProductController::class, 'update']);
     Route::delete('/{category_product}', [CategoryProductController::class, 'delete']);
 });
 
-Route::group(['prefix' => 'manage-user', 'as' => 'manage-user.', 'middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix' => 'manage-user', 'as' => 'manage-user.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
     Route::get('/', [ManageUserController::class, 'index']);
     Route::post('/', [ManageUserController::class, 'store']);
     Route::put('/{manage_user}', [ManageUserController::class, 'update']);
