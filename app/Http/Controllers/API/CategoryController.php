@@ -41,7 +41,7 @@ class CategoryController extends Controller
             $category->nama_category = $request->input('nama_category');
             $category->save();
             return response()->json([
-                'message' => 'Category Updated',
+                'message' => 'Category Created',
                 'data' => $category
                 ], 200);
 

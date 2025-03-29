@@ -63,7 +63,6 @@ class ProductController extends Controller
         try {
             $validate = Validator::make($request->all(), [
                 'user_id' => 'required',
-                'category_id' => 'required',
                 'nama_product' => 'required',
                 'deskripsi' => 'required',
                 'harga' => 'required',
@@ -100,7 +99,6 @@ class ProductController extends Controller
         try {
             $validate = Validator::make($request->all(), [
                 'user_id' => 'required',
-                'category_id' => 'required',
                 'nama_product' => 'required',
                 'deskripsi' => 'required',
                 'harga' => 'required',
