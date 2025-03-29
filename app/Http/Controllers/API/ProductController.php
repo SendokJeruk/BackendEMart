@@ -22,7 +22,7 @@ class ProductController extends Controller
     {
         try {
 
-            $query = Product::where('status_produk', 'publish');
+            $query = Product::query();
 
             if ($request->has('nama_product')) {
                 $query->where('nama_product', 'like', "%{$request->nama_product}%");

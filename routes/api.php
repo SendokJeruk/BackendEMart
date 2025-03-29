@@ -31,6 +31,8 @@ use App\Http\Controllers\API\DetailTransactionController;
 Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
+    Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
     // GOOGLE OAUTH
     // Route::group(['middleware' => ['web']], function () {
     //     // your routes here

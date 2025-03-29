@@ -95,6 +95,22 @@ class AuthController extends Controller
         }
     }
 
+    public function logout()
+    {
+        try {
+            auth()->user()->tokens()->delete();
+
+            return response()->json([
+                'message' => 'Logout berhasil',
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     // GOOGLE AUTH
     // public function redirect()
     // {
