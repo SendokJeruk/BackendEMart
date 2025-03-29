@@ -48,10 +48,12 @@ Sebelum menggunakan API ini, ikuti langkah-langkah berikut:
 - **Login**  
   `POST /api/auth/login`  
 - **Register**  
-  `POST /api/auth/register`  
+  `POST /api/auth/register`
+- **Logout**  
+  `POST /api/auth/logout`  
 
 ## Products
-- **Get all published products**  
+- **Get all products**  
   `GET /api/product`  
 - **Search products by name**  
   `GET /api/product?nama_product={query}`  
