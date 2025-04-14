@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use App\Models\Rating;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -47,10 +48,12 @@ class RatingController extends Controller
             $rating->product_id = $request->product_id;
             $rating->rating = $request->input('rating');
             $rating->save();
+
             return response()->json([
                 'message' => 'Berhasil menambahkan rating',
-                'rating' => $rating
+                'data' => $rating
                 ], 200);
+
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Internal Server Error',

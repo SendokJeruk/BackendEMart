@@ -3,20 +3,20 @@
 namespace App\Http\Controllers\API;
 
 use Exception;
-use App\Models\Transaction;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\CategoryProduct;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
-class TransactionController extends Controller
+class CategoryProductController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         try {
-            $transaction = Transaction::paginate(10);
+            $category_product = CategoryProduct::paginate(10);
             return response()->json([
-                'message' => 'Berhasil Menampilkan transaksi',
-                'data' => $transaction
+                'message' => 'Berhasil Dapatkan Data Category Product',
+                'data' => $category_product
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -29,10 +29,8 @@ class TransactionController extends Controller
     public function store(Request $request){
         try {
             $validate = Validator::make($request->all(),[
-                'user_id' => 'required',
-                'status' => 'required',
-                'tanggal_transaksi' => 'nullable',
-                'kode_transaksi' => 'nullable',
+                'category_id' => 'required',
+                'product_id' => 'required',
             ]);
 
             if($validate->fails()) {
@@ -40,17 +38,14 @@ class TransactionController extends Controller
                     'message' => 'Invalid Data',
                     'errors' => $validate->errors()
                 ], 422);
-
             }
-            $transaction = new Transaction();
-            $transaction->user_id = $request->user_id;
-            $transaction->status = $request->status;
-            $transaction->tanggal_transaksi = $request->tanggal_transaksi ?? now();
-            $transaction->kode_transaksi = $request->kode_transaksi ?? 'ID-' . time() . strtoupper(Str::random(5));
-            $transaction->save();
+            $category_product = new CategoryProduct();
+            $category_product->category_id = $request->input('category_id');
+            $category_product->product_id = $request->input('product_id');
+            $category_product->save();
             return response()->json([
-                'message' => 'Berhasil menambahkan transaksi',
-                'data' => $transaction
+                'message' => 'data telah di tambahkan',
+                'data' => $category_product
                 ], 200);
         } catch (Exception $e) {
             return response()->json([
@@ -60,13 +55,11 @@ class TransactionController extends Controller
         }
     }
 
-    public function update(Request $request, Transaction $transaction) {
+    public function update(Request $request, CategoryProduct $category_product){
         try {
             $validate = Validator::make($request->all(),[
-                'user_id' => 'required',
-                'status' => 'required',
-                'tanggal_transaksi' => 'nullable',
-                'kode_transaksi' => 'nullable',
+                'category_id' => 'required',
+                'product_id' => 'required',
             ]);
 
             if($validate->fails()) {
@@ -76,13 +69,15 @@ class TransactionController extends Controller
                 ], 422);
             }
 
-            $data = $request->all();
-            $transaction->update($data);
+            $category_product->update([
+                'category_id' => $request->category_id,
+                'product_id' => $request->product_id
+            ]);
 
             return response()->json([
-                'message' => 'Berhasil Edit transaksi',
-                'data' => $transaction->fresh()
-            ]);
+                'message' => 'Category telah di perbarui',
+                'data' => $category_product
+                ], 200);
 
         } catch (Exception $e) {
             return response()->json([
@@ -92,9 +87,9 @@ class TransactionController extends Controller
         }
     }
 
-    public function delete(Transaction $transaction) {
+    public function delete(CategoryProduct $category_product){
         try {
-            $transaction->delete();
+            $category_product->delete();
 
             return response()->json([
              'message' => 'Data berhasil dihapus'
@@ -107,3 +102,4 @@ class TransactionController extends Controller
         }
     }
 }
+

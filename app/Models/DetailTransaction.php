@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Detail_Transaction extends Model
+class DetailTransaction extends Model
 {
     use HasFactory;
     protected $guarded = [];
 
     public function transaction(): BelongsTo
     {
-        return $this->BelongsTo(User::class, 'transaction_id');
+        return $this->belongsTo(Transaction::class, 'transaction_id');
     }
 }

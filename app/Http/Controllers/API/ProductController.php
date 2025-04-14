@@ -17,10 +17,35 @@ class ProductController extends Controller
     {
         $this->upload = new UploadRepository();
     }
-    public function index()
+
+    public function index(Request $request)
     {
         try {
-            $products = Product::paginate(10);
+
+            $query = Product::query();
+
+            if ($request->has('nama_product')) {
+                $query->where('nama_product', 'like', "%{$request->nama_product}%");
+            }
+
+            $products = $query->paginate(10);
+
+            return response()->json([
+                'message' => 'Berhasil Dapatkan Data Produk',
+                'data' => $products
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function draft()
+    {
+        try {
+            $products = Product::where('status_produk', 'draft')->paginate(10);
             return response()->json([
                 'message' => 'Berhasil Dapatkan Data Produk',
                 'data' => $products
@@ -38,7 +63,6 @@ class ProductController extends Controller
         try {
             $validate = Validator::make($request->all(), [
                 'user_id' => 'required',
-                'category_id' => 'required',
                 'nama_product' => 'required',
                 'deskripsi' => 'required',
                 'harga' => 'required',
@@ -70,16 +94,16 @@ class ProductController extends Controller
         }
     }
 
-    public function edit(Request $request, Product $product) {
+    public function edit(Request $request, Product $product)
+    {
         try {
             $validate = Validator::make($request->all(), [
                 'user_id' => 'required',
-                'category_id' => 'required',
                 'nama_product' => 'required',
                 'deskripsi' => 'required',
                 'harga' => 'required',
                 'stock' => 'required',
-                'foto_cover' => 'required',
+                'foto_cover' => 'nullable',
                 'status_produk' => 'required|in:draft,publish',
             ]);
 
@@ -92,7 +116,7 @@ class ProductController extends Controller
 
             $data = $request->all();
 
-            if($request->file('foto_cover')) {
+            if ($request->file('foto_cover')) {
                 $data['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
             }
 
@@ -102,7 +126,6 @@ class ProductController extends Controller
                 'message' => 'Berhasil Edit Produk',
                 'data' => $product->fresh()
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Internal Server Error',

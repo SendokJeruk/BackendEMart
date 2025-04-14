@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
+use App\Models\Category;
+use App\Models\DetailTransaction;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Product extends Model
 {
@@ -14,20 +18,21 @@ class Product extends Model
 
     public function detail_transaction(): HasMany
     {
-        return $this->hasMany(related: detail_transaction::class, foreignKey: 'detail-transaction_id');
+        return $this->hasMany(related: DetailTransaction::class, foreignKey: 'detail-transaction_id');
     }
     public function rating(): HasMany
     {
         return $this->hasMany(related: rating::class, foreignKey: 'rating_id');
     }
 
-    public function category(): BelongsTo
+    public function categories(): BelongsToMany
     {
-        return $this->BelongsTo(Category::class, 'category_id');
+        return $this->belongsToMany(Category::class, 'category_product', 'product_id', 'category_id');
     }
+
     public function user(): BelongsTo
     {
-        return $this->BelongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
 

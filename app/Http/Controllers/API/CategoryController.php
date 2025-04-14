@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -40,8 +41,8 @@ class CategoryController extends Controller
             $category->nama_category = $request->input('nama_category');
             $category->save();
             return response()->json([
-                'message' => 'Category Updated',
-                'category' => $category
+                'message' => 'Category Created',
+                'data' => $category
                 ], 200);
 
         } catch (Exception $e) {
@@ -56,7 +57,7 @@ class CategoryController extends Controller
             $validate = Validator::make($request->all(),[
                 'nama_category' => 'required',
             ]);
-            
+
             if($validate->fails()) {
                 return response()->json([
                     'message' => 'Invalid Data',
@@ -70,7 +71,7 @@ class CategoryController extends Controller
 
             return response()->json([
                 'message' => 'Category Updated',
-                'category' => $category
+                'data' => $category
                 ], 200);
 
         } catch (Exception $e) {
