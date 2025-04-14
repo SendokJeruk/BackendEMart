@@ -28,24 +28,16 @@ class ProductController extends Controller
                 $query->where('nama_product', 'like', "%{$request->nama_product}%");
             }
 
+            elseif ($request->has('publish')) {
+                $query->where('status_produk', 'publish');
+            }
+
+            elseif ($request->has('draft')) {
+                $query->where('status_produk', 'draft');
+            }
+
             $products = $query->paginate(10);
 
-            return response()->json([
-                'message' => 'Berhasil Dapatkan Data Produk',
-                'data' => $products
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function draft()
-    {
-        try {
-            $products = Product::where('status_produk', 'draft')->paginate(10);
             return response()->json([
                 'message' => 'Berhasil Dapatkan Data Produk',
                 'data' => $products
