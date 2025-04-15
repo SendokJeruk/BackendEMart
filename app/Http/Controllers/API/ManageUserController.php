@@ -91,7 +91,7 @@ class ManageUserController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Category telah di perbarui',
+            'message' => 'data telah di perbarui',
             'data' => $manage_user
             ], 200);
     }
