@@ -48,15 +48,19 @@ Sebelum menggunakan API ini, ikuti langkah-langkah berikut:
 - **Login**  
   `POST /api/auth/login`  
 - **Register**  
-  `POST /api/auth/register`  
+  `POST /api/auth/register`
+- **Logout**  
+  `POST /api/auth/logout`  
 
 ## Products
-- **Get all published products**  
+- **Get all products**  
   `GET /api/product`  
 - **Search products by name**  
-  `GET /api/product?nama_product={query}`  
-- **Get all draft products**  
-  `GET /api/product/draft`  
+  `GET /api/product?nama_product={query}`
+- **Get publish products**  
+  `GET /api/product?publish`
+- **Get draft products**  
+  `GET /api/product?draft`   
 - **Create a new product**  
   `POST /api/product`  
 - **Update a product**  
@@ -107,4 +111,14 @@ Sebelum menggunakan API ini, ikuti langkah-langkah berikut:
   `PUT /api/detail-transaction/{id}`  
 - **Delete a transaction detail**  
   `DELETE /api/detail-transaction/{id}`
+  
+## Manage User
+- **Get all user**  
+  `GET /api/api/manage-user`  
+- **Create a new user**  
+  `POST /api/api/manage-user`  
+- **Update a user**  
+  `PUT /api/api/manage-user{id}`  
+- **Delete a user**  
+  `DELETE /api/api/manage-user[id}`
 
