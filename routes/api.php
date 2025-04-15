@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\RoleController;
+use App\Http\Controllers\API\TokoController;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CategoryController;
@@ -96,4 +97,11 @@ Route::group(['prefix' => 'manage-user', 'as' => 'manage-user.', 'middleware' =>
     Route::post('/', [ManageUserController::class, 'store']);
     Route::put('/{manage_user}', [ManageUserController::class, 'update']);
     Route::delete('/{manage_user}', [ManageUserController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'toko', 'as' => 'toko.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
+    Route::get('/', [TokoController::class, 'index']);
+    Route::post('/', [TokoController::class, 'store']);
+    Route::put('/{toko}', [TokoController::class, 'update']);
+    Route::delete('/{toko}', [TokoController::class, 'delete']);
 });
