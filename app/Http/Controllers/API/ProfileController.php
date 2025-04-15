@@ -17,10 +17,21 @@ class ProfileController extends Controller
     {
         $this->upload = new UploadProfileRepository();
     }
-    public function index() {
+    public function index()
+    {
+        $user = auth()->user()->load('role'); 
+
+        $data = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'no_telp' => $user->no_telp,
+            'foto_profil' => $user->foto_profil,
+            'nama_role' => $user->role->nama_role ?? null,
+        ];
+        // $data = auth()->user()->only(['name', 'email', 'no_telp', 'foto_profil']);
         return response()->json([
             'message' => "Berhasil Mendapatkan Data Profil",
-            'data' => auth()->user()
+            'data' => $data
         ]);
     }
 
