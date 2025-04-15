@@ -109,4 +109,14 @@ Sebelum menggunakan API ini, ikuti langkah-langkah berikut:
   `PUT /api/detail-transaction/{id}`  
 - **Delete a transaction detail**  
   `DELETE /api/detail-transaction/{id}`
+  
+## Manage User
+- **Get all user**  
+  `GET /api/api/manage-user`  
+- **Create a new user**  
+  `POST /api/api/manage-user`  
+- **Update a user**  
+  `PUT /api/api/manage-user{id}`  
+- **Delete a user**  
+  `DELETE /api/api/manage-user[id}`
 
