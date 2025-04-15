@@ -19,7 +19,7 @@ class ProfileController extends Controller
     }
     public function index()
     {
-        $user = auth()->user()->load('role'); 
+        $user = auth()->user()->load('role');
 
         $data = [
             'name' => $user->name,
@@ -28,43 +28,64 @@ class ProfileController extends Controller
             'foto_profil' => $user->foto_profil,
             'nama_role' => $user->role->nama_role ?? null,
         ];
-        // $data = auth()->user()->only(['name', 'email', 'no_telp', 'foto_profil']);
+
         return response()->json([
             'message' => "Berhasil Mendapatkan Data Profil",
             'data' => $data
         ]);
     }
 
-    // public function update(Request $request){
-    //     $updateUser = auth()->user();
-    //     $validate = Validator::make($request->all(),[
-    //         'name' => 'required',
-    //         'email' => 'required',
-    //         'no_telp' => 'required',
-    //         'password' => 'required',
-    //         'role_id' => 'required',
-    //         'foto_profil' => 'nullable',
-    //     ]);
+    public function update(Request $request)
+    {
+        $updateUser = auth()->user();
 
-    //     if($validate->fails()) {
-    //         return response()->json([
-    //             'message' => 'Invalid Data',
-    //             'errors' => $validate->errors()
-    //         ], 422);
-    //     }
+        $validate = Validator::make($request->all(), [
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'no_telp' => 'nullable|string|max:20',
+            'password' => 'nullable|min:6',
+            'role_id' => 'nullable|integer',
+            'foto_profil' => 'nullable|file|image|max:2048',
+        ]);
 
-    //     $updateUser->update([
-    //         'name' => $request->name,
-    //         'email' => $request->email,
-    //         'no_telp' => $request->no_telp,
-    //         'password' => Hash::make($request->password),
-    //         'role_id' => $request->role_id,
-    //         'foto_profil' => $request->foto_profil,
-    //     ]);
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => 'Invalid Data',
+                'errors' => $validate->errors()
+            ], 422);
+        }
 
-    //     return response()->json([
-    //         'message' => 'Profil telah di perbarui',
-    //         'data' => $updateUser
-    //         ], 200);
-    // }
+        $data = [];
+
+        $fields = ['name', 'email', 'no_telp', 'password', 'role_id'];
+
+        foreach ($fields as $field) {
+            if ($request->filled($field)) {
+                if ($field === 'password') {
+                    $data[$field] = Hash::make($request->password);
+                } else {
+                    $data[$field] = $request->$field;
+                }
+            }
+        }
+
+        $updateUser->update($data);
+
+        if ($request->hasFile('foto_profil')) {
+            $newImage = $request->file('foto_profil');
+
+            if ($updateUser->foto_profil) {
+                $updateUser->foto_profil = $this->upload->update($updateUser->foto_profil, $newImage);
+            } else {
+                $updateUser->foto_profil = $this->upload->save($newImage);
+            }
+
+            $updateUser->save();
+        }
+
+        return response()->json([
+            'message' => 'Profil telah diperbarui',
+            'data' => $updateUser
+        ], 200);
+    }
 }
