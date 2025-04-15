@@ -100,5 +100,6 @@ Route::group(['prefix' => 'manage-user', 'as' => 'manage-user.', 'middleware' =>
 
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'middleware' => 'auth:sanctum'], function () {
     Route::get('/', [ProfileController::class, 'index']);
+    Route::put('/', [ProfileController::class, 'update']);
 
 });
