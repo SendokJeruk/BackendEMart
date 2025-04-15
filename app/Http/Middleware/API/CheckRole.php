@@ -18,12 +18,14 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $token = PersonalAccessToken::findToken(Str::after(request()->header('Authorization'), "Bearer "));
-        $user = User::findOrFail($token->tokenable_id);
-        $role = $user->role->nama_role;
+        // $token = PersonalAccessToken::findToken(Str::after(request()->header('Authorization'), "Bearer "));
+        // $user = User::findOrFail($token->tokenable_id);
+        // $role = $user->role->nama_role;
+
+        $role = auth()->user()->role->nama_role;
 
         if ($role != 'admin') {
-            return response()->json(['message' => 'Anda tidak memiliki akses'], 403);
+            return response()->json(['message' => 'Halaman tidak ditemukan'], 404);
         }
 
         return $next($request);

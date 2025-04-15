@@ -6,6 +6,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\ManageUserController;
 use App\Http\Controllers\API\TransactionController;
@@ -43,9 +44,8 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 });
 
 
+Route::get('/product', [ProductController::class, 'index']);
 Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => ['auth:sanctum', 'checkrole'] ], function () {
-    Route::get('/', [ProductController::class, 'index']);
-    Route::get('/draft', [ProductController::class, 'draft']);
     Route::post('/', [ProductController::class, 'store']);
     Route::put('/{product}', [ProductController::class, 'edit']);
     Route::delete('/{product}', [ProductController::class, 'delete']);
@@ -96,4 +96,9 @@ Route::group(['prefix' => 'manage-user', 'as' => 'manage-user.', 'middleware' =>
     Route::post('/', [ManageUserController::class, 'store']);
     Route::put('/{manage_user}', [ManageUserController::class, 'update']);
     Route::delete('/{manage_user}', [ManageUserController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'profile', 'as' => 'profile.', 'middleware' => 'auth:sanctum'], function () {
+    Route::get('/', [ProfileController::class, 'index']);
+
 });
