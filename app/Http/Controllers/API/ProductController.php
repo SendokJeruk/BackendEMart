@@ -57,10 +57,12 @@ class ProductController extends Controller
                 'user_id' => 'required',
                 'nama_product' => 'required',
                 'deskripsi' => 'required',
+                'category_id' => 'required',
                 'harga' => 'required',
                 'stock' => 'required',
                 'foto_cover' => 'required',
                 'status_produk' => 'required|in:draft,publish',
+
             ]);
 
             if ($validate->fails()) {
@@ -95,7 +97,7 @@ class ProductController extends Controller
                 'deskripsi' => 'required',
                 'harga' => 'required',
                 'stock' => 'required',
-                'foto_cover' => 'nullable',
+                'foto_cover' => 'required',
                 'status_produk' => 'required|in:draft,publish',
             ]);
 

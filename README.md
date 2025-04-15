@@ -56,9 +56,11 @@ Sebelum menggunakan API ini, ikuti langkah-langkah berikut:
 - **Get all products**  
   `GET /api/product`  
 - **Search products by name**  
-  `GET /api/product?nama_product={query}`  
-- **Get all draft products**  
-  `GET /api/product/draft`  
+  `GET /api/product?nama_product={query}`
+- **Get publish products**  
+  `GET /api/product?publish`
+- **Get draft products**  
+  `GET /api/product?draft`   
 - **Create a new product**  
   `POST /api/product`  
 - **Update a product**  
