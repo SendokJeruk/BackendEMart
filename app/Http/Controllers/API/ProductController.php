@@ -36,7 +36,7 @@ class ProductController extends Controller
                 $query->where('status_produk', 'draft');
             }
 
-            $products = $query->paginate(10);
+            $products = $query->with(['categories', 'user.toko'])->paginate(10);
 
             return response()->json([
                 'message' => 'Berhasil Dapatkan Data Produk',

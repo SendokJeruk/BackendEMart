@@ -12,6 +12,10 @@ class Transaction extends Model
     use HasFactory;
     protected $guarded = [];
 
+    public function getRouteKeyName() {
+        return 'kode_transaksi';
+    }
+
 
     public function detail_transaction(): HasMany
     {
