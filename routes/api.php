@@ -76,7 +76,11 @@ Route::group(['prefix' => 'transaction', 'as' => 'transaction.', 'middleware' =>
     Route::post('/', [TransactionController::class, 'store']);
     Route::put('/{transaction}', [TransactionController::class, 'update']);
     Route::delete('/{transaction}', [TransactionController::class, 'delete']);
+
+    // MIDTRANS CUY
+    Route::post('/payment/{transaction}', [TransactionController::class, 'createTransaction']);
 });
+Route::post('/transaction/payment/callback', [TransactionController::class, 'handleCallback']);
 
 Route::group(['prefix' => 'detail-transaction', 'as' => 'detail-transaction.', 'middleware' => 'auth:sanctum'], function () {
     Route::get('/', [DetailTransactionController::class, 'index']);

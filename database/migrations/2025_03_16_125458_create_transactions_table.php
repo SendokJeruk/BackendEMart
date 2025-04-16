@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('total_harga')->default(0);
             $table->string('status');
             $table->datetime('tanggal_transaksi');
-            $table->string('kode_transaksi');
+            $table->string('kode_transaksi')->unique();
             $table->timestamps();
         });
     }
