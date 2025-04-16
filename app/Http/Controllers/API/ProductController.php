@@ -57,7 +57,6 @@ class ProductController extends Controller
                 'user_id' => 'required',
                 'nama_product' => 'required',
                 'deskripsi' => 'required',
-                'category_id' => 'required',
                 'harga' => 'required',
                 'stock' => 'required',
                 'foto_cover' => 'required',
