@@ -69,8 +69,8 @@ Route::group(['prefix' => 'rating', 'as' => 'rating.', 'middleware' => 'auth:san
 Route::group(['prefix' => 'role', 'as' => 'role.'], function () {
     Route::get('/', [RoleController::class, 'index']);
     Route::post('/', [RoleController::class, 'store']);
-    // Route::put('/{category}', [CategoryController::class, 'update']);
-    // Route::delete('/{category}', [CategoryController::class, 'delete']);
+    Route::put('/{role}', [RoleController::class, 'update']);
+    Route::delete('/{role}', [RoleController::class, 'delete']);
 });
 
 Route::group(['prefix' => 'transaction', 'as' => 'transaction.', 'middleware' => 'auth:sanctum'], function () {
