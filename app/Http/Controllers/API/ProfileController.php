@@ -22,6 +22,7 @@ class ProfileController extends Controller
         $user = auth()->user()->load('role');
 
         $data = [
+            'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
             'no_telp' => $user->no_telp,
