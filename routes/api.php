@@ -48,7 +48,7 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 
 
 Route::get('/product', [ProductController::class, 'index']);
-Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => ['auth:sanctum', 'checkrole'] ], function () {
+Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => ['auth:sanctum', 'seller'] ], function () {
     Route::post('/', [ProductController::class, 'store']);
     Route::put('/{product}', [ProductController::class, 'edit']);
     Route::delete('/{product}', [ProductController::class, 'delete']);
