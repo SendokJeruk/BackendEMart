@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\FotoController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\TokoController;
 use App\Http\Controllers\API\RatingController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\ManageUserController;
+use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
@@ -48,7 +50,7 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 
 
 Route::get('/product', [ProductController::class, 'index']);
-Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => ['auth:sanctum', 'checkrole'] ], function () {
+Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => ['auth:sanctum', 'seller'] ], function () {
     Route::post('/', [ProductController::class, 'store']);
     Route::put('/{product}', [ProductController::class, 'edit']);
     Route::delete('/{product}', [ProductController::class, 'delete']);
@@ -69,8 +71,8 @@ Route::group(['prefix' => 'rating', 'as' => 'rating.', 'middleware' => 'auth:san
 Route::group(['prefix' => 'role', 'as' => 'role.'], function () {
     Route::get('/', [RoleController::class, 'index']);
     Route::post('/', [RoleController::class, 'store']);
-    // Route::put('/{category}', [CategoryController::class, 'update']);
-    // Route::delete('/{category}', [CategoryController::class, 'delete']);
+    Route::put('/{role}', [RoleController::class, 'update']);
+    Route::delete('/{role}', [RoleController::class, 'delete']);
 });
 
 Route::group(['prefix' => 'transaction', 'as' => 'transaction.', 'middleware' => 'auth:sanctum'], function () {
@@ -115,4 +117,18 @@ Route::group(['prefix' => 'toko', 'as' => 'toko.', 'middleware' => ['auth:sanctu
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'middleware' => 'auth:sanctum'], function () {
     Route::get('/', [ProfileController::class, 'index']);
     Route::put('/', [ProfileController::class, 'update']);
+});
+
+Route::group(['prefix' => 'foto-product', 'as' => 'foto-product.', 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/', [FotoProductController::class, 'index']);
+    Route::post('/', [FotoProductController::class, 'store']);
+    Route::put('/{fotoProduct}', [FotoProductController::class, 'update']);
+    Route::delete('/{fotoProduct}', [FotoProductController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'foto', 'as' => 'foto.', 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/', [FotoController::class, 'index']);
+    Route::post('/', [FotoController::class, 'store']);
+    Route::put('/{foto}', [FotoController::class, 'update']);
+    Route::delete('/{foto}', [FotoController::class, 'delete']);
 });

@@ -53,4 +53,48 @@ class RoleController extends Controller
             ], 500);
         }
     }
+
+    public function update( Request $request, Role $role){
+        try {
+            $validate = Validator::make($request->all(),[
+                'nama_role' => 'required',
+            ]);
+
+            if($validate->fails()) {
+                return response()->json([
+                    'message' => 'Invalid Data',
+                    'errors' => $validate->errors()
+                ], 422);
+            }
+
+            $role->update([
+                'nama_role' => $request->nama_role
+            ]);
+
+            return response()->json([
+                'message' => 'role telah di update',
+                'data' => $role
+                ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function delete(Role $role){
+        try {
+            $role->delete();
+
+            return response()->json([
+             'message' => 'Data berhasil dihapus'
+         ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

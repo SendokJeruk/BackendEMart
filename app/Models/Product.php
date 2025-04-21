@@ -37,5 +37,11 @@ class Product extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function foto(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'foto_product', 'product_id', 'foto_id');
+    }
+
 }
 

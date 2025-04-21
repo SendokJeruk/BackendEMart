@@ -65,5 +65,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'checkrole' => \App\Http\Middleware\API\CheckRole::class,
         'putmidtrans' => \App\Http\Middleware\API\ForcePutForMidtrans::class,
+        'seller' => \App\Http\Middleware\API\seller::class,
     ];
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use App\Models\Toko;
 use App\Models\User;
 use Illuminate\Http\Request;
