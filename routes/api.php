@@ -15,7 +15,7 @@ use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
-
+use App\Http\Controllers\API\MidtransCallback;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +31,8 @@ use App\Http\Controllers\API\DetailTransactionController;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+
+Route::post('midtrans/callback', [MidtransCallback::class, 'callback']);
 
 Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
     Route::post('login', [AuthController::class, 'login']);
@@ -82,7 +84,7 @@ Route::group(['prefix' => 'transaction', 'as' => 'transaction.', 'middleware' =>
     // MIDTRANS CUY
     Route::post('/payment/{transaction}', [TransactionController::class, 'createTransaction']);
 });
-Route::post('/transaction/payment/callback', [TransactionController::class, 'handleCallback']);
+Route::post('/transaction/payment/callback', [TransactionController::class, 'callback'])->withoutMiddleware('auth:sanctum');
 
 Route::group(['prefix' => 'detail-transaction', 'as' => 'detail-transaction.', 'middleware' => 'auth:sanctum'], function () {
     Route::get('/', [DetailTransactionController::class, 'index']);
