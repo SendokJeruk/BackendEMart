@@ -36,7 +36,7 @@ class ProductController extends Controller
                 $query->where('status_produk', 'draft');
             }
 
-            $products = $query->paginate(10);
+            $products = $query->with(['categories', 'user.toko'])->paginate(10);
 
             return response()->json([
                 'message' => 'Berhasil Dapatkan Data Produk',
@@ -59,6 +59,7 @@ class ProductController extends Controller
                 'deskripsi' => 'required',
                 'harga' => 'required',
                 'stock' => 'required',
+                'berat' => 'required|decimal',
                 'foto_cover' => 'required',
                 'status_produk' => 'required|in:draft,publish',
 
@@ -96,6 +97,7 @@ class ProductController extends Controller
                 'deskripsi' => 'required',
                 'harga' => 'required',
                 'stock' => 'required',
+                'berat' => 'required|decimal',
                 'foto_cover' => 'required',
                 'status_produk' => 'required|in:draft,publish',
             ]);
