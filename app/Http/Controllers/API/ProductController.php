@@ -59,6 +59,7 @@ class ProductController extends Controller
                 'deskripsi' => 'required',
                 'harga' => 'required',
                 'stock' => 'required',
+                'berat' => 'required',
                 'foto_cover' => 'required',
                 'status_produk' => 'required|in:draft,publish',
 
@@ -96,6 +97,7 @@ class ProductController extends Controller
                 'deskripsi' => 'required',
                 'harga' => 'required',
                 'stock' => 'required',
+                'berat' => 'required',
                 'foto_cover' => 'required',
                 'status_produk' => 'required|in:draft,publish',
             ]);
