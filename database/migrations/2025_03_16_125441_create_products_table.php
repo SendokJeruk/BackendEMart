@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('deskripsi');
             $table->string('harga');
             $table->integer('stock');
-            $table->decimal('berat');
+            $table->integer('berat');
             $table->string('foto_cover');
             $table->enum('status_produk', ['draft', 'publish']);
             $table->timestamps();
