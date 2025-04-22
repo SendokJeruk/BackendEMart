@@ -76,13 +76,27 @@ Sebelum menggunakan API ini, ikuti langkah-langkah berikut:
 - **Update a category**  
   `PUT /api/category/{id}`  
 - **Delete a category**  
-  `DELETE /api/category/{id}`  
+  `DELETE /api/category/{id}`
+
+## Categories (M:N)
+- **Get all categories**  
+  `GET /api/category-product`  
+- **Create a new category**  
+  `POST /api/category-product`  
+- **Update a category**  
+  `PUT /api/category-product/{id}`  
+- **Delete a category**  
+  `DELETE /api/category-product/{id}`  
 
 ## Roles
 - **Get all roles**  
   `GET /api/role`  
 - **Create a new role**  
-  `POST /api/role`  
+  `POST /api/role`
+- **Update roles**  
+  `PUT /api/role`  
+- **Delete role**  
+  `DELETE /api/role`  
 
 ## Ratings
 - **Get product ratings**  
@@ -121,6 +135,36 @@ Sebelum menggunakan API ini, ikuti langkah-langkah berikut:
   `PUT /api/manage-user{id}`  
 - **Delete a user**  
   `DELETE /api/manage-user[id}`
+
+## Toko
+- **Get all toko**  
+  `GET /api/toko`  
+- **Create a new foto**  
+  `POST /api/toko`  
+- **Update a foto**  
+  `PUT /api/toko{id}`  
+- **Delete a foto**  
+  `DELETE /api/toko[id}`
+
+## Foto
+- **Get all foto**  
+  `GET /api/foto`  
+- **Create a new foto**  
+  `POST /api/foto`  
+- **Update a foto**  
+  `PUT /api/foto{id}`  
+- **Delete a foto**  
+  `DELETE /api/foto[id}`
+
+## Foto (M:N)
+- **Get all foto products**  
+  `GET /api/foto-product`  
+- **Create a new foto product**  
+  `POST /api/foto-product`  
+- **Update a foto product**  
+  `PUT /api/foto-product{id}`  
+- **Delete a foto product**  
+  `DELETE /api/foto-product[id}`
 
 ## Payment
 Sebelum melakukan payment diharapkan sudah ada record transaction terlebih dahulu dan gunakan `{kode_transaksi}` untuk melakukan payment
