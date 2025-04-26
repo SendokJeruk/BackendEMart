@@ -8,15 +8,22 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Repository\UploadProfileRepository;
 
 
 class ManageUserController extends Controller
 {
+    protected $upload;
+
+    public function __construct()
+    {
+        $this->upload = new UploadProfileRepository();
+    }
     public function index(){
         try {
             $manage_user = User::paginate(10);
             return response()->json([
-                'message' => 'Berhasil Dapatkan Data user',
+                'message' => 'Berhasil Dapatkan Data',
                 'data' => $manage_user
             ]);
         } catch (Exception $e) {
@@ -33,9 +40,9 @@ class ManageUserController extends Controller
                 'name' => 'required',
                 'email' => 'required',
                 'no_telp' => 'required',
-                'password' => 'required',
+                'password' => 'required|min:8',
                 'role_id' => 'required',
-                'foto_profil' => 'nullable',
+                'foto_profil' => 'nullable|image',
             ]);
 
             if($validate->fails()) {
@@ -44,14 +51,16 @@ class ManageUserController extends Controller
                     'errors' => $validate->errors()
                 ], 422);
             }
+
             $manage_user = new User();
             $manage_user->name = $request->input('name');
             $manage_user->email = $request->input('email');
             $manage_user->no_telp = $request->input('no_telp');
             $manage_user->role_id = $request->input('role_id');
             $manage_user->password = Hash::make($request->input('password'));
-            $manage_user->foto_profil = $request->input('foto_profil');
+            $manage_user->foto_profil = $this->upload->save($request->file('foto_profil'));
             $manage_user->save();
+
             return response()->json([
                 'message' => 'data telah di tambahkan',
                 'data' => $manage_user
@@ -66,11 +75,11 @@ class ManageUserController extends Controller
 
     public function update(Request $request, User $manage_user){
         $validate = Validator::make($request->all(),[
-            'name' => 'required',
-            'email' => 'required',
-            'no_telp' => 'required',
-            'password' => 'required',
-            'role_id' => 'required',
+            'name' => 'nullable',
+            'email' => 'nullable',
+            'no_telp' => 'nullable',
+            'password' => 'nullable',
+            'role_id' => 'nullable',
             'foto_profil' => 'nullable',
         ]);
 
@@ -90,6 +99,13 @@ class ManageUserController extends Controller
             'foto_profil' => $request->foto_profil,
         ]);
 
+        if ($request->hasFile('foto_profil')) {
+            $newImage = $request->file('foto_profil');
+
+            $manage_user->foto_profil = $this->upload->update($manage_user->foto_profil, $newImage);
+
+            $manage_user->save();
+        }
         return response()->json([
             'message' => 'data telah di perbarui',
             'data' => $manage_user

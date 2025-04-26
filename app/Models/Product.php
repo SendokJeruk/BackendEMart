@@ -16,9 +16,12 @@ class Product extends Model
     use HasFactory;
     protected $guarded = [];
 
+
+
+
     public function detail_transaction(): HasMany
     {
-        return $this->hasMany(related: DetailTransaction::class, foreignKey: 'detail-transaction_id');
+        return $this->hasMany(related: DetailTransaction::class, foreignKey: 'product_id');
     }
     public function rating(): HasMany
     {
@@ -27,12 +30,18 @@ class Product extends Model
 
     public function categories(): BelongsToMany
     {
-        return $this->belongsToMany(Category::class, 'category_product', 'product_id', 'category_id');
+        return $this->belongsToMany(Category::class, 'category_products', 'product_id', 'category_id');
     }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function foto(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'foto_product', 'product_id', 'foto_id');
+    }
+
 }
 

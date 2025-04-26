@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use App\Models\Toko;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -69,10 +70,10 @@ class TokoController extends Controller
     public function update(Request $request, Toko $toko){
         try {
             $validate = Validator::make($request->all(),[
-                'user_id' => 'required',
-                'nama_toko' => 'required',
-                'deskripsi' => 'required',
-                'no_telp' => 'required',
+                'user_id' => 'nullable',
+                'nama_toko' => 'nullable',
+                'deskripsi' => 'nullable',
+                'no_telp' => 'nullable',
             ]);
 
             if($validate->fails()) {
