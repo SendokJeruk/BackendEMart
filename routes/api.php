@@ -6,16 +6,17 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\FotoController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\TokoController;
+use App\Http\Controllers\API\MidtransCallback;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\ManageUserController;
+use App\Http\Controllers\API\RajaOngkirController;
 use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
-use App\Http\Controllers\API\MidtransCallback;
 
 /*
 |--------------------------------------------------------------------------
@@ -131,4 +132,11 @@ Route::group(['prefix' => 'foto', 'as' => 'foto.', 'middleware' => ['auth:sanctu
     Route::post('/', [FotoController::class, 'store']);
     Route::put('/{foto}', [FotoController::class, 'update']);
     Route::delete('/{foto}', [FotoController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'rajaongkir', 'as' => 'rajaongkir.'], function () {
+    Route::get('/domestic', [RajaOngkirController::class, 'domestic']);
+    Route::get('/cities', [RajaOngkirController::class, 'cities']);
+    Route::post('/cost', [RajaOngkirController::class, 'cost']);
+    Route::post('/track', [RajaOngkirController::class, 'track']);
 });

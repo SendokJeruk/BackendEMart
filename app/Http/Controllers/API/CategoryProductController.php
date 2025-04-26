@@ -58,8 +58,8 @@ class CategoryProductController extends Controller
     public function update(Request $request, CategoryProduct $category_product){
         try {
             $validate = Validator::make($request->all(),[
-                'category_id' => 'required',
-                'product_id' => 'required',
+                'category_id' => 'nullable',
+                'product_id' => 'nullable',
             ]);
 
             if($validate->fails()) {

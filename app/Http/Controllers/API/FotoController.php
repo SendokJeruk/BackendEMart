@@ -64,7 +64,7 @@ class FotoController extends Controller
     public function update(Request $request, Foto $foto){
         try {
                  $validate = Validator::make($request->all(), [
-                'foto' => 'required|mimes:jpg,jpeg,png,webp|max:2048',
+                'foto' => 'nullable|mimes:jpg,jpeg,png,webp|max:2048',
             ]);
 
             if ($validate->fails()) {

@@ -92,14 +92,14 @@ class ProductController extends Controller
     {
         try {
             $validate = Validator::make($request->all(), [
-                'user_id' => 'required',
-                'nama_product' => 'required',
-                'deskripsi' => 'required',
-                'harga' => 'required',
-                'stock' => 'required',
-                'berat' => 'required',
-                'foto_cover' => 'required',
-                'status_produk' => 'required|in:draft,publish',
+                'user_id' => 'nullable',
+                'nama_product' => 'nullable',
+                'deskripsi' => 'nullable',
+                'harga' => 'nullable',
+                'stock' => 'nullable',
+                'berat' => 'nullable',
+                'foto_cover' => 'nullable',
+                'status_produk' => 'nullable|in:draft,publish',
             ]);
 
             if ($validate->fails()) {
