@@ -92,9 +92,9 @@ class DetailTransactionController extends Controller
     {
         try {
             $validate = Validator::make($request->all(), [
-                'transaction_id' => 'required',
-                'product_id' => 'required',
-                'jumlah' => 'required',
+                'transaction_id' => 'nullable',
+                'product_id' => 'nullable',
+                'jumlah' => 'nullable',
             ]);
 
             if ($validate->fails()) {

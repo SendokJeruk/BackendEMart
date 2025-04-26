@@ -75,11 +75,11 @@ class ManageUserController extends Controller
 
     public function update(Request $request, User $manage_user){
         $validate = Validator::make($request->all(),[
-            'name' => 'required',
-            'email' => 'required',
-            'no_telp' => 'required',
-            'password' => 'required',
-            'role_id' => 'required',
+            'name' => 'nullable',
+            'email' => 'nullable',
+            'no_telp' => 'nullable',
+            'password' => 'nullable',
+            'role_id' => 'nullable',
             'foto_profil' => 'nullable',
         ]);
 

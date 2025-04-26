@@ -59,8 +59,8 @@ class FotoProductController extends Controller
     public function update(Request $request, FotoProduct $fotoProduct){
         try {
                  $validate = Validator::make($request->all(), [
-                    'foto_id' => 'required',
-                    'product_id' => 'required',
+                    'foto_id' => 'nullable',
+                    'product_id' => 'nullable',
             ]);
 
             if ($validate->fails()) {
