@@ -36,6 +36,10 @@ class ProductController extends Controller
                 $query->where('status_produk', 'draft');
             }
 
+            elseif ($request->has('id')) {
+                $query->where('id', $request->id);
+            }
+
             $products = $query->with(['categories', 'user.toko'])->paginate(10);
 
             return response()->json([

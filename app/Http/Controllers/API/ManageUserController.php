@@ -19,9 +19,19 @@ class ManageUserController extends Controller
     {
         $this->upload = new UploadProfileRepository();
     }
-    public function index(){
+    public function index(Request $request){
         try {
-            $manage_user = User::paginate(10);
+            $query = User::query();
+
+            if ($request->has('nama')) {
+                $query->where('name', 'like', "%{$request->name}%");
+            }
+
+            elseif ($request->has('id')) {
+                $query->where('id', $request->id);
+            }
+
+            $manage_user = $query->paginate(10);
             return response()->json([
                 'message' => 'Berhasil Dapatkan Data',
                 'data' => $manage_user
@@ -96,7 +106,6 @@ class ManageUserController extends Controller
             'no_telp' => $request->no_telp,
             'password' => Hash::make($request->password),
             'role_id' => $request->role_id,
-            'foto_profil' => $request->foto_profil,
         ]);
 
         if ($request->hasFile('foto_profil')) {
@@ -106,6 +115,7 @@ class ManageUserController extends Controller
 
             $manage_user->save();
         }
+        $manage_user->save();
         return response()->json([
             'message' => 'data telah di perbarui',
             'data' => $manage_user
