@@ -40,7 +40,7 @@ class ProductController extends Controller
                 $query->where('id', $request->id);
             }
 
-            $products = $query->with(['categories', 'user.toko'])->paginate(10);
+            $products = $query->with(['categories', 'user.toko', 'foto'])->paginate(10);
 
             return response()->json([
                 'message' => 'Berhasil Dapatkan Data Produk',
