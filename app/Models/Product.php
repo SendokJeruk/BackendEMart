@@ -40,7 +40,7 @@ class Product extends Model
 
     public function foto(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'foto_product', 'product_id', 'foto_id');
+        return $this->belongsToMany(Foto::class, 'foto_products');
     }
 
 }
