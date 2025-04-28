@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Services\MidtransService;
+use App\Services\RajaOngkirService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -16,12 +17,15 @@ class TransactionController extends Controller
 {
     protected $midtransService;
 
-    public function __construct(MidtransService $midtransService)
+    protected $rajaOngkir;
+
+    public function __construct(MidtransService $midtransService, RajaOngkirService $rajaOngkir)
     {
         $this->midtransService = $midtransService;
+        $this->rajaOngkir = $rajaOngkir;
     }
 
-    public function createTransaction(Transaction $transaction)
+    public function createTransaction(Transaction $transaction, Request $request)
     {
         $transaction->load('detail_transaction.product');
 
@@ -35,7 +39,30 @@ class TransactionController extends Controller
             ];
         })->toArray();
 
+        $origin = $request->origin;
+        $destination = $request->destination;
+        $weight = $transaction->total_berat;
+
+        $kurir = $this->rajaOngkir->getCost(
+            $origin,
+            $destination,
+            $weight,
+            "jnt",
+            "lowest"
+        );
+
+        $ongkir = $kurir['data'][0]['cost'];
+
+        array_push($products, [
+            'id' => 999,
+            'name' => 'Biaya Ongkir',
+            'price' => $ongkir,
+            'quantity' => 1,
+        ]);
+
         $order_id = $transaction->kode_transaksi;
+        $transaction->total_harga = $transaction->total_harga + $ongkir;
+        $transaction->save();
 
         $params = [
             'transaction_details' => [

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AlamatController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
+use App\Models\AlamatUser;
 
 /*
 |--------------------------------------------------------------------------
@@ -139,4 +141,11 @@ Route::group(['prefix' => 'rajaongkir', 'as' => 'rajaongkir.'], function () {
     Route::get('/cities', [RajaOngkirController::class, 'cities']);
     Route::post('/cost', [RajaOngkirController::class, 'cost']);
     Route::post('/track', [RajaOngkirController::class, 'track']);
+});
+
+Route::group(['prefix' => 'alamat', 'as' => 'alamat.'], function () {
+    // Route::get('/domestic', [RajaOngkirController::class, 'domestic']);
+    // Route::get('/cities', [RajaOngkirController::class, 'cities']);
+    Route::post('/', [AlamatController::class, 'store']);
+    // Route::post('/track', [RajaOngkirController::class, 'track']);
 });

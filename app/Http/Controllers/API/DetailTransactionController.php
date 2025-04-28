@@ -62,6 +62,7 @@ class DetailTransactionController extends Controller
             $product = Product::find($request->product_id);
             $harga = $product->harga;
             $subtotal = $harga * $request->jumlah;
+            $totalberat = $product->berat * $request->jumlah;
             $transaction = Transaction::findOrFail($request->transaction_id);
 
             $detailTransaction = new DetailTransaction();
@@ -70,10 +71,13 @@ class DetailTransactionController extends Controller
             $detailTransaction->harga = $harga;
             $detailTransaction->jumlah = $request->jumlah;
             $detailTransaction->subtotal = $subtotal;
+            $detailTransaction->totalberat = $totalberat;
             $detailTransaction->save();
 
             $total_harga = $transaction->detail_transaction->sum('subtotal');
+            $total_berat = $transaction->detail_transaction->sum('totalberat');
             $transaction->total_harga = $total_harga;
+            $transaction->total_berat = $total_berat;
             $transaction->save();
 
             return response()->json([

@@ -11,14 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('alamat_users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->integer('total_harga')->default(0);
-            $table->integer('total_berat')->default(0);
-            $table->string('status');
-            $table->datetime('tanggal_transaksi');
-            $table->string('kode_transaksi')->unique();
+            $table->string('kode_domestik');
+            $table->string('label');
+            $table->string('province_name');
+            $table->string('city_name');
+            $table->string('district_name');
+            $table->string('subdistrict_name');
+            $table->string('zip_code');
+            $table->text('detail_alamat');
             $table->timestamps();
         });
     }
@@ -28,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('alamat_users');
     }
 };

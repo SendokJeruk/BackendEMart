@@ -17,7 +17,8 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->string('harga');
             $table->integer('jumlah');
-            $table->string('subtotal');
+            $table->integer('subtotal');
+            $table->integer('totalberat');
             $table->timestamps();
         });
     }
