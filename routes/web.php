@@ -15,7 +15,11 @@ use App\Http\Controllers\API\AuthController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return response()->json([
+        'title' => 'Eleven Market',
+        'api_version' => '0.1',
+        'status' => 'active',
+    ]);
 });
 
 // Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
