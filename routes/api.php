@@ -18,6 +18,7 @@ use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
+use App\Http\Controllers\API\SettingController;
 use App\Models\AlamatUser;
 
 /*
@@ -110,7 +111,7 @@ Route::group(['prefix' => 'manage-user', 'as' => 'manage-user.', 'middleware' =>
     Route::delete('/{manage_user}', [ManageUserController::class, 'delete']);
 });
 
-Route::group(['prefix' => 'toko', 'as' => 'toko.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
+Route::group(['prefix' => 'toko', 'as' => 'toko.', 'middleware' => ['auth:sanctum', 'checkrole',]], function () {
     Route::get('/', [TokoController::class, 'index']);
     Route::post('/', [TokoController::class, 'store']);
     Route::put('/{toko}', [TokoController::class, 'update']);
@@ -148,4 +149,9 @@ Route::group(['prefix' => 'alamat', 'as' => 'alamat.'], function () {
     // Route::get('/cities', [RajaOngkirController::class, 'cities']);
     Route::post('/', [AlamatController::class, 'store']);
     // Route::post('/track', [RajaOngkirController::class, 'track']);
+});
+
+Route::group(['prefix' => 'setting', 'as' => 'setting.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
+    Route::get('/tes', [SettingController::class, 'test']);
+    Route::post('/', [SettingController::class, 'update']);
 });
