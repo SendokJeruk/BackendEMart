@@ -36,7 +36,11 @@ class ProductController extends Controller
                 $query->where('status_produk', 'draft');
             }
 
-            $products = $query->paginate(10);
+            elseif ($request->has('id')) {
+                $query->where('id', $request->id);
+            }
+
+            $products = $query->with(['categories', 'user.toko', 'foto'])->paginate(10);
 
             return response()->json([
                 'message' => 'Berhasil Dapatkan Data Produk',
@@ -57,9 +61,9 @@ class ProductController extends Controller
                 'user_id' => 'required',
                 'nama_product' => 'required',
                 'deskripsi' => 'required',
-                'category_id' => 'required',
                 'harga' => 'required',
                 'stock' => 'required',
+                'berat' => 'required',
                 'foto_cover' => 'required',
                 'status_produk' => 'required|in:draft,publish',
 
@@ -92,13 +96,14 @@ class ProductController extends Controller
     {
         try {
             $validate = Validator::make($request->all(), [
-                'user_id' => 'required',
-                'nama_product' => 'required',
-                'deskripsi' => 'required',
-                'harga' => 'required',
-                'stock' => 'required',
-                'foto_cover' => 'required',
-                'status_produk' => 'required|in:draft,publish',
+                'user_id' => 'nullable',
+                'nama_product' => 'nullable',
+                'deskripsi' => 'nullable',
+                'harga' => 'nullable',
+                'stock' => 'nullable',
+                'berat' => 'nullable',
+                'foto_cover' => 'nullable',
+                'status_produk' => 'nullable|in:draft,publish',
             ]);
 
             if ($validate->fails()) {

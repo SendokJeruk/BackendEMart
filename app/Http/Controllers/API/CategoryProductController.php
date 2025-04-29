@@ -15,7 +15,7 @@ class CategoryProductController extends Controller
         try {
             $category_product = CategoryProduct::paginate(10);
             return response()->json([
-                'message' => 'Berhasil Dapatkan Data Category Product',
+                'message' => 'Berhasil Dapatkan Category Product',
                 'data' => $category_product
             ]);
         } catch (Exception $e) {
@@ -58,8 +58,8 @@ class CategoryProductController extends Controller
     public function update(Request $request, CategoryProduct $category_product){
         try {
             $validate = Validator::make($request->all(),[
-                'category_id' => 'required',
-                'product_id' => 'required',
+                'category_id' => 'nullable',
+                'product_id' => 'nullable',
             ]);
 
             if($validate->fails()) {

@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Role;
+use App\Models\AlamatUser;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -54,6 +55,11 @@ class User extends Authenticatable
     public function toko(): HasOne
     {
         return $this->hasOne(Toko::class);
+    }
+
+    public function alamat(): HasMany
+    {
+        return $this->hasMany(related: AlamatUser::class, foreignKey: 'user_id');
     }
     /**
      * The attributes that should be hidden for serialization.

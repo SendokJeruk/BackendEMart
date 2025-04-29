@@ -76,13 +76,27 @@ Sebelum menggunakan API ini, ikuti langkah-langkah berikut:
 - **Update a category**  
   `PUT /api/category/{id}`  
 - **Delete a category**  
-  `DELETE /api/category/{id}`  
+  `DELETE /api/category/{id}`
+
+## Categories (M:N)
+- **Get all categories**  
+  `GET /api/category-product`  
+- **Create a new category**  
+  `POST /api/category-product`  
+- **Update a category**  
+  `PUT /api/category-product/{id}`  
+- **Delete a category**  
+  `DELETE /api/category-product/{id}`  
 
 ## Roles
 - **Get all roles**  
   `GET /api/role`  
 - **Create a new role**  
-  `POST /api/role`  
+  `POST /api/role`
+- **Update roles**  
+  `PUT /api/role`  
+- **Delete role**  
+  `DELETE /api/role`  
 
 ## Ratings
 - **Get product ratings**  
@@ -96,9 +110,9 @@ Sebelum menggunakan API ini, ikuti langkah-langkah berikut:
 - **Create a new transaction**  
   `POST /api/transaction`  
 - **Update a transaction**  
-  `PUT /api/transaction/{id}`  
+  `PUT /api/transaction/{kode_transaksi}`  
 - **Delete a transaction**  
-  `DELETE /api/transaction/{id}`  
+  `DELETE /api/transaction/{kode_transaksi}`  
 
 ## Transaction Details
 - **Get all transaction details**  
@@ -114,11 +128,55 @@ Sebelum menggunakan API ini, ikuti langkah-langkah berikut:
   
 ## Manage User
 - **Get all user**  
-  `GET /api/api/manage-user`  
+  `GET /api/manage-user`  
 - **Create a new user**  
-  `POST /api/api/manage-user`  
+  `POST /api/manage-user`  
 - **Update a user**  
-  `PUT /api/api/manage-user{id}`  
+  `PUT /api/manage-user{id}`  
 - **Delete a user**  
-  `DELETE /api/api/manage-user[id}`
+  `DELETE /api/manage-user[id}`
 
+## Toko
+- **Get all toko**  
+  `GET /api/toko`  
+- **Create a new foto**  
+  `POST /api/toko`  
+- **Update a foto**  
+  `PUT /api/toko{id}`  
+- **Delete a foto**  
+  `DELETE /api/toko[id}`
+
+## Foto
+- **Get all foto**  
+  `GET /api/foto`  
+- **Create a new foto**  
+  `POST /api/foto`  
+- **Update a foto**  
+  `PUT /api/foto{id}`  
+- **Delete a foto**  
+  `DELETE /api/foto[id}`
+
+## Foto (M:N)
+- **Get all foto products**  
+  `GET /api/foto-product`  
+- **Create a new foto product**  
+  `POST /api/foto-product`  
+- **Update a foto product**  
+  `PUT /api/foto-product{id}`  
+- **Delete a foto product**  
+  `DELETE /api/foto-product[id}`
+
+## Payment
+Sebelum melakukan payment diharapkan sudah ada record transaction terlebih dahulu dan gunakan `{kode_transaksi}` untuk melakukan payment
+- **Create a Payment**  
+  `POST /api/transaction/payment/[kode_transaksi}`
+
+Responsenya akan seperti
+```json
+{
+    "snap_token": "9d539ebc-037b-4f35-b066-024599fab9c7",
+    "redirect_url": "https://app.sandbox.midtrans.com/snap/v4/redirection/9d539ebc-037b-4f35-b066-024599fab9c7"
+}
+```
+
+Gunakan `snap_token` untuk keperluan integrasi midtrans di frontend menggunakan snap atau bisa langsung redirect ke `redirect_url`

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use App\Models\Toko;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -10,9 +11,16 @@ use Illuminate\Support\Facades\Validator;
 
 class TokoController extends Controller
 {
-    public function index(){
+    public function index(Request $request){
         try {
-            $toko = Toko::paginate(10);
+
+            $query = Toko::query();
+            if ($request->has('nama_toko')) {
+                $query->where('nama_toko', 'like', "%{$request->nama_toko}%");
+            }
+
+            $toko = $query->paginate(10);
+
             return response()->json([
                 'message' => 'Berhasil Dapatkan Data toko',
                 'data' => $toko
@@ -69,10 +77,10 @@ class TokoController extends Controller
     public function update(Request $request, Toko $toko){
         try {
             $validate = Validator::make($request->all(),[
-                'user_id' => 'required',
-                'nama_toko' => 'required',
-                'deskripsi' => 'required',
-                'no_telp' => 'required',
+                'user_id' => 'nullable',
+                'nama_toko' => 'nullable',
+                'deskripsi' => 'nullable',
+                'no_telp' => 'nullable',
             ]);
 
             if($validate->fails()) {
