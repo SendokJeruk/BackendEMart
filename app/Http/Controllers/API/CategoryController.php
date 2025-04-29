@@ -10,11 +10,17 @@ use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
-    public function index() {
+    public function index(Request $request ) {
         try {
-            $category = Category::paginate(10);
+            $query = Category::query();
+
+            if ($request->has('nama_category')) {
+                $query->where('nama_category', 'like', "%{$request->nama_category}%");
+            }
+
+            $category = $query->paginate(10);
             return response()->json([
-                'message' => 'Berhasil Dapatkan Data Produk',
+                'message' => 'Berhasil Dapatkan Data category',
                 'data' => $category
             ]);
         } catch (Exception $e) {
@@ -41,7 +47,7 @@ class CategoryController extends Controller
             $category->nama_category = $request->input('nama_category');
             $category->save();
             return response()->json([
-                'message' => 'Category Created',
+                'message' => 'Category telah dibuat',
                 'data' => $category
                 ], 200);
 
@@ -70,7 +76,7 @@ class CategoryController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Category Updated',
+                'message' => 'Data berhasil di update',
                 'data' => $category
                 ], 200);
 

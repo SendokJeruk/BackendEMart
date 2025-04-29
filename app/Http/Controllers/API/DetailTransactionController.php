@@ -92,49 +92,54 @@ class DetailTransactionController extends Controller
         }
     }
 
-    public function update(Request $request, DetailTransaction $detailTransaction)
-    {
-        try {
-            $validate = Validator::make($request->all(), [
-                'transaction_id' => 'nullable',
-                'product_id' => 'nullable',
-                'jumlah' => 'nullable',
-            ]);
+        public function update(Request $request, DetailTransaction $detailTransaction)
+        {
+            try {
+                $validate = Validator::make($request->all(), [
+                    'transaction_id' => 'nullable',
+                    'product_id' => 'nullable',
+                    'jumlah' => 'nullable',
+                ]);
 
-            if ($validate->fails()) {
+                if ($validate->fails()) {
+                    return response()->json([
+                        'message' => 'Invalid Data',
+                        'errors' => $validate->errors()
+                    ], 422);
+                }
+
+                $product = Product::find($request->product_id);
+                $harga = $product->harga;
+                $totalberat = $product->berat * $request->jumlah;
+                $subtotal = $harga * $request->jumlah;
+                $transaction = Transaction::findOrFail($request->transaction_id);
+
+                $detailTransaction->transaction_id = $request->transaction_id;
+                $detailTransaction->product_id = $request->product_id;
+                $detailTransaction->harga = $harga;
+                $detailTransaction->jumlah = $request->jumlah;
+                $detailTransaction->subtotal = $subtotal;
+                $detailTransaction->totalberat = $totalberat;
+                $detailTransaction->save();
+
+                $total_harga = $transaction->detail_transaction->sum('subtotal');
+                $total_berat = $transaction->detail_transaction->sum('totalberat');
+
+                $transaction->total_harga = $total_harga;
+                $transaction->total_berat = $total_berat;
+                $transaction->save();
+
                 return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
+                    'message' => 'Berhasil Edit Detail transaksi',
+                    'data' => $detailTransaction
+                ]);
+            } catch (Exception $e) {
+                return response()->json([
+                    'message' => 'Internal Server Error',
+                    'error' => $e->getMessage()
+                ], 500);
             }
-
-            $product = Product::find($request->product_id);
-            $harga = $product->harga;
-            $subtotal = $harga * $request->jumlah;
-            $transaction = Transaction::findOrFail($request->transaction_id);
-
-            $detailTransaction->transaction_id = $request->transaction_id;
-            $detailTransaction->product_id = $request->product_id;
-            $detailTransaction->harga = $harga;
-            $detailTransaction->jumlah = $request->jumlah;
-            $detailTransaction->subtotal = $subtotal;
-            $detailTransaction->save();
-
-            $total_harga = $transaction->detail_transaction->sum('subtotal');
-            $transaction->total_harga = $total_harga;
-            $transaction->save();
-
-            return response()->json([
-                'message' => 'Berhasil Edit Detail transaksi',
-                'data' => $detailTransaction
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
         }
-    }
 
 
     public function delete(DetailTransaction $detailTransaction)

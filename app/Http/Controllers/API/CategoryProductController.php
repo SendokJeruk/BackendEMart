@@ -15,7 +15,7 @@ class CategoryProductController extends Controller
         try {
             $category_product = CategoryProduct::paginate(10);
             return response()->json([
-                'message' => 'Berhasil Dapatkan Data Category Product',
+                'message' => 'Berhasil Dapatkan Category Product',
                 'data' => $category_product
             ]);
         } catch (Exception $e) {
