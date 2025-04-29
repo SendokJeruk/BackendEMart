@@ -23,7 +23,7 @@ class ManageUserController extends Controller
         try {
             $query = User::query();
 
-            if ($request->has('nama')) {
+            if ($request->has('name')) {
                 $query->where('name', 'like', "%{$request->name}%");
             }
 

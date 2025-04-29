@@ -13,6 +13,7 @@ class RatingController extends Controller
 {
     public function index(){
         try {
+            
             $ratings = Rating::when(request('product_id'), function ($query, $product_id) {
                 return $query->where('product_id', $product_id);
             })->get();
