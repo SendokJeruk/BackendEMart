@@ -111,7 +111,7 @@ Route::group(['prefix' => 'manage-user', 'as' => 'manage-user.', 'middleware' =>
     Route::delete('/{manage_user}', [ManageUserController::class, 'delete']);
 });
 
-Route::group(['prefix' => 'toko', 'as' => 'toko.', 'middleware' => ['auth:sanctum', 'checkrole',]], function () {
+Route::group(['prefix' => 'toko', 'as' => 'toko.', 'middleware' => ['auth:sanctum', 'seller',]], function () {
     Route::get('/', [TokoController::class, 'index']);
     Route::post('/', [TokoController::class, 'store']);
     Route::put('/{toko}', [TokoController::class, 'update']);
