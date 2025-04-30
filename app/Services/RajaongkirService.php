@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Setting;
 use Illuminate\Support\Facades\Http;
 
 class RajaongkirService
@@ -11,8 +12,8 @@ class RajaongkirService
 
     public function __construct()
     {
-        $this->shippingKey = config('rajaongkir.shipping_key');
-        $this->deliveryKey = config('rajaongkir.delivery_key');
+        $this->shippingKey = Setting::getValue('RAJAONGKIR_SHIPPING_KEY');
+        $this->deliveryKey = Setting::getValue('RAJAONGKIR_DELIVERY_KEY');
     }
 
     public function getDomestic($domestic)
