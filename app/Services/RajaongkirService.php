@@ -9,11 +9,11 @@ class RajaongkirService
 {
     protected $shippingKey;
     protected $deliveryKey;
-
+// ! DISABLE SEMENTARA
     public function __construct()
     {
-        $this->shippingKey = Setting::getValue('RAJAONGKIR_SHIPPING_KEY');
-        $this->deliveryKey = Setting::getValue('RAJAONGKIR_DELIVERY_KEY');
+        $this->shippingKey = config('rajaongkir.shipping_key');
+        $this->deliveryKey = config('rajaongkir.delivery_key');
     }
 
     public function getDomestic($domestic)

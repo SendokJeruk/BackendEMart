@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use Exception;
+use App\Models\Setting;
 use Midtrans\Notification;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
@@ -27,6 +28,25 @@ class TransactionController extends Controller
 
     public function createTransaction(Transaction $transaction, Request $request)
     {
+        Log::info("Received MD API KEY : " . config('midtrans.server_key'));
+
+        // return Setting::getValue('MIDTRANS_SERVER_KEY');
+        $validate = Validator::make($request->all(), [
+            'origin' => 'required',
+            'destination' => 'required',
+            // 'payment_type' => 'required',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => 'Invalid Data',
+                'errors' => $validate->errors()
+            ], 422);
+        }
+
+        // $payment_type = [];
+        // $payment_type[] = $request->payment_type;
+
         $transaction->load('detail_transaction.product');
 
         $products = $transaction->detail_transaction->map(function ($detail) {
@@ -74,7 +94,8 @@ class TransactionController extends Controller
                 'email' => $transaction->user->email,
                 'phone' => $transaction->user->no_telp
             ],
-            'item_details' => $products
+            'item_details' => $products,
+            // 'enabled_payments' => $payment_type
         ];
 
         // return response()->json($params);
