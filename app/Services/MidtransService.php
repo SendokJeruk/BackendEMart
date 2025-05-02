@@ -8,13 +8,15 @@ use App\Models\Setting;
 
 class MidtransService
 {
-    public function __construct()
-    {
-        Config::$serverKey = Setting::getValue('MIDTRANS_SERVER_KEY');
-        Config::$isProduction = Setting::getValue('MIDTRANS_IS_PRODUCTION');
-        Config::$isSanitized = true;
-        Config::$is3ds = true;
-    }
+    // public function __construct()
+    // {
+    //     // Config::$serverKey = Setting::getValue('MIDTRANS_SERVER_KEY');
+    //     // Config::$isProduction = Setting::getValue('MIDTRANS_IS_PRODUCTION');
+    //     Config::$serverKey = config('midtrans.server_key');
+    //     Config::$isProduction = config('midtrans.is_production');
+    //     Config::$isSanitized = true;
+    //     Config::$is3ds = true;
+    // }
 
     public function createTransaction(array $params)
     {

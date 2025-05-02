@@ -50,9 +50,9 @@ class SettingController extends Controller
         }
     }
 
-    public function test()
-    {
-        return Setting::getValue('MIDTRANS_SERVER_KEY');
-        return Setting::where('name', 'MIDTRANS_SERVER_KEY')->first()->value;
-    }
+    // public function test()
+    // {
+    //     return Setting::getValue('MIDTRANS_SERVER_KEY');
+    //     return Setting::where('name', 'MIDTRANS_SERVER_KEY')->first()->value;
+    // }
 }
