@@ -23,10 +23,10 @@ class Product extends Model
     {
         return $this->hasMany(related: DetailTransaction::class, foreignKey: 'product_id');
     }
-    public function rating(): HasMany
-    {
-        return $this->hasMany(related: rating::class, foreignKey: 'rating_id');
-    }
+        public function rating(): HasMany
+        {
+            return $this->hasMany(related: rating::class, foreignKey: 'rating_id');
+        }
 
     public function categories(): BelongsToMany
     {
@@ -41,6 +41,11 @@ class Product extends Model
     public function foto(): BelongsToMany
     {
         return $this->belongsToMany(Foto::class, 'foto_products');
+    }
+
+    public function cart_detail(): HasMany
+    {
+        return $this->HasMany(Cart_detail::class, 'cartDetail_id');
     }
 
 }

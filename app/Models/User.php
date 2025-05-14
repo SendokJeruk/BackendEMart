@@ -61,6 +61,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(related: AlamatUser::class, foreignKey: 'user_id');
     }
+
+        public function cart(): HasMany
+    {
+        return $this->HasMany(Cart::class, 'cart_id');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
