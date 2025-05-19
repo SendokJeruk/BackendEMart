@@ -345,4 +345,36 @@ class TransactionController extends Controller
             ], 500);
         }
     }
+
+    public function pesananMasuk(Request $request)
+{
+    try {
+        $sellerId = auth()->id(); // atau ambil dari $request->user_id
+
+        $transactions = Transaction::whereHas('detail_transaction.product', function ($query) use ($sellerId) {
+            $query->where('user_id', $sellerId); // user_id adalah pemilik produk
+        })
+        ->with([
+            'detail_transaction' => function ($q) use ($sellerId) {
+                $q->whereHas('product', function ($query) use ($sellerId) {
+                    $query->where('user_id', $sellerId);
+                })->with('product');
+            },
+            'user'
+        ])
+        ->latest()
+        ->paginate(10);
+
+        return response()->json([
+            'message' => 'Berhasil menampilkan pesanan masuk',
+            'data' => $transactions
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'message' => 'Internal Server Error',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
 }
