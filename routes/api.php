@@ -1,25 +1,27 @@
 <?php
 
-use App\Http\Controllers\API\AlamatController;
+use App\Models\AlamatUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\CartController;
 use App\Http\Controllers\API\FotoController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\TokoController;
+use App\Http\Controllers\API\AlamatController;
 use App\Http\Controllers\API\MidtransCallback;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ProfileController;
+use App\Http\Controllers\API\SettingController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\DetailCartController;
 use App\Http\Controllers\API\ManageUserController;
 use App\Http\Controllers\API\RajaOngkirController;
 use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
-use App\Http\Controllers\API\SettingController;
-use App\Models\AlamatUser;
 
 /*
 |--------------------------------------------------------------------------
@@ -155,4 +157,18 @@ Route::group(['prefix' => 'alamat', 'as' => 'alamat.'], function () {
 Route::group(['prefix' => 'setting', 'as' => 'setting.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
     Route::get('/tes', [SettingController::class, 'test']);
     Route::post('/', [SettingController::class, 'update']);
+});
+
+Route::group(['prefix' => 'detailcart', 'as' => 'detailcart.', 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/', [DetailCartController::class, 'index']);
+    Route::post('/', [DetailCartController::class, 'store']);
+    Route::put('/{Cart_detail}', [DetailCartController::class, 'update']);
+    Route::delete('/{Cart_detail}', [DetailCartController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'cart', 'as' => 'cart.', 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/', [CartController::class, 'index']);
+    Route::post('/', [CartController::class, 'store']);
+    Route::put('/{Cart_detail}', [CartController::class, 'update']);
+    Route::delete('/{Cart_detail}', [CartController::class, 'delete']);
 });

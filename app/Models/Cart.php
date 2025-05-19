@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Cart extends Model
 {
@@ -16,7 +18,7 @@ class Cart extends Model
     }
         public function cart_detail(): HasMany
     {
-        return $this->HasMany(cart_detail::class, 'cartDetail_id');
+        return $this->HasMany(cart_detail::class);
     }
 
 }

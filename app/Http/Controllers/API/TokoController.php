@@ -36,7 +36,6 @@ class TokoController extends Controller
     public function store(Request $request){
         try {
             $validate = Validator::make($request->all(),[
-                'user_id' => 'required',
                 'nama_toko' => 'required',
                 'deskripsi' => 'required',
                 'no_telp' => 'required',
@@ -57,7 +56,7 @@ class TokoController extends Controller
             }
 
             $toko = new Toko();
-            $toko->user_id = $request->user_id;
+            $toko->user_id = auth()->id();
             $toko->nama_toko = $request->input('nama_toko');
             $toko->deskripsi = $request->input('deskripsi');
             $toko->no_telp = $request->input('no_telp');
@@ -77,7 +76,6 @@ class TokoController extends Controller
     public function update(Request $request, Toko $toko){
         try {
             $validate = Validator::make($request->all(),[
-                'user_id' => 'nullable',
                 'nama_toko' => 'nullable',
                 'deskripsi' => 'nullable',
                 'no_telp' => 'nullable',
@@ -91,7 +89,7 @@ class TokoController extends Controller
             }
 
             $toko->update([
-                'user_id' => $request->user_id,
+                'user_id' => auth()->id(),
                 'nama_toko' => $request->nama_toko,
                 'deskripsi' => $request->deskripsi,
                 'no_telp' => $request->no_telp
