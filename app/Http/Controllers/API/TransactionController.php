@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use Exception;
-use App\Models\Setting;
 use Midtrans\Notification;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
@@ -28,9 +27,6 @@ class TransactionController extends Controller
 
     public function createTransaction(Transaction $transaction, Request $request)
     {
-        Log::info("Received MD API KEY : " . config('midtrans.server_key'));
-
-        // return Setting::getValue('MIDTRANS_SERVER_KEY');
         $validate = Validator::make($request->all(), [
             'origin' => 'required',
             'destination' => 'required',
@@ -268,7 +264,6 @@ class TransactionController extends Controller
     {
         try {
             $validate = Validator::make($request->all(), [
-                'user_id' => 'required',
                 'status' => 'required',
                 'tanggal_transaksi' => 'nullable',
                 'kode_transaksi' => 'nullable',
@@ -281,7 +276,7 @@ class TransactionController extends Controller
                 ], 422);
             }
             $transaction = new Transaction();
-            $transaction->user_id = $request->user_id;
+            $transaction->user_id = auth()->id();
             $transaction->status = $request->status;
             $transaction->tanggal_transaksi = $request->tanggal_transaksi ?? now();
             $transaction->kode_transaksi = $request->kode_transaksi ?? 'SJK-' . time() . strtoupper(Str::random(5));
@@ -302,7 +297,6 @@ class TransactionController extends Controller
     {
         try {
             $validate = Validator::make($request->all(), [
-                'user_id' => 'required',
                 'status' => 'required',
                 'tanggal_transaksi' => 'nullable',
                 'kode_transaksi' => 'nullable',
@@ -316,6 +310,7 @@ class TransactionController extends Controller
             }
 
             $data = $request->all();
+            $data['user_id'] = auth()->id();
             $transaction->update($data);
 
             return response()->json([

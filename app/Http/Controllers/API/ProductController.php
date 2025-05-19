@@ -58,7 +58,6 @@ class ProductController extends Controller
     {
         try {
             $validate = Validator::make($request->all(), [
-                'user_id' => 'required',
                 'nama_product' => 'required',
                 'deskripsi' => 'required',
                 'harga' => 'required',
@@ -78,6 +77,7 @@ class ProductController extends Controller
 
             $data = $request->all();
             $data['foto_cover'] = $this->upload->save($request->file('foto_cover'));
+            $data['user_id'] = auth()->id();
             $product = Product::create($data);
 
             return response()->json([
@@ -96,7 +96,6 @@ class ProductController extends Controller
     {
         try {
             $validate = Validator::make($request->all(), [
-                'user_id' => 'nullable',
                 'nama_product' => 'nullable',
                 'deskripsi' => 'nullable',
                 'harga' => 'nullable',
@@ -118,7 +117,7 @@ class ProductController extends Controller
             if ($request->file('foto_cover')) {
                 $data['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
             }
-
+            $data['user_id'] = auth()->id();
             $product->update($data);
 
             return response()->json([

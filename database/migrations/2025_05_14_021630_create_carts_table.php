@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('carts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('jumlah_harga');
-            $table->string('total_harga');
+            $table->integer('jumlah_harga');
+            $table->integer('total_harga');
             $table->timestamps();
         });
     }

@@ -4,22 +4,20 @@ namespace App\Services;
 
 use Midtrans\Snap;
 use Midtrans\Config;
-use App\Models\Setting;
 
 class MidtransService
 {
-    // public function __construct()
-    // {
-    //     // Config::$serverKey = Setting::getValue('MIDTRANS_SERVER_KEY');
-    //     // Config::$isProduction = Setting::getValue('MIDTRANS_IS_PRODUCTION');
-    //     Config::$serverKey = config('midtrans.server_key');
-    //     Config::$isProduction = config('midtrans.is_production');
-    //     Config::$isSanitized = true;
-    //     Config::$is3ds = true;
-    // }
+    public function init()
+    {
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+    }
 
     public function createTransaction(array $params)
     {
+        $this->init();
         try {
             $transaction = Snap::createTransaction($params);
             return [
