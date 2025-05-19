@@ -44,7 +44,7 @@ class RatingController extends Controller
                 ], 422);
             }
             $rating = new Rating();
-            $rating->user_id = auth()->id();;
+            $rating->user_id = auth()->id();
             $rating->product_id = $request->product_id;
             $rating->rating = $request->input('rating');
             $rating->save();
