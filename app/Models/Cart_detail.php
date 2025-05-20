@@ -12,15 +12,13 @@ class Cart_detail extends Model
     protected $guarded = [];
 
 
-        public function product(): BelongsTo
+    public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class, 'product_id');
+        return $this->belongsTo(Product::class);
     }
 
-        public function cart(): BelongsTo
+    public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class, 'cart_id');
     }
-
-
 }
