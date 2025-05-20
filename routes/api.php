@@ -23,6 +23,7 @@ use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\CheckoutController;
 use App\Http\Controllers\API\DetailTransactionController;
+use App\Http\Controllers\API\EncryptController;
 
 /*
 |--------------------------------------------------------------------------
@@ -176,3 +177,7 @@ Route::group(['prefix' => 'cart', 'as' => 'cart.', 'middleware' => ['auth:sanctu
 Route::group(['prefix' => 'checkout', 'as' => 'checkout.', 'middleware' => ['auth:sanctum']], function () {
     Route::post('/', [CheckoutController::class, 'checkout']);
 });
+
+// TES ENKRIPSI
+Route::post('/enkrypt', [EncryptController::class, 'enkrypt']);
+Route::post('/decrypt', [EncryptController::class, 'decrypt']);
