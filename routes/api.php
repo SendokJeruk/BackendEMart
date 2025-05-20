@@ -21,6 +21,7 @@ use App\Http\Controllers\API\RajaOngkirController;
 use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\CategoryProductController;
+use App\Http\Controllers\API\CheckoutController;
 use App\Http\Controllers\API\DetailTransactionController;
 
 /*
@@ -171,4 +172,8 @@ Route::group(['prefix' => 'cart', 'as' => 'cart.', 'middleware' => ['auth:sanctu
     Route::post('/', [CartController::class, 'store']);
     Route::put('/{Cart_detail}', [CartController::class, 'update']);
     Route::delete('/{Cart_detail}', [CartController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'checkout', 'as' => 'checkout.', 'middleware' => ['auth:sanctum']], function () {
+    Route::post('/', [CheckoutController::class, 'checkout']);
 });

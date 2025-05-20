@@ -265,8 +265,6 @@ class TransactionController extends Controller
         try {
             $validate = Validator::make($request->all(), [
                 'status' => 'required',
-                'tanggal_transaksi' => 'nullable',
-                'kode_transaksi' => 'nullable',
             ]);
 
             if ($validate->fails()) {
@@ -278,8 +276,8 @@ class TransactionController extends Controller
             $transaction = new Transaction();
             $transaction->user_id = auth()->id();
             $transaction->status = $request->status;
-            $transaction->tanggal_transaksi = $request->tanggal_transaksi ?? now();
-            $transaction->kode_transaksi = $request->kode_transaksi ?? 'SJK-' . time() . strtoupper(Str::random(5));
+            $transaction->tanggal_transaksi = now();
+            $transaction->kode_transaksi = 'SJK-' . time() . strtoupper(Str::random(5));
             $transaction->save();
             return response()->json([
                 'message' => 'Berhasil menambahkan transaksi',
