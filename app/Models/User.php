@@ -66,6 +66,12 @@ class User extends Authenticatable
     {
         return $this->hasOne(Cart::class, 'user_id');
     }
+
+        public function income(): hasMany
+    {
+        return $this->hasMany(Income::class, 'user_id');
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
