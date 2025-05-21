@@ -3,26 +3,32 @@
 namespace App\Http\Controllers\API;
 
 use Exception;
+use App\Models\income;
 use Midtrans\Notification;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
+use App\Models\DetailIncome;
 use Illuminate\Http\Request;
 use App\Services\MidtransService;
+use Illuminate\Support\Facades\DB;
 use App\Services\RajaOngkirService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use App\Repository\SuccessPaymentRepository;
 
 class TransactionController extends Controller
 {
     protected $midtransService;
 
     protected $rajaOngkir;
+    protected $successPayment;
 
-    public function __construct(MidtransService $midtransService, RajaOngkirService $rajaOngkir)
+    public function __construct(MidtransService $midtransService, RajaOngkirService $rajaOngkir, SuccessPaymentRepository $successPaymentRepository)
     {
         $this->midtransService = $midtransService;
         $this->rajaOngkir = $rajaOngkir;
+        $this->successPayment = $successPaymentRepository;
     }
 
     public function createTransaction(Transaction $transaction, Request $request)
@@ -192,7 +198,6 @@ class TransactionController extends Controller
 
         // Cek jika order ditemukan
         $order = Transaction::where('kode_transaksi', $orderId)->first();
-
         if (!$order) {
             Log::error('Order not found: ' . $orderId);
             return response('Order not found', 404);
@@ -203,6 +208,7 @@ class TransactionController extends Controller
 
         // Handle status transaksi
         switch ($transactionStatus) {
+
             case 'capture':
                 if ($request->payment_type == 'credit_card') {
                     if ($request->fraud_status == 'challenge') {
@@ -210,10 +216,12 @@ class TransactionController extends Controller
                         $order->update(['status' => 'pending']);
                     } else {
                         $order->update(['status' => 'success']);
+                        $this->successPayment->PaymentSuccess($orderId);
                     }
                 }
                 break;
             case 'settlement':
+                $this->successPayment->PaymentSuccess($orderId);
                 $order->update(['status' => 'success']);
                 break;
             case 'pending':
@@ -340,34 +348,40 @@ class TransactionController extends Controller
     }
 
     public function pesananMasuk(Request $request)
-{
-    try {
-        $sellerId = auth()->id(); // atau ambil dari $request->user_id
+    {
+        try {
+            $sellerId = auth()->id(); // atau ambil dari $request->user_id
 
-        $transactions = Transaction::whereHas('detail_transaction.product', function ($query) use ($sellerId) {
-            $query->where('user_id', $sellerId); // user_id adalah pemilik produk
-        })
-        ->with([
-            'detail_transaction' => function ($q) use ($sellerId) {
-                $q->whereHas('product', function ($query) use ($sellerId) {
-                    $query->where('user_id', $sellerId);
-                })->with('product');
-            },
-            'user'
-        ])
-        ->latest()
-        ->paginate(10);
+            $transactions = Transaction::whereHas('detail_transaction.product', function ($query) use ($sellerId) {
+                $query->where('user_id', $sellerId); // user_id adalah pemilik produk
+            })
+                ->with([
+                    'detail_transaction' => function ($q) use ($sellerId) {
+                        $q->whereHas('product', function ($query) use ($sellerId) {
+                            $query->where('user_id', $sellerId);
+                        })->with('product');
+                    },
+                    'user'
+                ])
+                ->latest()
+                ->paginate(10);
 
-        return response()->json([
-            'message' => 'Berhasil menampilkan pesanan masuk',
-            'data' => $transactions
-        ]);
-    } catch (Exception $e) {
-        return response()->json([
-            'message' => 'Internal Server Error',
-            'error' => $e->getMessage()
-        ], 500);
+
+            return response()->json([
+                'message' => 'Berhasil menampilkan pesanan masuk',
+                'data' => $transactions
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-}
 
+    public function test()
+    {
+        $orderId = 'SJK-1747804975KWUWX';
+        $this->successPayment->PaymentSuccess($orderId);
+    }
 }
