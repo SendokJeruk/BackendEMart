@@ -13,7 +13,6 @@ class AlamatController extends Controller
     public function store(Request $request) {
         try {
             $validate = Validator::make($request->all(), [
-                'user_id' => 'required',
                 'kode_domestik' => 'required',
                 'label' => 'required',
                 'province_name' => 'required',
@@ -31,8 +30,11 @@ class AlamatController extends Controller
                 ], 422);
             }
 
+
             $data = $request->all();
+            $data['user_id'] = auth()->id();
             $alamat = AlamatUser::create($data);
+
 
             return response()->json([
                 'message' => 'Berhasil Menambahkan Alamat',
