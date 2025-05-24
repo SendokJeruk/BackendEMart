@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use App\Models\Income;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -20,13 +21,9 @@ class IncomeController extends Controller
             $totalPending = $pendingIncomes->sum('jumlah_total');
 
             return response()->json([
+                'message' => 'Berhasil Dapatkan Data Income',
                 'incomes' => $pendingIncomes,
                 'total_pending' => $totalPending,
-            ]);
-
-            return response()->json([
-                'message' => 'Berhasil Dapatkan Data Income',
-                'data' => $category
             ]);
         } catch (Exception $e) {
             return response()->json([
