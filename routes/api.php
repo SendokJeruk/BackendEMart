@@ -9,21 +9,22 @@ use App\Http\Controllers\API\FotoController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\TokoController;
 use App\Http\Controllers\API\AlamatController;
+use App\Http\Controllers\API\IncomeController;
 use App\Http\Controllers\API\MidtransCallback;
 use App\Http\Controllers\API\RatingController;
+use App\Http\Controllers\API\EncryptController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\SettingController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\CheckoutController;
 use App\Http\Controllers\API\DetailCartController;
 use App\Http\Controllers\API\ManageUserController;
 use App\Http\Controllers\API\RajaOngkirController;
 use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\CategoryProductController;
-use App\Http\Controllers\API\CheckoutController;
 use App\Http\Controllers\API\DetailTransactionController;
-use App\Http\Controllers\API\EncryptController;
 
 /*
 |--------------------------------------------------------------------------
@@ -150,7 +151,7 @@ Route::group(['prefix' => 'rajaongkir', 'as' => 'rajaongkir.'], function () {
     Route::post('/track', [RajaOngkirController::class, 'track']);
 });
 
-Route::group(['prefix' => 'alamat', 'as' => 'alamat.'], function () {
+Route::group(['prefix' => 'alamat', 'as' => 'alamat.', 'middleware' => ['auth:sanctum']], function () {
     // Route::get('/domestic', [RajaOngkirController::class, 'domestic']);
     // Route::get('/cities', [RajaOngkirController::class, 'cities']);
     Route::post('/', [AlamatController::class, 'store']);
@@ -178,6 +179,10 @@ Route::group(['prefix' => 'cart', 'as' => 'cart.', 'middleware' => ['auth:sanctu
 
 Route::group(['prefix' => 'checkout', 'as' => 'checkout.', 'middleware' => ['auth:sanctum']], function () {
     Route::post('/', [CheckoutController::class, 'checkout']);
+});
+
+Route::group(['prefix' => 'income', 'as' => 'income.', 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/', [IncomeController::class, 'index']);
 });
 
 // TES ENKRIPSI
