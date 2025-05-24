@@ -17,15 +17,15 @@ class Setting extends Model
         'value',
     ];
 
-    // public function setValueAttribute($value)
-    // {
-    //     $this->attributes['value'] = Crypt::encryptString($value);
-    // }
+    public function setValueAttribute($value)
+    {
+        $this->attributes['value'] = Crypt::encryptString($value);
+    }
 
-    // public function getValueAttribute($value)
-    // {
-    //     return Crypt::decryptString($value);
-    // }
+    public function getValueAttribute($value)
+    {
+        return Crypt::decryptString($value);
+    }
 
     // public static function getValue($name)
     // {

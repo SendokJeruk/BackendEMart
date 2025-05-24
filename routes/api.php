@@ -93,6 +93,7 @@ Route::group(['prefix' => 'transaction', 'as' => 'transaction.', 'middleware' =>
     // MIDTRANS CUY
     Route::post('/payment/{transaction}', [TransactionController::class, 'createTransaction']);
 });
+Route::get('/test',[TransactionController::class, 'test']);
 Route::post('/transaction/payment/callback', [TransactionController::class, 'callback'])->withoutMiddleware('auth:sanctum');
 
 Route::group(['prefix' => 'detail-transaction', 'as' => 'detail-transaction.', 'middleware' => 'auth:sanctum'], function () {
