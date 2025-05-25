@@ -15,13 +15,10 @@ class DetailTransactionController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = DetailTransaction::query();
 
-            if ($request->has('transaction_id')) {
-                $query->where('transaction_id', $request->transaction_id);
-            }
-
-            $detailTransaction = $query->paginate(10);
+            $detailTransaction = DetailTransaction::with('product.user.toko')
+            ->filter($request)
+            ->paginate(10);
 
             if ($detailTransaction->isEmpty()) {
                 return response()->json([

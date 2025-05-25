@@ -22,25 +22,9 @@ class ProductController extends Controller
     {
         try {
 
-            $query = Product::query();
-
-            if ($request->has('nama_product')) {
-                $query->where('nama_product', 'like', "%{$request->nama_product}%");
-            }
-
-            elseif ($request->has('publish')) {
-                $query->where('status_produk', 'publish');
-            }
-
-            elseif ($request->has('draft')) {
-                $query->where('status_produk', 'draft');
-            }
-
-            elseif ($request->has('id')) {
-                $query->where('id', $request->id);
-            }
-
-            $products = $query->with(['categories', 'user.toko', 'foto'])->paginate(10);
+            $products = Product::with(['categories', 'user.toko', 'foto'])
+                ->filter($request)
+                ->paginate(10);
 
             return response()->json([
                 'message' => 'Berhasil Dapatkan Data Produk',
