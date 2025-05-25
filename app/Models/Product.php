@@ -23,10 +23,10 @@ class Product extends Model
     {
         return $this->hasMany(related: DetailTransaction::class, foreignKey: 'product_id');
     }
-        public function rating(): HasMany
-        {
-            return $this->hasMany(related: rating::class, foreignKey: 'rating_id');
-        }
+    public function rating(): HasMany
+    {
+        return $this->hasMany(related: rating::class, foreignKey: 'rating_id');
+    }
 
     public function categories(): BelongsToMany
     {
@@ -48,5 +48,18 @@ class Product extends Model
         return $this->HasMany(Cart_detail::class, 'cartDetail_id');
     }
 
+    public function scopeFilter($query, $request)
+    {
+        return $query
+            ->when($request->filled('nama_product'), fn($q) =>
+            $q->where('nama_product', 'like', "%{$request->nama_product}%"))
+            ->when($request->has('publish'), fn($q) =>
+            $q->where('status_produk', 'publish'))
+            ->when($request->has('draft'), fn($q) =>
+            $q->where('status_produk', 'draft'))
+            ->when($request->filled('id'), fn($q) =>
+            $q->where('id', $request->id))
+            ->when($request->filled('user_id'), fn($q) =>
+            $q->where('user_id', $request->user_id));
+    }
 }
-
