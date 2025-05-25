@@ -36,7 +36,7 @@ class TransactionController extends Controller
         $validate = Validator::make($request->all(), [
             'origin' => 'required',
             'destination' => 'required',
-            // 'payment_type' => 'required',
+            'payment_type' => 'required',
         ]);
 
         if ($validate->fails()) {
@@ -46,8 +46,8 @@ class TransactionController extends Controller
             ], 422);
         }
 
-        // $payment_type = [];
-        // $payment_type[] = $request->payment_type;
+        $payment_type = [];
+        $payment_type[] = $request->payment_type;
 
         $transaction->load('detail_transaction.product');
 
@@ -97,7 +97,7 @@ class TransactionController extends Controller
                 'phone' => $transaction->user->no_telp
             ],
             'item_details' => $products,
-            // 'enabled_payments' => $payment_type
+            'enabled_payments' => $payment_type
         ];
 
         // return response()->json($params);

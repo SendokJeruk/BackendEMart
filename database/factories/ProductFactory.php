@@ -26,7 +26,7 @@ class ProductFactory extends Factory
                 if ($seller) {
                     return $seller->id;
                 } else {
-                    return User::factory()->create(['role_id' => \App\Models\Role::where('name', 'seller')->first()->id])->id;
+                    return User::factory()->create(['role_id' => \App\Models\Role::where('nama_role', 'seller')->first()->id])->id;
                 }
             },
             'nama_product' => function () {
