@@ -5,8 +5,10 @@ namespace App\Http\Controllers\API;
 use Exception;
 use App\Models\Toko;
 use App\Models\User;
+use App\Models\AlamatToko;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class TokoController extends Controller
@@ -39,6 +41,16 @@ class TokoController extends Controller
                 'nama_toko' => 'required',
                 'deskripsi' => 'required',
                 'no_telp' => 'required',
+
+                //validator alamatnya
+                'kode_domestik' => 'required',
+                'label' => 'required',
+                'province_name' => 'required',
+                'city_name' => 'required',
+                'district_name' => 'required',
+                'subdistrict_name' => 'required',
+                'zip_code' => 'required',
+                'detail_alamat' => 'required',
             ]);
 
             if($validate->fails()) {
@@ -48,11 +60,11 @@ class TokoController extends Controller
                 ], 422);
             }
 
-            $user = User::find($request->user_id);
+            $user = Auth::user();
             if ($user->toko) {
                 return response()->json([
                     'message' => 'User sudah memiliki toko',
-                ], 409);
+                ], 422);
             }
 
             $toko = new Toko();
@@ -61,6 +73,22 @@ class TokoController extends Controller
             $toko->deskripsi = $request->input('deskripsi');
             $toko->no_telp = $request->input('no_telp');
             $toko->save();
+
+            //alamat toko
+            $alamat = new AlamatToko();
+            $alamat->kode_domestik = $request->input('kode_domestik');
+            $alamat->label = $request->input('label');
+            $alamat->province_name = $request->input('province_name');
+            $alamat->city_name = $request->input('city_name');
+            $alamat->district_name = $request->input('district_name');
+            $alamat->subdistrict_name = $request->input('subdistrict_name');
+            $alamat->zip_code = $request->input('zip_code');
+            $alamat->detail_alamat = $request->input('detail_alamat');
+            $alamat->save();
+
+            $toko->alamat_toko_id = $alamat->id;
+            $toko->update();
+
             return response()->json([
                 'message' => 'Toko telah terbuat',
                 'data' => $toko
@@ -122,4 +150,46 @@ class TokoController extends Controller
             ], 500);
         }
     }
+
+    public function tambahAlamatToko(Request $request) {
+        try {
+            $validate = Validator::make($request->all(), [
+                'kode_domestik' => 'required',
+                'label' => 'required',
+                'province_name' => 'required',
+                'city_name' => 'required',
+                'district_name' => 'required',
+                'subdistrict_name' => 'required',
+                'zip_code' => 'required',
+                'detail_alamat' => 'required',
+            ]);
+
+            if ($validate->fails()) {
+                return response()->json([
+                    'message' => 'Invalid Data',
+                    'errors' => $validate->errors()
+                ], 422);
+            }
+
+            $data = $request->all();
+            $alamat = AlamatToko::create($data);
+            $toko = Auth::user()->toko;
+            $toko->alamat_toko_id = $alamat->id;
+            $toko->update();
+
+            return response()->json([
+                'message' => 'Berhasil Menambahkan Alamat Toko',
+                'data' => $toko
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 }
+
+
