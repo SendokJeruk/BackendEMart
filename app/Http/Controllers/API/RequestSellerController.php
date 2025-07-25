@@ -18,13 +18,6 @@ class RequestSellerController extends Controller
         try {
         $user = Auth::user();
 
-        if (!$user) {
-            return response()->json([
-                'message' => 'Unauthorized'
-            ], 401);
-        }
-
-
         if ($user->role && $user->role->nama_role === 'admin') {
             $requestSeller = RequestSeller::all();
         } else {
