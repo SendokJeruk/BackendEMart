@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->integer('total_harga')->default(0);
+            $table->integer('total_ongkir')->default(0);
             $table->integer('total_berat')->default(0);
             $table->string('status');
             $table->datetime('tanggal_transaksi');

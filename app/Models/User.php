@@ -40,7 +40,7 @@ class User extends Authenticatable
     }
     public function transaction(): HasMany
     {
-        return $this->hasMany(related: Transaction::class, foreignKey: 'transaction_id');
+        return $this->hasMany(related: Transaction::class, foreignKey: 'user_id');
     }
 
     public function rating(): HasMany

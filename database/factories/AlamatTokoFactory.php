@@ -1,25 +1,22 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Factories;
 
-use App\Models\Toko;
-use App\Models\User;
-use App\Models\AlamatToko;
-use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-class TokoSeeder extends Seeder
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AlamatToko>
+ */
+class AlamatTokoFactory extends Factory
 {
     /**
-     * Run the database seeds.
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
      */
-    public function run(): void
+    public function definition(): array
     {
-        $sellers = User::whereHas('role', function ($query) {
-            $query->where('nama_role', 'seller');
-        })->get();
-
-        $alamatList = [
+        $AlamatList = [
             [
                 'kode_domestik' => '4866',
                 'label' => 'BATUNUNGGAL, BANDUNG KIDUL, BANDUNG, JAWA BARAT, 40266',
@@ -169,20 +166,9 @@ class TokoSeeder extends Seeder
                 'subdistrict_name' => 'HUSEN SASTRANEGARA',
                 'zip_code' => '40174',
                 'detail_alamat' => '',
-            ],
+            ]
         ];
-
-        $sellers = $sellers->take(count($alamatList));
-
-        foreach ($sellers as $index => $seller) {
-            $alamat = AlamatToko::create($alamatList[$index]);
-
-            Toko::factory()->create([
-                'user_id' => $seller->id,
-                'no_telp' => $seller->no_telp,
-                'alamat_toko_id' => $alamat->id,
-            ]);
-        }
+        
+        return $this->faker->randomElement($AlamatList);
     }
-
 }
