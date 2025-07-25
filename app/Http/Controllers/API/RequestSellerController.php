@@ -18,7 +18,6 @@ class RequestSellerController extends Controller
         try {
         $user = Auth::user();
 
-        
         if ($user->role && $user->role->nama_role === 'admin') {
             $requestSeller = RequestSeller::all();
         } else {

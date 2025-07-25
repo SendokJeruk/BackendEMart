@@ -122,6 +122,7 @@ Route::group(['prefix' => 'manage-user', 'as' => 'manage-user.', 'middleware' =>
 Route::group(['prefix' => 'toko', 'as' => 'toko.', 'middleware' => ['auth:sanctum', 'seller',]], function () {
     Route::get('/', [TokoController::class, 'index']);
     Route::post('/', [TokoController::class, 'store']);
+    Route::post('/alamat', [TokoController::class, 'tambahAlamatToko']);
     Route::put('/{toko}', [TokoController::class, 'update']);
     Route::delete('/{toko}', [TokoController::class, 'delete']);
 });
@@ -153,10 +154,8 @@ Route::group(['prefix' => 'rajaongkir', 'as' => 'rajaongkir.'], function () {
 });
 
 Route::group(['prefix' => 'alamat', 'as' => 'alamat.', 'middleware' => ['auth:sanctum']], function () {
-    // Route::get('/domestic', [RajaOngkirController::class, 'domestic']);
-    // Route::get('/cities', [RajaOngkirController::class, 'cities']);
+    Route::get('/', [AlamatController::class, 'get']);
     Route::post('/', [AlamatController::class, 'store']);
-    // Route::post('/track', [RajaOngkirController::class, 'track']);
 });
 
 Route::group(['prefix' => 'setting', 'as' => 'setting.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
