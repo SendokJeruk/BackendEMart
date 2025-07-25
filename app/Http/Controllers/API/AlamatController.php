@@ -13,7 +13,7 @@ class AlamatController extends Controller
 {
     public function get() {
         try {
-            return 
+
             $data = Auth::user()->alamat()->paginate(5);
             return response()->json([
                 'message' => 'Berhasil mendapatkan semua data alamat user',
@@ -67,5 +67,62 @@ class AlamatController extends Controller
     }
 
     //todo edit
+    public function update(Request $request, AlamatUser $alamat){
+        try {
+                $validate = Validator::make($request->all(),[
+                'kode_domestik' => 'nullable',
+                'label' => 'nullable',
+                'province_name' => 'nullable',
+                'city_name' => 'nullable',
+                'district_name' => 'nullable',
+                'subdistrict_name' => 'nullable',
+                'zip_code' => 'nullable',
+                'detail_alamat' => 'nullable',
+            ]);
+
+            if($validate->fails()) {
+                return response()->json([
+                    'message' => 'Invalid Data',
+                    'errors' => $validate->errors()
+                ], 422);
+            }
+
+            $alamat->update([
+                'kode_domestik' => $request->kode_domestik,
+                'label' => $request->label,
+                'province_name' => $request->province_name,
+                'city_name' => $request->city_name,
+                'district_name' => $request->district_name,
+                'subdistrict_name' => $request->subdistrict_name,
+                'zip_code' => $request->zip_code,
+                'detail_alamat' => $request->detail_alamat
+            ]);
+
+            return response()->json([
+                'message' => 'Data berhasil di update',
+                'data' => $alamat
+                ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
     //todo hapus
+    public function delete(AlamatUser $alamat){
+        try {
+            $alamat->delete();
+
+            return response()->json([
+                'message' => 'data berhasil di hapus'
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
