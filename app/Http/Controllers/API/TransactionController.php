@@ -61,8 +61,8 @@ class TransactionController extends Controller
             ];
         })->toArray();
 
-        $origin = $request->origin;
-        $destination = $request->destination;
+        $origin = $request->origin; // ! ambil dari alamat toko -> olah data disini
+        $destination = $request->destination; //? get alamat user 4917
         $weight = $transaction->total_berat;
 
         $kurir = $this->rajaOngkir->getCost(
