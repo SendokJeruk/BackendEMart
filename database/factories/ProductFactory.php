@@ -33,7 +33,7 @@ class ProductFactory extends Factory
                 $adjectives = [
                     'Super', 'Mega', 'Ultra', 'Eco', 'Pro', 'Smart', 'Advanced', 'Classic', 'Modern',
                     'Vintage', 'Elegant', 'Compact', 'Portable', 'Durable', 'Lightweight', 'Wireless',
-                    'Waterproof', 'Limited Edition', 'Premium', 'Custom', 'Sleek', 'Powerful', 'Affordable'
+                    'Waterproof', 'Limited Edition', 'Premium', 'Custom', 'Sleek', 'Powerful', 'Affordable', 'King'
                 ];
 
                 $productTypes = [

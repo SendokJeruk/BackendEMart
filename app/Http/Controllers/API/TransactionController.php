@@ -6,6 +6,7 @@ use Exception;
 use App\Models\income;
 use Midtrans\Notification;
 use App\Models\Transaction;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use App\Models\DetailIncome;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use App\Services\RajaOngkirService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Repository\SuccessPaymentRepository;
 
@@ -34,8 +36,6 @@ class TransactionController extends Controller
     public function createTransaction(Transaction $transaction, Request $request)
     {
         $validate = Validator::make($request->all(), [
-            'origin' => 'required',
-            'destination' => 'required',
             'payment_type' => 'required',
         ]);
 
@@ -61,19 +61,19 @@ class TransactionController extends Controller
             ];
         })->toArray();
 
-        $origin = $request->origin; // ! ambil dari alamat toko -> olah data disini
-        $destination = $request->destination; //? get alamat user 4917
-        $weight = $transaction->total_berat;
+        // $origin = $request->origin; // ! ambil dari alamat toko -> olah data disini
+        // $destination = $request->destination; //? get alamat user 4917
+        // $weight = $transaction->total_berat;
 
-        $kurir = $this->rajaOngkir->getCost(
-            $origin,
-            $destination,
-            $weight,
-            "jnt",
-            "lowest"
-        );
+        // $kurir = $this->rajaOngkir->getCost(
+        //     $origin,
+        //     $destination,
+        //     $weight,
+        //     "jnt",
+        //     "lowest"
+        // );
 
-        $ongkir = $kurir['data'][0]['cost'];
+        $ongkir = $transaction->total_ongkir;
 
         array_push($products, [
             'id' => 999,
@@ -252,7 +252,7 @@ class TransactionController extends Controller
     //? CALLBACK BARU
     //! Callback masih bermasalah
 
-    public function index()
+    public function getAllTransaction()
     {
         try {
             $transaction = Transaction::with('detail_transaction')->paginate(10);
@@ -267,6 +267,24 @@ class TransactionController extends Controller
             ], 500);
         }
     }
+
+    public function index()
+    {
+        try {
+            $user = Auth::user();
+            $transaction = $user->transaction()->with('detail_transaction.product.user.toko.alamatToko')->paginate(5);
+            return response()->json([
+                'message' => 'Berhasil Menampilkan transaksi ' . $user->name,
+                'data' => $transaction
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
     public function store(Request $request)
     {
@@ -301,9 +319,10 @@ class TransactionController extends Controller
 
     public function update(Request $request, Transaction $transaction)
     {
+        //TODO UPDATE KALKULASI ONGKIR TIAP UPDATE
         try {
             $validate = Validator::make($request->all(), [
-                'status' => 'required',
+                'status' => 'nullable',
                 'tanggal_transaksi' => 'nullable',
                 'kode_transaksi' => 'nullable',
             ]);
@@ -315,12 +334,49 @@ class TransactionController extends Controller
                 ], 422);
             }
 
-            $data = $request->all();
+            $destination = $request->input('destination');
+
+            $transaction->load('detail_transaction.product.user.toko.alamatToko');
+            $totalOngkir = 0;
+            $weightPerToko = [];
+
+            foreach ($transaction->detail_transaction as $detail) {
+                $toko = $detail->product->user->toko;
+
+                if ($toko && $toko->alamatToko) {
+                    $kodeDomestik = $toko->alamatToko->kode_domestik;
+
+                    if (!isset($weightPerToko[$kodeDomestik])) {
+                        $weightPerToko[$kodeDomestik] = 0;
+                    }
+
+                    $weightPerToko[$kodeDomestik] += $detail->totalberat ?? 0;
+                }
+            }
+
+            foreach ($weightPerToko as $kodeDomestik => $beratToko) {
+                $ongkir = $this->rajaOngkir->getCost(
+                    $kodeDomestik,
+                    $destination,
+                    $beratToko,
+                    "jnt",
+                    "lowest"
+                );
+
+                $totalOngkir += $ongkir['data'][0]['cost'] ?? 0;
+            }
+
+            $data = Arr::except($request->all(), ['destination']);
             $data['user_id'] = auth()->id();
+
+            $transaction->total_harga -= $transaction->total_ongkir; //Ngurangin dulu harga pake ongkir sebelumnya
+            $transaction->total_ongkir = $totalOngkir; // lalu pasang nilai ongkir baru
+            $transaction->total_harga += $totalOngkir; // dan ditambah
+
             $transaction->update($data);
 
             return response()->json([
-                'message' => 'Berhasil Edit transaksi',
+                'message' => 'Berhasil Update transaksi',
                 'data' => $transaction->fresh()
             ]);
         } catch (Exception $e) {

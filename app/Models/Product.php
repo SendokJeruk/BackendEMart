@@ -16,9 +16,6 @@ class Product extends Model
     use HasFactory;
     protected $guarded = [];
 
-
-
-
     public function detail_transaction(): HasMany
     {
         return $this->hasMany(related: DetailTransaction::class, foreignKey: 'product_id');

@@ -86,15 +86,17 @@ Route::group(['prefix' => 'role', 'as' => 'role.'], function () {
 });
 
 Route::group(['prefix' => 'transaction', 'as' => 'transaction.', 'middleware' => 'auth:sanctum'], function () {
-    Route::get('/', [TransactionController::class, 'index']);
     Route::post('/', [TransactionController::class, 'store']);
     Route::put('/{transaction}', [TransactionController::class, 'update']);
     Route::delete('/{transaction}', [TransactionController::class, 'delete']);
     Route::get('/pesanan-masuk', [TransactionController::class, 'pesananMasuk']);
+    Route::get('/', [TransactionController::class, 'pesananMasuk']);
+    Route::get('/getAllTransaction', [TransactionController::class, 'getAllTransaction']);
 
     // MIDTRANS CUY
     Route::post('/payment/{transaction}', [TransactionController::class, 'createTransaction']);
 });
+Route::get('/transaction', [TransactionController::class, 'index'])->middleware('auth:sanctum');
 Route::get('/test',[TransactionController::class, 'test']);
 Route::post('/transaction/payment/callback', [TransactionController::class, 'callback'])->withoutMiddleware('auth:sanctum');
 
