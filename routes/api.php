@@ -156,6 +156,8 @@ Route::group(['prefix' => 'rajaongkir', 'as' => 'rajaongkir.'], function () {
 Route::group(['prefix' => 'alamat', 'as' => 'alamat.', 'middleware' => ['auth:sanctum']], function () {
     Route::get('/', [AlamatController::class, 'get']);
     Route::post('/', [AlamatController::class, 'store']);
+    Route::put('/{alamat}', [AlamatController::class, 'update']);
+    Route::delete('/{alamat}', [AlamatController::class, 'delete']);
 });
 
 Route::group(['prefix' => 'setting', 'as' => 'setting.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
