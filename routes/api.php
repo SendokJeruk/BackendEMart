@@ -23,6 +23,7 @@ use App\Http\Controllers\API\ManageUserController;
 use App\Http\Controllers\API\RajaOngkirController;
 use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
+use App\Http\Controllers\API\RequestSellerController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
 
@@ -183,6 +184,13 @@ Route::group(['prefix' => 'checkout', 'as' => 'checkout.', 'middleware' => ['aut
 Route::group(['prefix' => 'income', 'as' => 'income.', 'middleware' => ['auth:sanctum']], function () {
     Route::get('/', [IncomeController::class, 'index']);
 });
+
+Route::group(['prefix' => 'requestseller', 'as' => 'requestseller.', 'middleware' => ['auth:sanctum', ]], function () {
+    Route::get('/', [RequestSellerController::class, 'index']);
+    Route::post('/', [RequestSellerController::class, 'store']);
+});
+Route::put('/requestseller/{requestSeller}', [RequestSellerController::class, 'update'])->middleware(['auth:sanctum', 'checkrole']);
+
 
 // TES ENKRIPSI
 Route::post('/enkrypt', [EncryptController::class, 'enkrypt']);

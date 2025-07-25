@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('detail_incomes', function (Blueprint $table) {
+        Schema::create('request_sellers', function (Blueprint $table) {
             $table->id();
-            $table->integer('jumlah');
-            $table->foreignId('income_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->enum('status', ['pending', 'accepted', 'rejected']);
+            $table->text('note');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('incomes');
+        Schema::dropIfExists('request_sellers');
     }
 };

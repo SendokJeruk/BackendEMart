@@ -15,7 +15,6 @@ class TokoController extends Controller
 {
     public function index(Request $request){
         try {
-
             $query = Toko::query();
             if ($request->has('nama_toko')) {
                 $query->where('nama_toko', 'like', "%{$request->nama_toko}%");
