@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Validator;
 
 class TokoController extends Controller
 {
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         try {
             $query = Toko::query();
             if ($request->has('nama_toko')) {
@@ -34,9 +35,10 @@ class TokoController extends Controller
         }
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         try {
-            $validate = Validator::make($request->all(),[
+            $validate = Validator::make($request->all(), [
                 'nama_toko' => 'required',
                 'deskripsi' => 'required',
                 'no_telp' => 'required',
@@ -52,7 +54,7 @@ class TokoController extends Controller
                 'detail_alamat' => 'required',
             ]);
 
-            if($validate->fails()) {
+            if ($validate->fails()) {
                 return response()->json([
                     'message' => 'Invalid Data',
                     'errors' => $validate->errors()
@@ -91,7 +93,7 @@ class TokoController extends Controller
             return response()->json([
                 'message' => 'Toko telah terbuat',
                 'data' => $toko
-                ], 200);
+            ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Internal Server Error',
@@ -100,15 +102,61 @@ class TokoController extends Controller
         }
     }
 
-    public function update(Request $request, Toko $toko){
+    public function updateAlamat(Request $request, Toko $toko)
+    {
         try {
-            $validate = Validator::make($request->all(),[
+            $validate = Validator::make($request->all(), [
+                'kode_domestik' => 'nullable',
+                'label' => 'nullable',
+                'province_name' => 'nullable',
+                'city_name' => 'nullable',
+                'district_name' => 'nullable',
+                'subdistrict_name' => 'nullable',
+                'zip_code' => 'nullable',
+                'detail_alamat' => 'nullable',
+            ]);
+
+            if ($validate->fails()) {
+                return response()->json([
+                    'message' => 'Invalid Data',
+                    'errors' => $validate->errors()
+                ], 422);
+            }
+
+            $toko->alamatToko->update([
+                'kode_domestik' => $request->input('kode_domestik'),
+                'label' => $request->input('label'),
+                'province_name' => $request->input('province_name'),
+                'city_name' => $request->input('city_name'),
+                'district_name' => $request->input('district_name'),
+                'subdistrict_name' => $request->input('subdistrict_name'),
+                'zip_code' => $request->input('zip_code'),
+                'detail_alamat' => $request->input('detail_alamat'),
+            ]);
+
+            return response()->json([
+                'message' => 'Alamat Toko telah diperbarui',
+                'data' => $toko
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function update(Request $request, Toko $toko)
+    {
+        try {
+            $validate = Validator::make($request->all(), [
                 'nama_toko' => 'nullable',
                 'deskripsi' => 'nullable',
                 'no_telp' => 'nullable',
             ]);
 
-            if($validate->fails()) {
+            if ($validate->fails()) {
                 return response()->json([
                     'message' => 'Invalid Data',
                     'errors' => $validate->errors()
@@ -119,13 +167,14 @@ class TokoController extends Controller
                 'user_id' => auth()->id(),
                 'nama_toko' => $request->nama_toko,
                 'deskripsi' => $request->deskripsi,
-                'no_telp' => $request->no_telp
+                'no_telp' => $request->no_telp,
+                'alamat_toko_id' => $toko->alamat_toko_id
             ]);
 
             return response()->json([
                 'message' => 'Toko telah diperbarui',
                 'data' => $toko
-                ], 200);
+            ], 200);
 
         } catch (Exception $e) {
             return response()->json([
@@ -135,52 +184,15 @@ class TokoController extends Controller
         }
     }
 
-    public function delete(Toko $toko){
+    public function delete(Toko $toko)
+    {
         try {
+            $toko->alamatToko->delete();
             $toko->delete();
 
             return response()->json([
-             'message' => 'Data berhasil dihapus'
-         ]);
-         } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function tambahAlamatToko(Request $request) {
-        try {
-            $validate = Validator::make($request->all(), [
-                'kode_domestik' => 'required',
-                'label' => 'required',
-                'province_name' => 'required',
-                'city_name' => 'required',
-                'district_name' => 'required',
-                'subdistrict_name' => 'required',
-                'zip_code' => 'required',
-                'detail_alamat' => 'required',
+                'message' => 'Data toko beserta alamat berhasil dihapus'
             ]);
-
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
-            }
-
-            $data = $request->all();
-            $alamat = AlamatToko::create($data);
-            $toko = Auth::user()->toko;
-            $toko->alamat_toko_id = $alamat->id;
-            $toko->update();
-
-            return response()->json([
-                'message' => 'Berhasil Menambahkan Alamat Toko',
-                'data' => $toko
-            ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Internal Server Error',
