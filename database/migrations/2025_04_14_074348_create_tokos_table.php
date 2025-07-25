@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tokos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
-            $table->string('nama_toko');
-            $table->string('deskripsi');
-            $table->string('no_telp');
-            $table->timestamps();
+            Schema::create('tokos', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
+                $table->string('nama_toko');
+                $table->string('deskripsi');
+                $table->string('no_telp');
+                $table->timestamps();
         });
     }
 

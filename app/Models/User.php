@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Role;
 use App\Models\AlamatUser;
+use App\Models\RequestSeller;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -67,11 +68,15 @@ class User extends Authenticatable
         return $this->hasOne(Cart::class, 'user_id');
     }
 
-        public function income(): hasMany
+    public function income(): hasMany
     {
         return $this->hasMany(Income::class, 'user_id');
     }
 
+    public function RequestSeller(): hasOne
+    {
+        return $this->hasOne(RequestSeller::class);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
