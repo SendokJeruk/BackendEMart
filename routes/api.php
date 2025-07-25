@@ -121,7 +121,7 @@ Route::group(['prefix' => 'manage-user', 'as' => 'manage-user.', 'middleware' =>
 Route::group(['prefix' => 'toko', 'as' => 'toko.', 'middleware' => ['auth:sanctum', 'seller',]], function () {
     Route::get('/', [TokoController::class, 'index']);
     Route::post('/', [TokoController::class, 'store']);
-    Route::post('/alamat', [TokoController::class, 'tambahAlamatToko']);
+    Route::put('/alamat/{toko}', [TokoController::class, 'updateAlamat']);
     Route::put('/{toko}', [TokoController::class, 'update']);
     Route::delete('/{toko}', [TokoController::class, 'delete']);
 });

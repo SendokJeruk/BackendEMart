@@ -17,8 +17,8 @@ class Toko extends Model
         return $this->BelongsTo(User::class, 'user_id');
     }
 
-    public function alamatToko() : HasOne
+    public function alamatToko() : BelongsTo
     {
-        return $this->hasOne(AlamatToko::class);
+        return $this->BelongsTo(AlamatToko::class);
     }
 }
