@@ -65,7 +65,7 @@ class AuthController extends Controller
                 'email' => 'required',
                 'no_telp' => 'required',
                 'password' => 'required',
-                'role_id' => 'required',
+                'role_id' => 'nullable',
             ]);
 
             if ($validate->fails()) {
@@ -75,11 +75,22 @@ class AuthController extends Controller
                 ], 422);
             }
 
+            $findUserRole = Role::where('nama_role', 'buyer')->first();
+            if (!$findUserRole) {
+                $addUserRole = new Role();
+                $addUserRole->nama_role = 'buyer';
+                $addUserRole->save();
+
+                $id = $addUserRole->id;
+            } else {
+                $id = $findUserRole->id;
+            }
+
             $user = new User();
             $user->name = $request->input('name');
             $user->email = $request->input('email');
             $user->no_telp = $request->input('no_telp');
-            $user->role_id = $request->input('role_id');
+            $user->role_id = $id;
             $user->password = Hash::make($request->input('password'));
             $user->save();
 
