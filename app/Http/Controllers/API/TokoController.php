@@ -20,6 +20,9 @@ class TokoController extends Controller
             if ($request->has('nama_toko')) {
                 $query->where('nama_toko', 'like', "%{$request->nama_toko}%");
             }
+            if ($request->has('id')) {
+                $query->where('id', $request->id);
+            }
 
             $toko = $query->paginate(10);
 
