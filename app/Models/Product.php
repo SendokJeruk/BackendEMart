@@ -22,7 +22,7 @@ class Product extends Model
     }
     public function rating(): HasMany
     {
-        return $this->hasMany(related: rating::class, foreignKey: 'rating_id');
+        return $this->hasMany(related: rating::class, foreignKey: 'product_id');
     }
 
     public function categories(): BelongsToMany

@@ -22,9 +22,16 @@ class ProductController extends Controller
     {
         try {
 
-            $products = Product::with(['categories', 'user.toko', 'foto'])
+            $products = Product::with(['categories', 'user.toko', 'foto', 'rating'])
+                ->withAvg('rating', 'rating')
                 ->filter($request)
                 ->paginate(10);
+
+            $products->getCollection()->transform(function ($product) {
+                $product->average_rating = round($product->rating_avg_rating, 1);
+                unset($product->rating_avg_rating);
+                return $product;
+            });
 
             return response()->json([
                 'message' => 'Berhasil Dapatkan Data Produk',
