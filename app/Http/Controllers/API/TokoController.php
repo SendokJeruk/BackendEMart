@@ -24,7 +24,7 @@ class TokoController extends Controller
                 $query->where('id', $request->id);
             }
 
-            $toko = $query->paginate(10);
+            $toko = $query->with('alamatToko')->paginate(10);
 
             return response()->json([
                 'message' => 'Berhasil Dapatkan Data toko',
