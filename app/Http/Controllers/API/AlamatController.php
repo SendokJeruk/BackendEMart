@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Validator;
 
 class AlamatController extends Controller
 {
-    public function get() {
+    public function get()
+    {
         try {
 
             $data = Auth::user()->alamat()->paginate(5);
@@ -27,16 +28,17 @@ class AlamatController extends Controller
         }
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         try {
             $validate = Validator::make($request->all(), [
-                'kode_domestik' => 'required',
+                'kode_domestik' => 'required|integer',
                 'label' => 'required',
                 'province_name' => 'required',
                 'city_name' => 'required',
                 'district_name' => 'required',
                 'subdistrict_name' => 'required',
-                'zip_code' => 'required',
+                'zip_code' => 'required|integer',
                 'detail_alamat' => 'required',
             ]);
 
@@ -46,7 +48,6 @@ class AlamatController extends Controller
                     'errors' => $validate->errors()
                 ], 422);
             }
-
 
             $data = $request->all();
             $data['user_id'] = auth()->id();
@@ -67,20 +68,21 @@ class AlamatController extends Controller
     }
 
     //todo edit
-    public function update(Request $request, AlamatUser $alamat){
+    public function update(Request $request, AlamatUser $alamat)
+    {
         try {
-                $validate = Validator::make($request->all(),[
-                'kode_domestik' => 'nullable',
-                'label' => 'nullable',
-                'province_name' => 'nullable',
-                'city_name' => 'nullable',
-                'district_name' => 'nullable',
-                'subdistrict_name' => 'nullable',
-                'zip_code' => 'nullable',
+            $validate = Validator::make($request->all(), [
+                'kode_domestik' => 'required|integer',
+                'label' => 'required',
+                'province_name' => 'required',
+                'city_name' => 'required',
+                'district_name' => 'required',
+                'subdistrict_name' => 'required',
+                'zip_code' => 'required|integer',
                 'detail_alamat' => 'nullable',
             ]);
 
-            if($validate->fails()) {
+            if ($validate->fails()) {
                 return response()->json([
                     'message' => 'Invalid Data',
                     'errors' => $validate->errors()
@@ -101,7 +103,7 @@ class AlamatController extends Controller
             return response()->json([
                 'message' => 'Data berhasil di update',
                 'data' => $alamat
-                ], 200);
+            ], 200);
 
         } catch (Exception $e) {
             return response()->json([
@@ -111,7 +113,8 @@ class AlamatController extends Controller
         }
     }
     //todo hapus
-    public function delete(AlamatUser $alamat){
+    public function delete(AlamatUser $alamat)
+    {
         try {
             $alamat->delete();
 
