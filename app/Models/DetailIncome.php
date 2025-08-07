@@ -11,8 +11,13 @@ class DetailIncome extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public function transaction()
+    public function income()
     {
-        return $this->belongsTo(Transaction::class);
+       return $this->belongsTo(Income::class);
+    }
+
+    public function detailTransaction()
+    {
+       return $this->belongsTo(DetailTransaction::class);
     }
 }

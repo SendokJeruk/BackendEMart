@@ -19,6 +19,10 @@ class DetailTransaction extends Model
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
+    public function detailIncomes()
+    {
+        return $this->hasMany(DetailIncome::class);
+    }
 
     public function scopeFilter($query, $request)
     {
