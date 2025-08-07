@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use App\Models\Income;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -17,4 +18,8 @@ class Withdraw extends Model
         return $this->hasMany(Income::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

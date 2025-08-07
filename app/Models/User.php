@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Role;
+use App\Models\Withdraw;
 use App\Models\AlamatUser;
 use App\Models\RequestSeller;
 use Laravel\Sanctum\HasApiTokens;
@@ -76,6 +77,10 @@ class User extends Authenticatable
     public function RequestSeller(): hasOne
     {
         return $this->hasOne(RequestSeller::class);
+    }
+    public function withdraw(): hasMany
+    {
+        return $this->hasMany(Withdraw::class);
     }
     /**
      * The attributes that should be hidden for serialization.

@@ -15,7 +15,7 @@ return new class extends Migration
                 $table->id();
                 $table->foreignId('user_id')->constrained()->onDelete('cascade');
                 $table->integer('jumlah_total');
-                $table->enum('status', ['pending', 'accepted ', 'rejected']);
+                // $table->enum('status', ['pending', 'accepted ', 'rejected']);
                 $table->timestamps();
             });
     }
