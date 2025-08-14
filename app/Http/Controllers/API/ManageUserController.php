@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Repository\UploadProfileRepository;
+use Illuminate\Validation\Rules\Password;
 
 
 class ManageUserController extends Controller
