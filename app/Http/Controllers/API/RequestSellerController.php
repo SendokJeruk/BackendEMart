@@ -50,7 +50,7 @@ class RequestSellerController extends Controller
             }
 
             $validate = Validator::make($request->all(), [
-                'note' => 'required',
+                'note' => 'required|max:100',
             ]);
 
             if ($validate->fails()) {

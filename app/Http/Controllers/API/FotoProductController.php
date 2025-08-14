@@ -75,7 +75,7 @@ class FotoProductController extends Controller
                 'product_id' => $request->product_id
             ]);
             return response()->json([
-                'message' => 'Category Updated',
+                'message' => 'berhasil mengupdate FotoProduct',
                 'data' => $fotoProduct
                 ], 200);
         } catch (Exception $e) {

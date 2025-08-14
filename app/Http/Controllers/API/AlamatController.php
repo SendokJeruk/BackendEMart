@@ -38,7 +38,7 @@ class AlamatController extends Controller
                 'city_name' => 'required',
                 'district_name' => 'required',
                 'subdistrict_name' => 'required',
-                'zip_code' => 'required|integer',
+                'zip_code' => 'required|digits:5',
                 'detail_alamat' => 'required',
             ]);
 
@@ -78,7 +78,7 @@ class AlamatController extends Controller
                 'city_name' => 'required',
                 'district_name' => 'required',
                 'subdistrict_name' => 'required',
-                'zip_code' => 'required|integer',
+                'zip_code' => 'required|digits:5',
                 'detail_alamat' => 'nullable',
             ]);
 

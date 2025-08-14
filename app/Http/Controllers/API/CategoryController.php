@@ -34,7 +34,7 @@ class CategoryController extends Controller
     public function store(Request $request){
             try {
             $validate = Validator::make($request->all(),[
-                'nama_category' => 'required',
+                'nama_category' => 'required|max:100',
             ]);
 
             if($validate->fails()) {
@@ -61,7 +61,7 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category){
         try {
             $validate = Validator::make($request->all(),[
-                'nama_category' => 'required',
+                'nama_category' => 'required|max:100',
             ]);
 
             if($validate->fails()) {
