@@ -36,7 +36,7 @@ class TransactionController extends Controller
     public function createTransaction(Transaction $transaction, Request $request)
     {
         $validate = Validator::make($request->all(), [
-            'payment_type' => 'required',
+            'payment_type' => 'nullable',
         ]);
 
         if ($validate->fails()) {
@@ -97,7 +97,7 @@ class TransactionController extends Controller
                 'phone' => $transaction->user->no_telp
             ],
             'item_details' => $products,
-            'enabled_payments' => $payment_type
+            !empty($payment_type) ?? 'enabled_payments' => $payment_type
         ];
 
         // return response()->json($params);
@@ -208,66 +208,67 @@ class TransactionController extends Controller
 
         // Handle status transaksi
         switch ($transactionStatus) {
-
             case 'capture':
                 if ($request->payment_type == 'credit_card') {
                     if ($request->fraud_status == 'challenge') {
                         Log::info('Fraud challenge for order ID: ' . $orderId);
                         $order->update(['status' => 'pending']);
                     } else {
+                        Log::info('MASUK SETTLEMENT (CAPTURE) OTW IMPLEN KE DE BE');
                         $order->update(['status' => 'success']);
                         $this->successPayment->PaymentSuccess($orderId);
                     }
                 }
                 break;
             case 'settlement':
+                Log::info('MASUK SETTLEMENT OTW IMPLEN KE DE BE');
                 $this->successPayment->PaymentSuccess($orderId);
                 $order->update(['status' => 'success']);
 
-  $order->load('detail_transaction.product.user');
+                // $order->load('detail_transaction.product.user');
 
-foreach ($order->detail_transaction as $detail) {
-    $product = $detail->product;
+                // foreach ($order->detail_transaction as $detail) {
+                //     $product = $detail->product;
 
-    if (!$product || !$product->user) {
-        \Log::warning("Produk atau seller tidak ditemukan untuk detail ID: {$detail->id}");
-        continue;
-    }
+                //     if (!$product || !$product->user) {
+                //         Log::warning("Produk atau seller tidak ditemukan untuk detail ID: {$detail->id}");
+                //         continue;
+                //     }
 
-    $seller = $product->user;
+                //     $seller = $product->user;
 
-    // Kurangi stok
-    $product->stok = max(0, $product->stok - $detail->qty);
-    $product->save();
+                //     // Kurangi stok
+                //     $product->stok = max(0, $product->stok - $detail->qty);
+                //     $product->save();
 
-    // Cari atau buat Income berdasarkan user_id
-    $income = Income::firstOrCreate(
-        ['user_id' => $seller->id],
-        ['jumlah_total' => 0]
-    );
+                //     // Cari atau buat Income berdasarkan user_id
+                //     $income = Income::firstOrCreate(
+                //         ['user_id' => $seller->id],
+                //         ['jumlah_total' => 0]
+                //     );
 
-    \Log::info("Income ID yang didapat:", [
-        'user_id' => $seller->id,
-        'income_id' => $income->id ?? 'null'
-    ]);
+                //     Log::info("Income ID yang didapat:", [
+                //         'user_id' => $seller->id,
+                //         'income_id' => $income->id ?? 'null'
+                //     ]);
 
-    // Hitung subtotal
-    $subtotal = $detail->subtotal ?? ($detail->qty * $detail->harga);
+                //     // Hitung subtotal
+                //     $subtotal = $detail->subtotal ?? ($detail->qty * $detail->harga);
 
-    // Buat detail income
-    $detailIncome = DetailIncome::create([
-        'income_id' => $income->id,
-        'detail_transaction_id' => $detail->id,
-        'jumlah' => $subtotal
-    ]);
+                //     // Buat detail income
+                //     $detailIncome = DetailIncome::create([
+                //         'income_id' => $income->id,
+                //         'detail_transaction_id' => $detail->id,
+                //         'jumlah' => $subtotal
+                //     ]);
 
-    \Log::info("DetailIncome ID created:", [
-        'detail_income_id' => $detailIncome->id ?? 'null'
-    ]);
+                //     Log::info("DetailIncome ID created:", [
+                //         'detail_income_id' => $detailIncome->id ?? 'null'
+                //     ]);
 
-    // Update jumlah_total income
-    $income->increment('jumlah_total', $subtotal);
-}
+                //     // Update jumlah_total income
+                //     $income->increment('jumlah_total', $subtotal);
+                // }
                 //todo : inome
                 break;
             case 'pending':
@@ -481,9 +482,10 @@ foreach ($order->detail_transaction as $detail) {
         }
     }
 
-    public function test()
+    public function test(Request $request)
     {
-        $orderId = 'SJK-1747804975KWUWX';
-        $this->successPayment->PaymentSuccess($orderId);
+        // return "masuk";
+        $orderId = $request->input('order_id');
+        return $this->successPayment->PaymentSuccess($orderId);
     }
 }

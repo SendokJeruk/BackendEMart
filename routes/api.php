@@ -204,3 +204,5 @@ Route::group(['prefix' => 'detailIncome', 'as' => 'detailIncome.', 'middleware' 
 // TES ENKRIPSI
 Route::post('/enkrypt', [EncryptController::class, 'enkrypt']);
 Route::post('/decrypt', [EncryptController::class, 'decrypt']);
+
+Route::post('/testincome', [TransactionController::class, 'test']);

@@ -6,9 +6,15 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Repository\SuccessPaymentRepository;
 
 class MidtransCallback extends Controller
 {
+    protected $successPayment;
+    public function __construct(SuccessPaymentRepository $successPaymentRepository)
+    {
+        $this->successPayment = $successPaymentRepository;
+    }
     public function callback(Request $request)
     {
         // $method = $request->input('_method') ?? $request->method();
@@ -72,6 +78,8 @@ class MidtransCallback extends Controller
                 }
                 break;
             case 'settlement':
+                Log::info('MASUK SETTLEMENT OTW IMPLEN KE DE BE');
+                $this->successPayment->PaymentSuccess($orderId);
                 $order->update(['status' => 'success']);
                 break;
             case 'pending':

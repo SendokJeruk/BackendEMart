@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Income extends Model
 {
     use HasFactory;
-
     protected $guarded = [];
+
 
     public function user(): BelongsTo
     {
@@ -26,5 +26,4 @@ class Income extends Model
     {
         return $this->belongsTo(Withdraw::class, 'withdraw_id');
     }
-    
 }
