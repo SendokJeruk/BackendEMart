@@ -481,11 +481,4 @@ class TransactionController extends Controller
             ], 500);
         }
     }
-
-    public function test(Request $request)
-    {
-        // return "masuk";
-        $orderId = $request->input('order_id');
-        return $this->successPayment->PaymentSuccess($orderId);
-    }
 }
