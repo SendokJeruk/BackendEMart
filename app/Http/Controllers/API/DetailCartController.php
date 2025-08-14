@@ -90,7 +90,7 @@ class DetailCartController extends Controller
             $product = Product::find($request->product_id);
             if (!$product) {
                 return response()->json([
-                    'message' => 'Product not found'
+                    'message' => 'Produk tidak di temukan'
                 ], 404);
             }
 
@@ -118,7 +118,7 @@ class DetailCartController extends Controller
             }
 
             return response()->json([
-                'message' => 'Cart_detail updated successfully',
+                'message' => 'berhasil perbarui cart detail',
                 'data' => $Cart_detail
             ]);
         } catch (Exception $e) {

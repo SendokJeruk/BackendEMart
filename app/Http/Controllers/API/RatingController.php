@@ -42,7 +42,7 @@ class RatingController extends Controller
         try {
             $validate = Validator::make($request->all(), [
                 'product_id' => 'required',
-                'rating' => 'required',
+                'rating' => 'required|integer',
                 'deskripsi' => 'nullable'
             ]);
 

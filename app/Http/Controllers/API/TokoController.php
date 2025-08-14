@@ -42,9 +42,9 @@ class TokoController extends Controller
     {
         try {
             $validate = Validator::make($request->all(), [
-                'nama_toko' => 'required',
-                'deskripsi' => 'required',
-                'no_telp' => 'required',
+                'nama_toko' => 'required|string|max:100',
+                'deskripsi' => 'required|string|max:255',
+                'no_telp' => 'required|max:12',
 
                 //validator alamatnya
                 'kode_domestik' => 'required',
@@ -154,9 +154,9 @@ class TokoController extends Controller
     {
         try {
             $validate = Validator::make($request->all(), [
-                'nama_toko' => 'nullable',
-                'deskripsi' => 'nullable',
-                'no_telp' => 'nullable',
+                'nama_toko' => 'required|string|max:100',
+                'deskripsi' => 'required|string|max:255',
+                'no_telp' => 'required|max:12',
             ]);
 
             if ($validate->fails()) {

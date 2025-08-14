@@ -75,7 +75,7 @@ class CategoryProductController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Category telah di perbarui',
+                'message' => 'Category product telah di perbarui',
                 'data' => $category_product
                 ], 200);
 
