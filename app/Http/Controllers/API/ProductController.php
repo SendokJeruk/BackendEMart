@@ -48,27 +48,28 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         try {
-            $validate = Validator::make($request->all(), [
-                'nama_product' => 'required',
-                'deskripsi' => 'required',
-                'harga' => 'required',
-                'stock' => 'required',
-                'berat' => 'required',
-                'foto_cover' => 'required',
+            $request->validate([
+                'nama_product' => 'required|string|max:255',
+                'deskripsi' => 'required|string',
+                'harga' => 'required|numeric|min:0',
+                'stock' => 'required|integer|min:0',
+                'berat' => 'required|numeric|min:0',
+                'foto_cover' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
                 'status_produk' => 'required|in:draft,publish',
-
             ]);
 
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
-            }
+            $data = $request->only([
+                'nama_product',
+                'deskripsi',
+                'harga',
+                'stock',
+                'berat',
+                'status_produk'
+            ]);
 
-            $data = $request->all();
             $data['foto_cover'] = $this->upload->save($request->file('foto_cover'));
             $data['user_id'] = auth()->id();
+
             $product = Product::create($data);
 
             return response()->json([
@@ -83,33 +84,27 @@ class ProductController extends Controller
         }
     }
 
+
     public function edit(Request $request, Product $product)
     {
         try {
-            $validate = Validator::make($request->all(), [
-                'nama_product' => 'nullable',
-                'deskripsi' => 'nullable',
-                'harga' => 'nullable',
-                'stock' => 'nullable',
-                'berat' => 'nullable',
-                'foto_cover' => 'nullable',
+            $validated = $request->validate([
+                'nama_product' => 'nullable|string|max:255',
+                'deskripsi' => 'nullable|string',
+                'harga' => 'nullable|numeric|min:0',
+                'stock' => 'nullable|integer|min:0',
+                'berat' => 'nullable|numeric|min:0',
+                'foto_cover' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
                 'status_produk' => 'nullable|in:draft,publish',
             ]);
 
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
+            if ($request->hasFile('foto_cover')) {
+                $validated['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
             }
 
-            $data = $request->all();
+            $validated['user_id'] = auth()->id();
 
-            if ($request->file('foto_cover')) {
-                $data['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
-            }
-            $data['user_id'] = auth()->id();
-            $product->update($data);
+            $product->update($validated);
 
             return response()->json([
                 'message' => 'Berhasil Edit Produk',

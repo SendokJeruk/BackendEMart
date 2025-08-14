@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
@@ -22,7 +23,7 @@ class AuthController extends Controller
     {
         try {
             $validate = Validator::make($request->all(), [
-                'email' => 'required',
+                'email' => 'required|email',
                 'password' => 'required'
             ]);
 
@@ -62,9 +63,13 @@ class AuthController extends Controller
         try {
             $validate = Validator::make($request->all(), [
                 'name' => 'required',
-                'email' => 'required',
+                'email' => 'required|email|unique:users,email',
                 'no_telp' => 'required',
-                'password' => 'required',
+                'password' => ['required', Password::min(8)
+                ->mixedCase()
+                ->letters()
+                ->numbers()
+                ->symbols()],
                 'role_id' => 'nullable',
             ]);
 

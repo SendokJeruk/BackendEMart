@@ -223,6 +223,52 @@ class TransactionController extends Controller
             case 'settlement':
                 $this->successPayment->PaymentSuccess($orderId);
                 $order->update(['status' => 'success']);
+
+  $order->load('detail_transaction.product.user');
+
+foreach ($order->detail_transaction as $detail) {
+    $product = $detail->product;
+
+    if (!$product || !$product->user) {
+        \Log::warning("Produk atau seller tidak ditemukan untuk detail ID: {$detail->id}");
+        continue;
+    }
+
+    $seller = $product->user;
+
+    // Kurangi stok
+    $product->stok = max(0, $product->stok - $detail->qty);
+    $product->save();
+
+    // Cari atau buat Income berdasarkan user_id
+    $income = Income::firstOrCreate(
+        ['user_id' => $seller->id],
+        ['jumlah_total' => 0]
+    );
+
+    \Log::info("Income ID yang didapat:", [
+        'user_id' => $seller->id,
+        'income_id' => $income->id ?? 'null'
+    ]);
+
+    // Hitung subtotal
+    $subtotal = $detail->subtotal ?? ($detail->qty * $detail->harga);
+
+    // Buat detail income
+    $detailIncome = DetailIncome::create([
+        'income_id' => $income->id,
+        'detail_transaction_id' => $detail->id,
+        'jumlah' => $subtotal
+    ]);
+
+    \Log::info("DetailIncome ID created:", [
+        'detail_income_id' => $detailIncome->id ?? 'null'
+    ]);
+
+    // Update jumlah_total income
+    $income->increment('jumlah_total', $subtotal);
+}
+                //todo : inome
                 break;
             case 'pending':
                 $order->update(['status' => 'pending']);

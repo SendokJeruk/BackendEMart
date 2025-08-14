@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('jumlah');
             $table->foreignId('income_id')->constrained()->onDelete('cascade');
+            $table->foreignId('detail_transaction_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -12,32 +12,23 @@ class IncomeController extends Controller
 {
     public function index(){
         try {
-            $user = Auth::user();
+            $user = auth()->user();
 
-            $pendingIncomes = Income::where('user_id', $user->id)
-                                    ->where('status', 'pending')
-                                    ->get();
+         $income = Income::where('user_id', $user->id)->first();
 
-            $totalPending = $pendingIncomes->sum('jumlah_total');
-
-            return response()->json([
-                'message' => 'Berhasil Dapatkan Data Income',
-                'incomes' => $pendingIncomes,
-                'total_pending' => $totalPending,
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-
-        //? Ini buat bikin logic ambil seluruh income user yang login dan
-        //? Filter yang status nya pending
-        //? terus bikin variable yang isinya income tadi di kalkulasikan semua buat di return
+     return response()->json([
+            'message' => 'Berhasil mendapatkan data income',
+            'data' => [
+            'income' => $income,
+            'total_income' => $income ? $income->jumlah_total : 0,
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Terjadi kesalahan pada server',
+            'error' => $e->getMessage()
+        ], 500);
+    }
     }
 
-    public function store(){
-        
-    }
 }

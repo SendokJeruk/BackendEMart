@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Repository\UploadProfileRepository;
+use Illuminate\Validation\Rules\Password;
 
 
 class ManageUserController extends Controller
@@ -47,12 +48,16 @@ class ManageUserController extends Controller
     public function store(Request $request){
         try {
             $validate = Validator::make($request->all(),[
-                'name' => 'required',
-                'email' => 'required',
-                'no_telp' => 'required',
-                'password' => 'required|min:8',
+                'name' => 'required|string|min:3|max:50',
+                'email' => 'required|email|unique:users,email',
+                'no_telp' => 'required|integer',
+                'password' => ['required', Password::min(8)
+                ->mixedCase()
+                ->letters()
+                ->numbers()
+                ->symbols()],
                 'role_id' => 'required',
-                'foto_profil' => 'nullable|image',
+                'foto_profil' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             ]);
 
             if($validate->fails()) {
@@ -85,12 +90,16 @@ class ManageUserController extends Controller
 
     public function update(Request $request, User $manage_user){
         $validate = Validator::make($request->all(),[
-            'name' => 'nullable',
-            'email' => 'nullable',
-            'no_telp' => 'nullable',
-            'password' => 'nullable',
+            'name' => 'nullable|string|min:3|max:50',
+            'email' => 'nullable|email|unique:users,email',
+            'no_telp' => 'nullable|integer',
+            'password' => ['nullable', Password::min(8)
+                        ->mixedCase()
+                        ->letters()
+                        ->numbers()
+                        ->symbols()],
             'role_id' => 'nullable',
-            'foto_profil' => 'nullable',
+            'foto_profil' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         if($validate->fails()) {

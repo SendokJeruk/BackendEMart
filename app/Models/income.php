@@ -26,4 +26,5 @@ class Income extends Model
     {
         return $this->belongsTo(Withdraw::class, 'withdraw_id');
     }
+    
 }

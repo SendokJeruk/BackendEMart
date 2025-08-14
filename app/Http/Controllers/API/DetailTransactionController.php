@@ -46,7 +46,7 @@ class DetailTransactionController extends Controller
             $validate = Validator::make($request->all(), [
                 'transaction_id' => 'required',
                 'product_id' => 'required',
-                'jumlah' => 'required',
+                'jumlah' => 'required|integer|min:1',
             ]);
 
             if ($validate->fails()) {
@@ -95,7 +95,7 @@ class DetailTransactionController extends Controller
                 $validate = Validator::make($request->all(), [
                     'transaction_id' => 'nullable',
                     'product_id' => 'nullable',
-                    'jumlah' => 'nullable',
+                    'jumlah' => 'nullable|integer|min:1',
                 ]);
 
                 if ($validate->fails()) {
