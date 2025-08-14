@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Crypt;
 
 class EncryptRepository
 {
-    public static function encrypt($value)
+    public static function encryptor($value)
     {
         function randomString($length = 16)
         {
@@ -24,12 +24,12 @@ class EncryptRepository
         $detik   = Carbon::now()->format('s');
         $last_random = randomString(13);
 
-        $enkryptValue = Crypt::encryptString(base64_encode($first_random.$tanggal.$bulan.$value.$tahun.$jam.$last_random.$menit.$detik));
+        $encryptValue = Crypt::encryptString(base64_encode($first_random.$tanggal.$bulan.$value.$tahun.$jam.$last_random.$menit.$detik));
 
-        return $enkryptValue;
+        return $encryptValue;
     }
 
-    public static function decrypt($value) {
+    public static function decryptor($value) {
         $decrypt = Crypt::decryptString($value);
         $decrypt = base64_decode($decrypt);
         $length = strlen($decrypt);

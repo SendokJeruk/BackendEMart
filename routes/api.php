@@ -28,6 +28,7 @@ use App\Http\Controllers\API\DetailIncomeController;
 use App\Http\Controllers\API\RequestSellerController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
+use App\Http\Controllers\API\TestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,7 +100,7 @@ Route::group(['prefix' => 'transaction', 'as' => 'transaction.', 'middleware' =>
     Route::post('/payment/{transaction}', [TransactionController::class, 'createTransaction']);
 });
 Route::get('/transaction', [TransactionController::class, 'index'])->middleware('auth:sanctum');
-Route::get('/test',[TransactionController::class, 'test']);
+Route::post('/test',[TestController::class, 'test']);
 Route::post('/transaction/payment/callback', [TransactionController::class, 'callback'])->withoutMiddleware('auth:sanctum');
 
 Route::group(['prefix' => 'detail-transaction', 'as' => 'detail-transaction.', 'middleware' => 'auth:sanctum'], function () {
