@@ -28,11 +28,23 @@ class RequestSellerController extends Controller
 
             if ($user->role && $user->role->nama_role === 'admin') {
                 $requestSeller = RequestSeller::all();
+
+            foreach ($requestSeller as $seller) {
+                $seller->nik = Crypt::decryptString($seller->nik);
+                $seller->alamat_ktp = Crypt::decryptString($seller->alamat_ktp);
+                $seller->foto_ktp = Crypt::decryptString($seller->foto_ktp);
+            }
             } else {
                 $requestSeller = RequestSeller::with('user')
                     ->where('user_id', $user->id)
                     ->latest()
                     ->first();
+
+             if ($requestSeller) {
+                $requestSeller->nik = Crypt::decryptString($requestSeller->nik);
+                $requestSeller->alamat_ktp = Crypt::decryptString($requestSeller->alamat_ktp);
+                $requestSeller->foto_ktp = Crypt::decryptString($requestSeller->foto_ktp);
+            }
             }
 
             return response()->json([
@@ -62,7 +74,7 @@ class RequestSellerController extends Controller
                 'nik' => 'required|digits:16|unique:request_sellers,nik',
                 'nama_lengkap' => 'required|string|max:255',
                 'tempat_lahir' => 'required|string|max:100',
-                'tanggal_lahir' => 'required|date|before:today',
+                    'tanggal_lahir' => 'required|date|before:today',
                 'jenis_kelamin' => 'required|in:L,P',
                 'alamat_ktp' => 'required|string|max:500',
                 'foto_ktp' => 'required|image|mimes:jpg,jpeg,png|max:2048'
@@ -74,6 +86,11 @@ class RequestSellerController extends Controller
                     'errors' => $validate->errors()
                 ], 422);
             }
+
+        // $filePath = $this->ktp->save($request->file('foto_ktp'));
+        // if (!$filePath) {
+        //     throw new \Exception('Gagal mengunggah foto KTP.');
+        // }
 
             $requestSeller = new RequestSeller();
             $requestSeller->user_id = auth()->id();
@@ -139,4 +156,6 @@ class RequestSellerController extends Controller
             ], 500);
         }
     }
+
+
 }

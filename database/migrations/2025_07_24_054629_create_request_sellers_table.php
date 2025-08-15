@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('tanggal_lahir');
             $table->enum('jenis_kelamin', ['L','P']);
             $table->text('alamat_ktp');
-            $table->string('foto_ktp'); 
+            $table->text('foto_ktp');
             $table->timestamps();
         });
     }
