@@ -9,6 +9,21 @@ use App\Http\Controllers\Controller;
 
 class SettingController extends Controller
 {
+    public function index(Request $request)
+    {
+        try {
+            $keys = Setting::filter($request)->get();
+            return response()->json([
+                'message' => 'Berhasil Dapatkan Data Setting ',
+                'data' => $keys
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
     public function update(Request $request)
     {
         try {

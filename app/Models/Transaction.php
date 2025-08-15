@@ -12,7 +12,8 @@ class Transaction extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public function getRouteKeyName() {
+    public function getRouteKeyName()
+    {
         return 'kode_transaksi';
     }
 
@@ -30,6 +31,13 @@ class Transaction extends Model
     public function income()
     {
         return $this->hasOne(Income::class);
+    }
+
+    public function scopeFilter($query, $request)
+    {
+        return $query
+            ->when($request->has('kode_transaksi'), fn($q) =>
+                $q->where('kode_transaksi', $request->kode_transaksi));
     }
 
 }

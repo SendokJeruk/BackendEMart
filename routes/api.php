@@ -166,7 +166,7 @@ Route::group(['prefix' => 'alamat', 'as' => 'alamat.', 'middleware' => ['auth:sa
 });
 
 Route::group(['prefix' => 'setting', 'as' => 'setting.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
-    Route::get('/tes', [SettingController::class, 'test']);
+    Route::get('/', [SettingController::class, 'index']);
     Route::post('/', [SettingController::class, 'update']);
 });
 
