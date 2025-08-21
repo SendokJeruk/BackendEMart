@@ -51,14 +51,19 @@ class Product extends Model
         return $query
             ->when($request->filled('nama_product'), fn($q) =>
             $q->where('nama_product', 'like', "%{$request->nama_product}%"))
+
             ->when($request->has('publish'), fn($q) =>
             $q->where('status_produk', 'publish'))
+
             ->when($request->has('myproducts'), fn($q) =>
             $q->where('user_id', Auth::id()))
+
             ->when($request->has('draft'), fn($q) =>
             $q->where('status_produk', 'draft'))
+
             ->when($request->filled('id'), fn($q) =>
             $q->where('id', $request->id))
+            
             ->when($request->filled('user_id'), fn($q) =>
             $q->where('user_id', $request->user_id));
     }

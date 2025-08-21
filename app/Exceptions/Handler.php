@@ -36,6 +36,13 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
+    protected function unauthenticated($request, \Illuminate\Auth\AuthenticationException $exception)
+    {
+        return $request->expectsJson()
+            ? response()->json(['message' => 'Unauthenticated'], 401)
+            : response()->json(['message' => 'Unauthenticated'], 401);
+    }
+
     /**
      * Register the exception handling callbacks for the application.
      */
