@@ -22,7 +22,7 @@ class ProductController extends Controller
     {
         try {
 
-            $products = Product::with(['categories', 'user.toko', 'foto', 'rating'])
+            $products = Product::with(['categories', 'user.toko', 'foto', 'rating', 'foto'])
                 ->withAvg('rating', 'rating')
                 ->filter($request)
                 ->paginate(10);

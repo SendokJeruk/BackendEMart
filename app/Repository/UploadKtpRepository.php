@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\File;
 class UploadKtpRepository {
     public static function save($image) {
         $file = $image;
-        $file_name = url('upload/ktp/' . $file->hashName());
+        $file_name = rtrim(config('app.url'), '/') . '/upload/ktp/' . $file->hashName();
         $destinasi = 'upload/ktp/';
         $file->move($destinasi, $file_name);
 
@@ -21,7 +21,7 @@ class UploadKtpRepository {
         }
 
         $file = $image;
-        $file_name = url('upload/ktp/' . $file->hashName());
+        $file_name = rtrim(config('app.url'), '/') . '/upload/ktp/' . $file->hashName();
         $destinasi = 'upload/ktp/';
         $file->move($destinasi, $file_name);
 
