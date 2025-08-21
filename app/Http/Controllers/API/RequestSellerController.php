@@ -144,6 +144,21 @@ class RequestSellerController extends Controller
                 $user->save();
             }
 
+            if ($requestSeller->foto_ktp) {
+                try {
+                    $fotoPath = Crypt::decryptString($requestSeller->foto_ktp);
+                    $this->ktp->delete($fotoPath);
+            } catch (\Exception $e) {
+                return response()->json([
+                'message' => 'Gagal Menghapus Foto KTP',
+            ], 500);
+            }
+
+            $requestSeller->update([
+                'foto_ktp' => null,
+            ]);
+        }
+
             return response()->json([
                 'message' => 'Permohonan Berhasil Diubah',
                 'data' => $requestSeller
