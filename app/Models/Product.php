@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\DetailTransaction;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -52,6 +53,8 @@ class Product extends Model
             $q->where('nama_product', 'like', "%{$request->nama_product}%"))
             ->when($request->has('publish'), fn($q) =>
             $q->where('status_produk', 'publish'))
+            ->when($request->has('myproducts'), fn($q) =>
+            $q->where('user_id', Auth::id()))
             ->when($request->has('draft'), fn($q) =>
             $q->where('status_produk', 'draft'))
             ->when($request->filled('id'), fn($q) =>
