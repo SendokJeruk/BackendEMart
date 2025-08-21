@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\File;
 class UploadProfileRepository {
     public static function save($image) {
         $file = $image;
-        $file_name = rtrim(config('app.url'), '/') . '/upload/pfp/' . $file->hashName();
+        $file_name = url('upload/pfp/' . $file->hashName());
         $destinasi = 'upload/pfp/';
         $file->move($destinasi, $file_name);
 
@@ -21,7 +21,7 @@ class UploadProfileRepository {
         }
 
         $file = $image;
-        $file_name = rtrim(config('app.url'), '/') . '/upload/pfp/' . $file->hashName();
+        $file_name = url('upload/pfp/' . $file->hashName());
         $destinasi = 'upload/pfp/';
         $file->move($destinasi, $file_name);
 
