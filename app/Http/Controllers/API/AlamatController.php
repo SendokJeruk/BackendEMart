@@ -13,19 +13,11 @@ class AlamatController extends Controller
 {
     public function get()
     {
-        try {
-
-            $data = Auth::user()->alamat()->paginate(5);
-            return response()->json([
-                'message' => 'Berhasil mendapatkan semua data alamat user',
-                'data' => $data
-            ], );
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        $data = Auth::user()->alamat()->paginate(5);
+        return response()->json([
+            'message' => 'Berhasil mendapatkan semua data alamat user',
+            'data' => $data
+        ], );
     }
 
     public function store(Request $request)
