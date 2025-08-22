@@ -12,17 +12,18 @@ class SuccessPaymentRepository
 {
     public static function PaymentSuccess($kodeTransaksi)
     {
-        $transaction = Transaction::with('detail_transaction.product.user')
-            ->where('kode_transaksi', $kodeTransaksi)
-            ->first();
-
-        if (!$transaction) {
-            return response()->json(['message' => 'Transaksi tidak ditemukan.'], 404);
-        }
-
-        DB::beginTransaction();
-
         try {
+            $transaction = Transaction::with('detail_transaction.product.user')
+                ->where('kode_transaksi', $kodeTransaksi)
+                ->first();
+
+            if (!$transaction) {
+                return response()->json(['message' => 'Transaksi tidak ditemukan.'], 404);
+            }
+
+            DB::beginTransaction();
+
+
             $debugIncomes = [];
 
             foreach ($transaction->detail_transaction as $detail) {

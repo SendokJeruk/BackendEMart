@@ -23,7 +23,7 @@ class RequestSellerController extends Controller
     }
     public function index()
     {
-        try {
+
             $user = Auth::user();
 
             if ($user->role && $user->role->nama_role === 'admin') {
@@ -51,17 +51,12 @@ class RequestSellerController extends Controller
                 'message' => 'Berhasil Menampilkan Request',
                 'data' => $requestSeller
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function store(Request $request)
     {
-        try {
+
             $existing = RequestSeller::where('user_id', Auth::id())->where('status', 'pending')->first();
             if ($existing) {
                 return response()->json([
@@ -109,17 +104,12 @@ class RequestSellerController extends Controller
                 'message' => 'Permohonan Berhasil Dikirim',
                 'data' => $requestSeller
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function update(Request $request, RequestSeller $requestSeller)
     {
-        try {
+
             $validate = Validator::make($request->all(), [
                 'status' => 'required|in:accepted,rejected',
                 'note' => 'required',
@@ -149,12 +139,7 @@ class RequestSellerController extends Controller
                 'data' => $requestSeller
             ]);
 
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
 

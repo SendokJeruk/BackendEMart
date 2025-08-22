@@ -29,16 +29,16 @@ class AppServiceProvider extends ServiceProvider
                 'MIDTRANS_CLIENT_KEY',
             ])->pluck('value', 'name');
 
-            $serverKey       = $db['MIDTRANS_SERVER_KEY'] ?? null;
+            $serverKey = $db['MIDTRANS_SERVER_KEY'] ?? null;
             $isProductionRaw = $db['MIDTRANS_IS_PRODUCTION'] ?? false;
 
             config()->set('midtrans.server_key', $serverKey);
             config()->set('midtrans.is_production', filter_var($isProductionRaw, FILTER_VALIDATE_BOOLEAN));
 
-            Config::$serverKey    = config('midtrans.server_key') ?? '';
+            Config::$serverKey = config('midtrans.server_key') ?? '';
             Config::$isProduction = config('midtrans.is_production') ?? false;
-            Config::$isSanitized  = true;
-            Config::$is3ds        = true;
+            Config::$isSanitized = true;
+            Config::$is3ds = true;
 
             if (empty($serverKey)) {
                 Log::warning('MIDTRANS_SERVER_KEY is not set in settings table.');

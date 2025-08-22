@@ -20,7 +20,7 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        try {
+
 
             $products = Product::with(['categories', 'user.toko', 'foto', 'rating', 'foto'])
                 ->withAvg('rating', 'rating')
@@ -37,17 +37,12 @@ class ProductController extends Controller
                 'message' => 'Berhasil Dapatkan Data Produk',
                 'data' => $products
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function store(Request $request)
     {
-        try {
+
             $request->validate([
                 'nama_product' => 'required|string|max:255',
                 'deskripsi' => 'required|string',
@@ -76,18 +71,13 @@ class ProductController extends Controller
                 'message' => 'Berhasil Menambahkan Produk',
                 'data' => $product
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
 
     public function edit(Request $request, Product $product)
     {
-        try {
+
             $validated = $request->validate([
                 'nama_product' => 'nullable|string|max:255',
                 'deskripsi' => 'nullable|string',
@@ -110,27 +100,17 @@ class ProductController extends Controller
                 'message' => 'Berhasil Edit Produk',
                 'data' => $product->fresh()
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function delete(Product $product)
     {
-        try {
+
             $this->upload->delete($product->foto_cover);
             $product->delete();
             return response()->json([
                 'message' => 'Data berhasil dihapus'
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 }

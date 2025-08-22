@@ -10,25 +10,20 @@ use Illuminate\Support\Facades\Auth;
 
 class IncomeController extends Controller
 {
-    public function index(){
-        try {
-            $user = auth()->user();
+    public function index()
+    {
 
-         $income = Income::where('user_id', $user->id)->first();
+        $user = auth()->user();
 
-     return response()->json([
+        $income = Income::where('user_id', $user->id)->first();
+
+        return response()->json([
             'message' => 'Berhasil mendapatkan data income',
             'data' => [
-            'income' => $income,
-            'total_income' => $income ? $income->jumlah_total : 0,
+                'income' => $income,
+                'total_income' => $income ? $income->jumlah_total : 0,
             ]
         ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'message' => 'Terjadi kesalahan pada server',
-            'error' => $e->getMessage()
-        ], 500);
-    }
     }
 
 }

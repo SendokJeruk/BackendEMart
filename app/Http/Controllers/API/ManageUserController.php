@@ -21,7 +21,7 @@ class ManageUserController extends Controller
         $this->upload = new UploadProfileRepository();
     }
     public function index(Request $request){
-        try {
+
             $query = User::query();
 
             if ($request->has('name')) {
@@ -37,16 +37,11 @@ class ManageUserController extends Controller
                 'message' => 'Berhasil Dapatkan Data',
                 'data' => $manage_user
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function store(Request $request){
-        try {
+
             $validate = Validator::make($request->all(),[
                 'name' => 'required|string|min:3|max:50',
                 'email' => 'required|email|unique:users,email',
@@ -80,12 +75,7 @@ class ManageUserController extends Controller
                 'message' => 'data telah di tambahkan',
                 'data' => $manage_user
                 ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function update(Request $request, User $manage_user){
@@ -132,18 +122,13 @@ class ManageUserController extends Controller
     }
 
     public function delete(User $manage_user){
-        try {
+
             $manage_user->delete();
 
             return response()->json([
              'message' => 'Data berhasil dihapus'
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 }
 

@@ -20,7 +20,7 @@ class RatingController extends Controller
     }
     public function index()
     {
-        try {
+
             $ratings = Rating::when(request('product_id'), function ($query, $product_id) {
                 return $query->where('product_id', $product_id);
             })->get();
@@ -29,17 +29,12 @@ class RatingController extends Controller
                 'message' => 'Berhasil menampilkan data rating',
                 'data' => $ratings
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function store(Request $request)
     {
-        try {
+
             $validate = Validator::make($request->all(), [
                 'product_id' => 'required',
                 'rating' => 'required|integer',
@@ -70,11 +65,6 @@ class RatingController extends Controller
                 'data' => $rating
             ], 200);
 
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 }

@@ -15,7 +15,7 @@ class TokoController extends Controller
 {
     public function index(Request $request)
     {
-        try {
+
             $query = Toko::query();
             if ($request->has('nama_toko')) {
                 $query->where('nama_toko', 'like', "%{$request->nama_toko}%");
@@ -30,17 +30,12 @@ class TokoController extends Controller
                 'message' => 'Berhasil Dapatkan Data toko',
                 'data' => $toko
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function store(Request $request)
     {
-        try {
+
             $validate = Validator::make($request->all(), [
                 'nama_toko' => 'required|string|max:100',
                 'deskripsi' => 'required|string|max:255',
@@ -97,17 +92,12 @@ class TokoController extends Controller
                 'message' => 'Toko telah terbuat',
                 'data' => $toko
             ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function updateAlamat(Request $request, Toko $toko)
     {
-        try {
+
             $validate = Validator::make($request->all(), [
                 'kode_domestik' => 'nullable',
                 'label' => 'nullable',
@@ -142,17 +132,12 @@ class TokoController extends Controller
                 'data' => $toko
             ], 200);
 
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function update(Request $request, Toko $toko)
     {
-        try {
+
             $validate = Validator::make($request->all(), [
                 'nama_toko' => 'required|string|max:100',
                 'deskripsi' => 'required|string|max:255',
@@ -179,29 +164,19 @@ class TokoController extends Controller
                 'data' => $toko
             ], 200);
 
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function delete(Toko $toko)
     {
-        try {
+
             $toko->alamatToko->delete();
             $toko->delete();
 
             return response()->json([
                 'message' => 'Data toko beserta alamat berhasil dihapus'
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
 }
