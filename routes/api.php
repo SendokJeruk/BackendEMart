@@ -62,7 +62,10 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 });
 
 
-Route::get('/product', [ProductController::class, 'index'])->middleware('auth:sanctum');
+Route::get('/product/mobile', [ProductController::class, 'index'])->middleware('auth:sanctum');
+Route::get('/product', [ProductController::class, 'index']);
+
+
 Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => ['auth:sanctum', 'seller'] ], function () {
     Route::post('/', [ProductController::class, 'store']);
     Route::put('/{product}', [ProductController::class, 'edit']);
@@ -89,12 +92,15 @@ Route::group(['prefix' => 'role', 'as' => 'role.'], function () {
 });
 
 Route::group(['prefix' => 'transaction', 'as' => 'transaction.', 'middleware' => 'auth:sanctum'], function () {
+    Route::get('/', [TransactionController::class, 'index']);
+    Route::get('/get-all-transaction', [TransactionController::class, 'getAllTransaction'])->middleware('checkrole');
+    Route::get('/get-transaction-detail/{transaction}', [TransactionController::class, 'getTransactionDetail']);
+
     Route::post('/', [TransactionController::class, 'store']);
     Route::put('/{transaction}', [TransactionController::class, 'update']);
     Route::delete('/{transaction}', [TransactionController::class, 'delete']);
+
     Route::get('/pesanan-masuk', [TransactionController::class, 'pesananMasuk']);
-    Route::get('/', [TransactionController::class, 'pesananMasuk']);
-    Route::get('/getAllTransaction', [TransactionController::class, 'getAllTransaction']);
 
     // MIDTRANS CUY
     Route::post('/payment/{transaction}', [TransactionController::class, 'createTransaction']);

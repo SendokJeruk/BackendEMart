@@ -332,6 +332,47 @@ class TransactionController extends Controller
         }
     }
 
+    public function getTransactionDetail(Transaction $transaction)
+    {
+        try {
+            if ($transaction->user_id != auth()->id()) {
+                return response()->json([
+                    'message' => 'Forbidden'
+                ], 403);
+            }
+
+            $result = [];
+
+            foreach ($transaction->detail_transaction as $detail) {
+                $group = $detail->product->user->toko->alamatToko->kode_domestik;
+
+                if (!isset($result[$group])) {
+                    $result[$group] = [];
+                }
+
+                $result[$group][] = [
+                    'product_id' => $detail->product_id,
+                    'harga' => $detail->harga,
+                    'jumlah' => $detail->jumlah,
+                    'subtotal' => $detail->subtotal,
+                    'totalberat' => $detail->totalberat,
+                ];
+            }
+
+            return response()->json([
+                'message' => 'Berhasil mendapatkan detail dari transaksi ' . $transaction->kode_transaksi,
+                'data' => $result
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+    }
+
 
     public function store(Request $request)
     {
@@ -366,12 +407,10 @@ class TransactionController extends Controller
 
     public function update(Request $request, Transaction $transaction)
     {
-        //TODO UPDATE KALKULASI ONGKIR TIAP UPDATE
         try {
             $validate = Validator::make($request->all(), [
-                'status' => 'nullable',
-                'tanggal_transaksi' => 'nullable',
-                'kode_transaksi' => 'nullable',
+                'status' => 'nullable|string',
+                'total_ongkir' => 'nullable|numeric'
             ]);
 
             if ($validate->fails()) {
@@ -381,46 +420,16 @@ class TransactionController extends Controller
                 ], 422);
             }
 
-            $destination = $request->input('destination');
-
-            $transaction->load('detail_transaction.product.user.toko.alamatToko');
-            $totalOngkir = 0;
-            $weightPerToko = [];
-
-            foreach ($transaction->detail_transaction as $detail) {
-                $toko = $detail->product->user->toko;
-
-                if ($toko && $toko->alamatToko) {
-                    $kodeDomestik = $toko->alamatToko->kode_domestik;
-
-                    if (!isset($weightPerToko[$kodeDomestik])) {
-                        $weightPerToko[$kodeDomestik] = 0;
-                    }
-
-                    $weightPerToko[$kodeDomestik] += $detail->totalberat ?? 0;
-                }
+            if ($request->has('total_ongkir')) {
+                $transaction->total_ongkir = $request->input('total_ongkir');
+                $transaction->total_harga = $transaction->detail_transaction->sum('subtotal') + $transaction->total_ongkir;
             }
 
-            foreach ($weightPerToko as $kodeDomestik => $beratToko) {
-                $ongkir = $this->rajaOngkir->getCost(
-                    $kodeDomestik,
-                    $destination,
-                    $beratToko,
-                    "jnt",
-                    "lowest"
-                );
-
-                $totalOngkir += $ongkir['data'][0]['cost'] ?? 0;
+            if ($request->filled('status')) {
+                $transaction->status = $request->input('status');
             }
 
-            $data = Arr::except($request->all(), ['destination']);
-            $data['user_id'] = auth()->id();
-
-            $transaction->total_harga -= $transaction->total_ongkir; //Ngurangin dulu harga pake ongkir sebelumnya
-            $transaction->total_ongkir = $totalOngkir; // lalu pasang nilai ongkir baru
-            $transaction->total_harga += $totalOngkir; // dan ditambah
-
-            $transaction->update($data);
+            $transaction->save();
 
             return response()->json([
                 'message' => 'Berhasil Update transaksi',
@@ -433,6 +442,7 @@ class TransactionController extends Controller
             ], 500);
         }
     }
+
 
     public function delete(Transaction $transaction)
     {
