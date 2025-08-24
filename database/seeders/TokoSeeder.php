@@ -28,7 +28,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'BANDUNG KIDUL',
                 'subdistrict_name' => 'BATUNUNGGAL',
                 'zip_code' => '40266',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
             [
                 'kode_domestik' => '4866',
@@ -38,7 +38,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'BANDUNG KIDUL',
                 'subdistrict_name' => 'BATUNUNGGAL',
                 'zip_code' => '40266',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
             [
                 'kode_domestik' => '4844',
@@ -48,7 +48,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'ANDIR',
                 'subdistrict_name' => 'CAMPAKA',
                 'zip_code' => '40184',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
             [
                 'kode_domestik' => '5256',
@@ -58,7 +58,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'CIMAHI TENGAH',
                 'subdistrict_name' => 'CIMAHI',
                 'zip_code' => '40525',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
             [
                 'kode_domestik' => '5256',
@@ -68,7 +68,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'CIMAHI TENGAH',
                 'subdistrict_name' => 'CIMAHI',
                 'zip_code' => '40525',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
             [
                 'kode_domestik' => '4846',
@@ -78,7 +78,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'ANDIR',
                 'subdistrict_name' => 'DUNGUS CARIANG',
                 'zip_code' => '40183',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
             [
                 'kode_domestik' => '4877',
@@ -88,7 +88,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'BANDUNG KULON',
                 'subdistrict_name' => 'WARUNG MUNCANG',
                 'zip_code' => '40211',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
             [
                 'kode_domestik' => '8427',
@@ -98,7 +98,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'PARUNG PANJANG',
                 'subdistrict_name' => 'DAGO',
                 'zip_code' => '16360',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
             [
                 'kode_domestik' => '8427',
@@ -108,7 +108,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'PARUNG PANJANG',
                 'subdistrict_name' => 'DAGO',
                 'zip_code' => '16360',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
             [
                 'kode_domestik' => '8119',
@@ -118,7 +118,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'BOGOR BARAT - KOTA',
                 'subdistrict_name' => 'BUBULAK',
                 'zip_code' => '16115',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
             [
                 'kode_domestik' => '4872',
@@ -128,7 +128,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'BANDUNG KULON',
                 'subdistrict_name' => 'CIGONDEWAH KALER',
                 'zip_code' => '40214',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
             [
                 'kode_domestik' => '4872',
@@ -138,7 +138,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'BANDUNG KULON',
                 'subdistrict_name' => 'CIGONDEWAH KALER',
                 'zip_code' => '40214',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
             [
                 'kode_domestik' => '4912',
@@ -148,7 +148,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'CICENDO',
                 'subdistrict_name' => 'PAJAJARAN',
                 'zip_code' => '40173',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
             [
                 'kode_domestik' => '4949',
@@ -158,7 +158,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'SUMUR BANDUNG',
                 'subdistrict_name' => 'BRAGA',
                 'zip_code' => '40111',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
             [
                 'kode_domestik' => '4911',
@@ -168,7 +168,7 @@ class TokoSeeder extends Seeder
                 'district_name' => 'CICENDO',
                 'subdistrict_name' => 'HUSEN SASTRANEGARA',
                 'zip_code' => '40174',
-                'detail_alamat' => '',
+                'detail_alamat' => 'Jl disuatu tempat ada orang yang berjualan',
             ],
         ];
 

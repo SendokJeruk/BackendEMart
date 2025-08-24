@@ -94,7 +94,16 @@ class TransactionController extends Controller
             'customer_details' => [
                 'first_name' => $transaction->user->name,
                 'email' => $transaction->user->email,
-                'phone' => $transaction->user->no_telp
+                'phone' => $transaction->user->no_telp,
+                // 'billing_address' => [
+                //     'first_name' => $transaction->user->alamat->nama_penerima,
+                //     'email' => $transaction->user->email,
+                //     'phone' => $transaction->user->no_telp,
+                //     'address' => $transaction->user->alamat->label . "" . $transaction->user->alamat->detail_alamat,
+                //     'city' => $transaction->user->alamat->city_name,
+                //     'postal_code' => $transaction->user->alamat->zip_code,
+                //     'country_code' => 'IDN',
+                // ],
             ],
             'item_details' => $products,
             !empty($payment_type) ?? 'enabled_payments' => $payment_type

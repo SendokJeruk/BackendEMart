@@ -47,8 +47,8 @@ class CheckoutController extends Controller
             ]);
 
 
-            $cartDetail->product->stock -= $cartDetail->jumlah;
-            $cartDetail->product->save();
+            // $cartDetail->product->stock -= $cartDetail->jumlah;
+            // $cartDetail->product->save();
         }
 
 

@@ -31,22 +31,63 @@ class ProductFactory extends Factory
             },
             'nama_product' => function () {
                 $adjectives = [
-                    'Super', 'Mega', 'Ultra', 'Eco', 'Pro', 'Smart', 'Advanced', 'Classic', 'Modern',
-                    'Vintage', 'Elegant', 'Compact', 'Portable', 'Durable', 'Lightweight', 'Wireless',
-                    'Waterproof', 'Limited Edition', 'Premium', 'Custom', 'Sleek', 'Powerful', 'Affordable', 'King'
+                    'Super',
+                    'Mega',
+                    'Ultra',
+                    'Eco',
+                    'Pro',
+                    'Smart',
+                    'Advanced',
+                    'Classic',
+                    'Modern',
+                    'Vintage',
+                    'Elegant',
+                    'Compact',
+                    'Portable',
+                    'Durable',
+                    'Lightweight',
+                    'Wireless',
+                    'Waterproof',
+                    'Limited Edition',
+                    'Premium',
+                    'Custom',
+                    'Sleek',
+                    'Powerful',
+                    'Affordable',
+                    'King'
                 ];
 
                 $productTypes = [
-                    'T-Shirt', 'Sepatu', 'Jam Tangan', 'Tas', 'Kacamata', 'Jaket', 'Celana Jeans',
-                    'Topi Baseball', 'Kaos Kaki', 'Sweater Hoodie', 'Tas Selempang', 'Sepatu Formal',
-                    'Jaket Denim', 'Jam Tangan Digital', 'Kacamata Renang', 'Rompi Safety', 'Tas Laptop',
-                    'Sepatu Lari', 'Baju Renang', 'Sarung Tangan', 'Dompet', 'Kalung', 'Gelang', 'Belt'
+                    'T-Shirt',
+                    'Sepatu',
+                    'Jam Tangan',
+                    'Tas',
+                    'Kacamata',
+                    'Jaket',
+                    'Celana Jeans',
+                    'Topi Baseball',
+                    'Kaos Kaki',
+                    'Sweater Hoodie',
+                    'Tas Selempang',
+                    'Sepatu Formal',
+                    'Jaket Denim',
+                    'Jam Tangan Digital',
+                    'Kacamata Renang',
+                    'Rompi Safety',
+                    'Tas Laptop',
+                    'Sepatu Lari',
+                    'Baju Renang',
+                    'Sarung Tangan',
+                    'Dompet',
+                    'Kalung',
+                    'Gelang',
+                    'Belt'
                 ];
 
                 return fake()->randomElement($adjectives) . ' ' . fake()->randomElement($productTypes);
             },
             'deskripsi' => fake()->paragraph(),
-            'harga' => (string) fake()->numberBetween(10000, 1000000),
+            'harga' => (string) (fake()->numberBetween(1, 500) * 10000),
             'stock' => fake()->numberBetween(1, 100),
             'berat' => fake()->numberBetween(100, 5000),
             'foto_cover' => function (array $attributes) {
