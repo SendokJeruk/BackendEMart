@@ -41,7 +41,7 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
-        $user->tokens()->delete();
+        // $user->tokens()->delete();
         $token = $user->createToken('auth_token')->plainTextToken;
         $user->access_token = $token;
         $user->token_type = 'Bearer';

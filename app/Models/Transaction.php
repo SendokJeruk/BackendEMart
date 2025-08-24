@@ -33,6 +33,16 @@ class Transaction extends Model
         return $this->hasOne(Income::class);
     }
 
+    public function alamat_user(): BelongsTo
+    {
+        return $this->belongsTo(AlamatUser::class);
+    }
+
+    public function alamat_toko(): BelongsTo
+    {
+        return $this->belongsTo(AlamatToko::class);
+    }
+
     public function scopeFilter($query, $request)
     {
         return $query
