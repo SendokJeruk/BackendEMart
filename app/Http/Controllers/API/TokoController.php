@@ -15,27 +15,24 @@ class TokoController extends Controller
 {
     public function index(Request $request)
     {
+        $query = Toko::query();
+        if ($request->has('nama_toko')) {
+            $query->where('nama_toko', 'like', "%{$request->nama_toko}%");
+        }
+        if ($request->has('id')) {
+            $query->where('id', $request->id);
+        }
 
-            $query = Toko::query();
-            if ($request->has('nama_toko')) {
-                $query->where('nama_toko', 'like', "%{$request->nama_toko}%");
-            }
-            if ($request->has('id')) {
-                $query->where('id', $request->id);
-            }
+        $toko = $query->with(['alamatToko', 'products'])->paginate(10);
 
-            $toko = $query->with('alamatToko')->paginate(10);
-
-            return response()->json([
-                'message' => 'Berhasil Dapatkan Data toko',
-                'data' => $toko
-            ]);
-
+        return response()->json([
+            'message' => 'Berhasil Dapatkan Data toko',
+            'data' => $toko
+        ]);
     }
 
     public function store(Request $request)
     {
-
             $validate = Validator::make($request->all(), [
                 'nama_toko' => 'required|string|max:100',
                 'deskripsi' => 'required|string|max:255',
@@ -88,16 +85,25 @@ class TokoController extends Controller
             $toko->alamat_toko_id = $alamat->id;
             $toko->update();
 
+        if ($validate->fails()) {
             return response()->json([
                 'message' => 'Toko telah terbuat',
                 'data' => $toko
             ], 200);
+                'message' => 'Invalid Data',
+                'errors' => $validate->errors()
+            ], 422);
+        }
+      
+        return response()->json([
+            'message' => 'Toko telah terbuat',
+            'data' => $toko
+        ], 200);
 
     }
 
     public function updateAlamat(Request $request, Toko $toko)
     {
-
             $validate = Validator::make($request->all(), [
                 'kode_domestik'     => 'nullable',
                 'label'             => 'nullable',
@@ -127,17 +133,35 @@ class TokoController extends Controller
                 'detail_alamat' => $request->input('detail_alamat'),
             ]);
 
+        if ($validate->fails()) {
             return response()->json([
-                'message' => 'Alamat Toko telah diperbarui',
-                'data' => $toko
-            ], 200);
+                'message' => 'Invalid Data',
+                'errors' => $validate->errors()
+            ], 422);
+        }
+
+        $toko->alamatToko->update([
+            'kode_domestik' => $request->input('kode_domestik'),
+            'label' => $request->input('label'),
+            'province_name' => $request->input('province_name'),
+            'city_name' => $request->input('city_name'),
+            'district_name' => $request->input('district_name'),
+            'subdistrict_name' => $request->input('subdistrict_name'),
+            'zip_code' => $request->input('zip_code'),
+            'detail_alamat' => $request->input('detail_alamat'),
+        ]);
+
+        return response()->json([
+            'message' => 'Alamat Toko telah diperbarui',
+            'data' => $toko
+        ], 200);
+
 
 
     }
 
     public function update(Request $request, Toko $toko)
     {
-
             $validate = Validator::make($request->all(), [
                 'nama_toko' => 'required|string|max:100',
                 'deskripsi' => 'required|string|max:255',
@@ -159,23 +183,21 @@ class TokoController extends Controller
                 'alamat_toko_id' => $toko->alamat_toko_id
             ]);
 
-            return response()->json([
-                'message' => 'Toko telah diperbarui',
-                'data' => $toko
-            ], 200);
-
+        return response()->json([
+            'message' => 'Toko telah diperbarui',
+            'data' => $toko
+        ], 200);
 
     }
 
     public function delete(Toko $toko)
     {
+        $toko->alamatToko->delete();
+        $toko->delete();
 
-            $toko->alamatToko->delete();
-            $toko->delete();
-
-            return response()->json([
-                'message' => 'Data toko beserta alamat berhasil dihapus'
-            ]);
+        return response()->json([
+            'message' => 'Data toko beserta alamat berhasil dihapus'
+        ]);
 
     }
 
