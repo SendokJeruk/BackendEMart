@@ -45,7 +45,7 @@ class ProfileController extends Controller
             'name'        => 'nullable|string|max:255',
             'email'       => 'nullable|email|max:255',
             'no_telp'     => 'nullable|string|max:13',
-            'password'    => [ 'required',
+            'password'    => [ 'nullable',
                 Password::min(8)
                     ->mixedCase()
                     ->letters()
