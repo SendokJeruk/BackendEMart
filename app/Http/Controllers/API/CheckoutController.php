@@ -46,7 +46,6 @@ class CheckoutController extends Controller
                 'totalberat' => $cartDetail->product->berat * $cartDetail->jumlah,
             ]);
 
-
             // $cartDetail->product->stock -= $cartDetail->jumlah;
             // $cartDetail->product->save();
         }

@@ -43,15 +43,15 @@ class ManageUserController extends Controller
     public function store(Request $request){
 
             $validate = Validator::make($request->all(),[
-                'name' => 'required|string|min:3|max:50',
-                'email' => 'required|email|unique:users,email',
-                'no_telp' => 'required|integer',
-                'password' => ['required', Password::min(8)
+                'name'      => 'required|string|min:3|max:50',
+                'email'     => 'required|email|unique:users,email',
+                'no_telp'   => 'required|max:12',
+                'password'  => ['required', Password::min(8)
                 ->mixedCase()
                 ->letters()
                 ->numbers()
                 ->symbols()],
-                'role_id' => 'required',
+                'role_id'   => 'required',
                 'foto_profil' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             ]);
 
@@ -80,15 +80,15 @@ class ManageUserController extends Controller
 
     public function update(Request $request, User $manage_user){
         $validate = Validator::make($request->all(),[
-            'name' => 'nullable|string|min:3|max:50',
-            'email' => 'nullable|email|unique:users,email',
-            'no_telp' => 'nullable|integer',
+            'name'     => 'nullable|string|min:3|max:50',
+            'email'    => 'nullable|email|unique:users,email',
+            'no_telp'  => 'nullable|max:12',
             'password' => ['nullable', Password::min(8)
                         ->mixedCase()
                         ->letters()
                         ->numbers()
                         ->symbols()],
-            'role_id' => 'nullable',
+            'role_id'  => 'nullable',
             'foto_profil' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 

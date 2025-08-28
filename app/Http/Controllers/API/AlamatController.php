@@ -24,14 +24,14 @@ class AlamatController extends Controller
     {
 
         $validate = Validator::make($request->all(), [
-            'kode_domestik' => 'required|integer',
-            'label' => 'required',
-            'province_name' => 'required',
-            'city_name' => 'required',
-            'district_name' => 'required',
-            'subdistrict_name' => 'required',
-            'zip_code' => 'required|digits:5',
-            'detail_alamat' => 'required',
+            'kode_domestik'    => 'required|integer',
+            'label'            => 'required|string|max:100',
+            'province_name'    => 'required|string|max:100',
+            'city_name'        => 'required|string|max:100',
+            'district_name'    => 'required|string|max:100',
+            'subdistrict_name' => 'required|string|max:100',
+            'zip_code'         => 'required|digits:5',
+            'detail_alamat'    => 'required|string|max:255',
         ]);
 
         if ($validate->fails()) {
@@ -59,14 +59,14 @@ class AlamatController extends Controller
     {
 
         $validate = Validator::make($request->all(), [
-            'kode_domestik' => 'required|integer',
-            'label' => 'required',
-            'province_name' => 'required',
-            'city_name' => 'required',
-            'district_name' => 'required',
-            'subdistrict_name' => 'required',
-            'zip_code' => 'required|digits:5',
-            'detail_alamat' => 'nullable',
+            'kode_domestik'    => 'required|integer',
+            'label'            => 'required|string|max:100',
+            'province_name'    => 'required|string|max:100',
+            'city_name'        => 'required|string|max:100',
+            'district_name'    => 'required|string|max:100',
+            'subdistrict_name' => 'required|string|max:100',
+            'zip_code'         => 'required|digits:5',
+            'detail_alamat'    => 'nullable',
         ]);
 
         if ($validate->fails()) {
