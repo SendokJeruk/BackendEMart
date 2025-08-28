@@ -87,14 +87,11 @@ class TokoController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                'message' => 'Toko telah terbuat',
-                'data' => $toko
-            ], 200);
                 'message' => 'Invalid Data',
                 'errors' => $validate->errors()
             ], 422);
         }
-      
+
         return response()->json([
             'message' => 'Toko telah terbuat',
             'data' => $toko
