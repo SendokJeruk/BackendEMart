@@ -17,8 +17,13 @@ class Toko extends Model
         return $this->BelongsTo(User::class, 'user_id');
     }
 
-    public function alamatToko() : BelongsTo
+    public function alamatToko(): BelongsTo
     {
         return $this->BelongsTo(AlamatToko::class);
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'user_id', 'user_id');
     }
 }
