@@ -17,8 +17,9 @@ class MidtransService
 
     public function createTransaction(array $params)
     {
-        $this->init();
         try {
+            $this->init();
+
             $transaction = Snap::createTransaction($params);
             return [
                 'snap_token' => $transaction->token,
