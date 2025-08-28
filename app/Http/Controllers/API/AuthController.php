@@ -21,110 +21,98 @@ class AuthController extends Controller
     use HasApiTokens, Notifiable;
     public function login(Request $request)
     {
-        try {
-            $validate = Validator::make($request->all(), [
-                'email' => 'required|email',
-                'password' => 'required'
-            ]);
 
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
-            }
+        $validate = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-            if (!Auth::attempt($request->only('email', 'password'))) {
-                return response()->json([
-                    'message' => 'Unauthorized'
-                ], 401);
-            }
-
-            $user = Auth::user();
-            $user->tokens()->delete();
-            $token = $user->createToken('auth_token')->plainTextToken;
-            $user->access_token = $token;
-            $user->token_type = 'Bearer';
-
+        if ($validate->fails()) {
             return response()->json([
-                'message' => 'Login Berhasil',
-                'data' => $user
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => 'Invalid Data',
+                'errors' => $validate->errors()
+            ], 422);
         }
+
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        $user = Auth::user();
+        // $user->tokens()->delete();
+        $token = $user->createToken('auth_token')->plainTextToken;
+        $user->access_token = $token;
+        $user->token_type = 'Bearer';
+
+        return response()->json([
+            'message' => 'Login Berhasil',
+            'data' => $user
+        ]);
+
     }
 
     public function register(Request $request)
     {
-        try {
-            $validate = Validator::make($request->all(), [
-                'name' => 'required',
-                'email' => 'required|email|unique:users,email',
-                'no_telp' => 'required',
-                'password' => ['required', Password::min(8)
-                ->mixedCase()
-                ->letters()
-                ->numbers()
-                ->symbols()],
-                'role_id' => 'nullable',
-            ]);
 
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
-            }
+        $validate = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'no_telp' => 'required',
+            'password' => [
+                'required',
+                Password::min(8)
+                    ->mixedCase()
+                    ->letters()
+                    ->numbers()
+                    ->symbols()
+            ],
+            'role_id' => 'nullable',
+        ]);
 
-            $findUserRole = Role::where('nama_role', 'buyer')->first();
-            if (!$findUserRole) {
-                $addUserRole = new Role();
-                $addUserRole->nama_role = 'buyer';
-                $addUserRole->save();
-
-                $id = $addUserRole->id;
-            } else {
-                $id = $findUserRole->id;
-            }
-
-            $user = new User();
-            $user->name = $request->input('name');
-            $user->email = $request->input('email');
-            $user->no_telp = $request->input('no_telp');
-            $user->role_id = $id;
-            $user->password = Hash::make($request->input('password'));
-            $user->save();
-
+        if ($validate->fails()) {
             return response()->json([
-                'message' => 'Registrasi Berhasil',
-                'data' => $user
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => 'Invalid Data',
+                'errors' => $validate->errors()
+            ], 422);
         }
+
+        $findUserRole = Role::where('nama_role', 'buyer')->first();
+        if (!$findUserRole) {
+            $addUserRole = new Role();
+            $addUserRole->nama_role = 'buyer';
+            $addUserRole->save();
+
+            $id = $addUserRole->id;
+        } else {
+            $id = $findUserRole->id;
+        }
+
+        $user = new User();
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        $user->no_telp = $request->input('no_telp');
+        $user->role_id = $id;
+        $user->password = Hash::make($request->input('password'));
+        $user->save();
+
+        return response()->json([
+            'message' => 'Registrasi Berhasil',
+            'data' => $user
+        ]);
+
     }
 
     public function logout()
     {
-        try {
-            auth()->user()->tokens()->delete();
 
-            return response()->json([
-                'message' => 'Logout berhasil',
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        auth()->user()->tokens()->delete();
+
+        return response()->json([
+            'message' => 'Logout berhasil',
+        ]);
+
     }
 
     // GOOGLE AUTH
@@ -135,7 +123,7 @@ class AuthController extends Controller
 
     // public function callback()
     // {
-    //     try {
+    //
     //         $socialUser = Socialite::driver('google')->user();
     //         $registeredUser = User::where("google_id", $socialUser->id)->first();
     //         $roleId = Role::where('nama_role', 'user')->value('id');

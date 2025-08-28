@@ -20,7 +20,7 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        try {
+
 
             $products = Product::with(['categories', 'user.toko', 'foto', 'rating', 'foto'])
                 ->withAvg('rating', 'rating')
@@ -37,24 +37,19 @@ class ProductController extends Controller
                 'message' => 'Berhasil Dapatkan Data Produk',
                 'data' => $products
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function store(Request $request)
     {
-        try {
+
             $request->validate([
-                'nama_product' => 'required|string|max:255',
-                'deskripsi' => 'required|string',
-                'harga' => 'required|numeric|min:0',
-                'stock' => 'required|integer|min:0',
-                'berat' => 'required|numeric|min:0',
-                'foto_cover' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'nama_product'  => 'required|string|max:255',
+                'deskripsi'     => 'required|string',
+                'harga'         => 'required|numeric|min:0',
+                'stock'         => 'required|integer|min:0',
+                'berat'         => 'required|numeric|min:0',
+                'foto_cover'    => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
                 'status_produk' => 'required|in:draft,publish',
             ]);
 
@@ -76,28 +71,23 @@ class ProductController extends Controller
                 'message' => 'Berhasil Menambahkan Produk',
                 'data' => $product
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
 
     public function edit(Request $request, Product $product)
     {
-        try {
+
             $validated = $request->validate([
-                'nama_product' => 'nullable|string|max:255',
-                'deskripsi' => 'nullable|string',
-                'harga' => 'nullable|numeric|min:0',
-                'stock' => 'nullable|integer|min:0',
-                'berat' => 'nullable|numeric|min:0',
-                'foto_cover' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'nama_product'  => 'nullable|string|max:255',
+                'deskripsi'     => 'nullable|string',
+                'harga'         => 'nullable|numeric|min:0',
+                'stock'         => 'nullable|integer|min:0',
+                'berat'         => 'nullable|numeric|min:0',
+                'foto_cover'    => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
                 'status_produk' => 'nullable|in:draft,publish',
             ]);
-
+            
             if ($request->hasFile('foto_cover')) {
                 $validated['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
             }
@@ -110,27 +100,17 @@ class ProductController extends Controller
                 'message' => 'Berhasil Edit Produk',
                 'data' => $product->fresh()
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function delete(Product $product)
     {
-        try {
+
             $this->upload->delete($product->foto_cover);
             $product->delete();
             return response()->json([
                 'message' => 'Data berhasil dihapus'
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 }

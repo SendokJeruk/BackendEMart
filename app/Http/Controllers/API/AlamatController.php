@@ -22,102 +22,87 @@ class AlamatController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $validate = Validator::make($request->all(), [
-                'kode_domestik' => 'required|integer',
-                'label' => 'required',
-                'province_name' => 'required',
-                'city_name' => 'required',
-                'district_name' => 'required',
-                'subdistrict_name' => 'required',
-                'zip_code' => 'required|digits:5',
-                'detail_alamat' => 'required',
-            ]);
 
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
-            }
+        $validate = Validator::make($request->all(), [
+            'kode_domestik'    => 'required|integer',
+            'label'            => 'required|string|max:100',
+            'province_name'    => 'required|string|max:100',
+            'city_name'        => 'required|string|max:100',
+            'district_name'    => 'required|string|max:100',
+            'subdistrict_name' => 'required|string|max:100',
+            'zip_code'         => 'required|digits:5',
+            'detail_alamat'    => 'required|string|max:255',
+        ]);
 
-            $data = $request->all();
-            $data['user_id'] = auth()->id();
-            $alamat = AlamatUser::create($data);
-
-
+        if ($validate->fails()) {
             return response()->json([
-                'message' => 'Berhasil Menambahkan Alamat',
-                'data' => $alamat
-            ]);
-
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => 'Invalid Data',
+                'errors' => $validate->errors()
+            ], 422);
         }
+
+        $data = $request->all();
+        $data['user_id'] = auth()->id();
+        $alamat = AlamatUser::create($data);
+
+
+        return response()->json([
+            'message' => 'Berhasil Menambahkan Alamat',
+            'data' => $alamat
+        ]);
+
+
     }
 
     //todo edit
     public function update(Request $request, AlamatUser $alamat)
     {
-        try {
-            $validate = Validator::make($request->all(), [
-                'kode_domestik' => 'required|integer',
-                'label' => 'required',
-                'province_name' => 'required',
-                'city_name' => 'required',
-                'district_name' => 'required',
-                'subdistrict_name' => 'required',
-                'zip_code' => 'required|digits:5',
-                'detail_alamat' => 'nullable',
-            ]);
 
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
-            }
+        $validate = Validator::make($request->all(), [
+            'kode_domestik'    => 'required|integer',
+            'label'            => 'required|string|max:100',
+            'province_name'    => 'required|string|max:100',
+            'city_name'        => 'required|string|max:100',
+            'district_name'    => 'required|string|max:100',
+            'subdistrict_name' => 'required|string|max:100',
+            'zip_code'         => 'required|digits:5',
+            'detail_alamat'    => 'nullable',
+        ]);
 
-            $alamat->update([
-                'kode_domestik' => $request->kode_domestik,
-                'label' => $request->label,
-                'province_name' => $request->province_name,
-                'city_name' => $request->city_name,
-                'district_name' => $request->district_name,
-                'subdistrict_name' => $request->subdistrict_name,
-                'zip_code' => $request->zip_code,
-                'detail_alamat' => $request->detail_alamat
-            ]);
-
+        if ($validate->fails()) {
             return response()->json([
-                'message' => 'Data berhasil di update',
-                'data' => $alamat
-            ], 200);
-
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => 'Invalid Data',
+                'errors' => $validate->errors()
+            ], 422);
         }
+
+        $alamat->update([
+            'kode_domestik' => $request->kode_domestik,
+            'label' => $request->label,
+            'province_name' => $request->province_name,
+            'city_name' => $request->city_name,
+            'district_name' => $request->district_name,
+            'subdistrict_name' => $request->subdistrict_name,
+            'zip_code' => $request->zip_code,
+            'detail_alamat' => $request->detail_alamat
+        ]);
+
+        return response()->json([
+            'message' => 'Data berhasil di update',
+            'data' => $alamat
+        ], 200);
+
+
     }
     //todo hapus
     public function delete(AlamatUser $alamat)
     {
-        try {
-            $alamat->delete();
 
-            return response()->json([
-                'message' => 'data berhasil di hapus'
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        $alamat->delete();
+
+        return response()->json([
+            'message' => 'data berhasil di hapus'
+        ], 200);
+
     }
 }

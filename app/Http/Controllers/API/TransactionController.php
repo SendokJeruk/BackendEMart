@@ -94,7 +94,16 @@ class TransactionController extends Controller
             'customer_details' => [
                 'first_name' => $transaction->user->name,
                 'email' => $transaction->user->email,
-                'phone' => $transaction->user->no_telp
+                'phone' => $transaction->user->no_telp,
+                // 'billing_address' => [
+                //     'first_name' => $transaction->user->alamat->nama_penerima,
+                //     'email' => $transaction->user->email,
+                //     'phone' => $transaction->user->no_telp,
+                //     'address' => $transaction->user->alamat->label . "" . $transaction->user->alamat->detail_alamat,
+                //     'city' => $transaction->user->alamat->city_name,
+                //     'postal_code' => $transaction->user->alamat->zip_code,
+                //     'country_code' => 'IDN',
+                // ],
             ],
             'item_details' => $products,
             !empty($payment_type) ?? 'enabled_payments' => $payment_type
@@ -120,7 +129,7 @@ class TransactionController extends Controller
     //! Callback masih bermasalah
     public function handleCallback(Request $request)
     {
-        try {
+
             $notif = new Notification();
 
             $status = $notif->transaction_status;
@@ -148,12 +157,7 @@ class TransactionController extends Controller
             }
 
             return response()->json(['status' => 'OK']);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     //? CALLBACK BARU
@@ -301,40 +305,30 @@ class TransactionController extends Controller
 
     public function getAllTransaction()
     {
-        try {
+
             $transaction = Transaction::with('detail_transaction')->paginate(10);
             return response()->json([
                 'message' => 'Berhasil Menampilkan transaksi',
                 'data' => $transaction
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function index()
     {
-        try {
+
             $user = Auth::user();
             $transaction = $user->transaction()->with('detail_transaction.product.user.toko.alamatToko')->paginate(5);
             return response()->json([
                 'message' => 'Berhasil Menampilkan transaksi ' . $user->name,
                 'data' => $transaction
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function getTransactionDetail(Transaction $transaction)
     {
-        try {
+
             if ($transaction->user_id != auth()->id()) {
                 return response()->json([
                     'message' => 'Forbidden'
@@ -364,19 +358,14 @@ class TransactionController extends Controller
                 'data' => $result
             ]);
 
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
 
     }
 
 
     public function store(Request $request)
     {
-        try {
+
             $validate = Validator::make($request->all(), [
                 'status' => 'required',
             ]);
@@ -397,17 +386,12 @@ class TransactionController extends Controller
                 'message' => 'Berhasil menambahkan transaksi',
                 'data' => $transaction
             ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function update(Request $request, Transaction $transaction)
     {
-        try {
+
             $validate = Validator::make($request->all(), [
                 'status' => 'nullable|string',
                 'total_ongkir' => 'nullable|numeric'
@@ -435,34 +419,24 @@ class TransactionController extends Controller
                 'message' => 'Berhasil Update transaksi',
                 'data' => $transaction->fresh()
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
 
     public function delete(Transaction $transaction)
     {
-        try {
+
             $transaction->delete();
 
             return response()->json([
                 'message' => 'Data berhasil dihapus'
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function pesananMasuk(Request $request)
     {
-        try {
+
             $sellerId = auth()->id(); // atau ambil dari $request->user_id
 
             $transactions = Transaction::whereHas('detail_transaction.product', function ($query) use ($sellerId) {
@@ -484,11 +458,6 @@ class TransactionController extends Controller
                 'message' => 'Berhasil menampilkan pesanan masuk',
                 'data' => $transactions
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 }

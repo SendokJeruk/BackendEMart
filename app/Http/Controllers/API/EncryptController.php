@@ -16,7 +16,7 @@ class EncryptController extends Controller
     }
     public function enkrypt(Request $request) {
         $nilai = $request->nilai;
-        $hasil = $this->enkrypt->encrypt($nilai);
+        $hasil = $this->enkrypt->encryptor($nilai);
         return response()->json([
             'sebelum' => $nilai,
             'sesudah' => $hasil
@@ -24,7 +24,7 @@ class EncryptController extends Controller
     }
     public function decrypt(Request $request) {
         $value = $request->nilai;
-        $hasil = $this->enkrypt->decrypt($value);
+        $hasil = $this->enkrypt->decryptor($value);
         return response()->json([
             'sebelum' => $value,
             'sesudah' => $hasil

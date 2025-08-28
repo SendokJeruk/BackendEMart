@@ -37,7 +37,7 @@ class User extends Authenticatable
 
     public function product(): HasMany
     {
-        return $this->hasMany(related: Product::class, foreignKey: 'product_id');
+        return $this->hasMany(related: Product::class, foreignKey: 'user_id');
     }
     public function transaction(): HasMany
     {
