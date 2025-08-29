@@ -20,57 +20,54 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
+        $products = Product::with(['categories', 'user.toko', 'rating', 'foto'])
+            ->withAvg('rating', 'rating')
+            ->filter($request)
+            ->paginate(10);
 
+        $products->getCollection()->transform(function ($product) {
+            $product->average_rating = round($product->rating_avg_rating, 1);
+            unset($product->rating_avg_rating);
+            return $product;
+        });
 
-            $products = Product::with(['categories', 'user.toko', 'foto', 'rating', 'foto'])
-                ->withAvg('rating', 'rating')
-                ->filter($request)
-                ->paginate(10);
-
-            $products->getCollection()->transform(function ($product) {
-                $product->average_rating = round($product->rating_avg_rating, 1);
-                unset($product->rating_avg_rating);
-                return $product;
-            });
-
-            return response()->json([
-                'message' => 'Berhasil Dapatkan Data Produk',
-                'data' => $products
-            ]);
+        return response()->json([
+            'message' => 'Berhasil Dapatkan Data Produk',
+            'data' => $products
+        ]);
 
     }
 
     public function store(Request $request)
     {
+        $request->validate([
+            'nama_product' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'harga' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'berat' => 'required|numeric|min:0',
+            'foto_cover' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'status_produk' => 'required|in:draft,publish',
+        ]);
 
-            $request->validate([
-                'nama_product' => 'required|string|max:255',
-                'deskripsi' => 'required|string',
-                'harga' => 'required|numeric|min:0',
-                'stock' => 'required|integer|min:0',
-                'berat' => 'required|numeric|min:0',
-                'foto_cover' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-                'status_produk' => 'required|in:draft,publish',
-            ]);
+        $data = $request->only([
+            'nama_product',
+            'deskripsi',
+            'harga',
+            'stock',
+            'berat',
+            'status_produk'
+        ]);
 
-            $data = $request->only([
-                'nama_product',
-                'deskripsi',
-                'harga',
-                'stock',
-                'berat',
-                'status_produk'
-            ]);
+        $data['foto_cover'] = $this->upload->save($request->file('foto_cover'));
+        $data['user_id'] = auth()->id();
 
-            $data['foto_cover'] = $this->upload->save($request->file('foto_cover'));
-            $data['user_id'] = auth()->id();
+        $product = Product::create($data);
 
-            $product = Product::create($data);
-
-            return response()->json([
-                'message' => 'Berhasil Menambahkan Produk',
-                'data' => $product
-            ]);
+        return response()->json([
+            'message' => 'Berhasil Menambahkan Produk',
+            'data' => $product
+        ]);
 
     }
 
@@ -78,39 +75,39 @@ class ProductController extends Controller
     public function edit(Request $request, Product $product)
     {
 
-            $validated = $request->validate([
-                'nama_product' => 'nullable|string|max:255',
-                'deskripsi' => 'nullable|string',
-                'harga' => 'nullable|numeric|min:0',
-                'stock' => 'nullable|integer|min:0',
-                'berat' => 'nullable|numeric|min:0',
-                'foto_cover' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-                'status_produk' => 'nullable|in:draft,publish',
-            ]);
+        $validated = $request->validate([
+            'nama_product' => 'nullable|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'harga' => 'nullable|numeric|min:0',
+            'stock' => 'nullable|integer|min:0',
+            'berat' => 'nullable|numeric|min:0',
+            'foto_cover' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'status_produk' => 'nullable|in:draft,publish',
+        ]);
 
-            if ($request->hasFile('foto_cover')) {
-                $validated['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
-            }
+        if ($request->hasFile('foto_cover')) {
+            $validated['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
+        }
 
-            $validated['user_id'] = auth()->id();
+        $validated['user_id'] = auth()->id();
 
-            $product->update($validated);
+        $product->update($validated);
 
-            return response()->json([
-                'message' => 'Berhasil Edit Produk',
-                'data' => $product->fresh()
-            ]);
+        return response()->json([
+            'message' => 'Berhasil Edit Produk',
+            'data' => $product->fresh()
+        ]);
 
     }
 
     public function delete(Product $product)
     {
 
-            $this->upload->delete($product->foto_cover);
-            $product->delete();
-            return response()->json([
-                'message' => 'Data berhasil dihapus'
-            ]);
+        $this->upload->delete($product->foto_cover);
+        $product->delete();
+        return response()->json([
+            'message' => 'Data berhasil dihapus'
+        ]);
 
     }
 }

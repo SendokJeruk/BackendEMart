@@ -20,4 +20,8 @@ class Cart extends Model
     {
         return $this->HasMany(cart_detail::class);
     }
+    public function toko()
+    {
+        return $this->hasMany(Toko::class, 'user_id', 'user_id');
+    }
 }
