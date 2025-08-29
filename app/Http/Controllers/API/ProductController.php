@@ -40,34 +40,36 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_product' => 'required|string|max:255',
-            'deskripsi' => 'required|string',
-            'harga' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'berat' => 'required|numeric|min:0',
-            'foto_cover' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'status_produk' => 'required|in:draft,publish',
-        ]);
 
-        $data = $request->only([
-            'nama_product',
-            'deskripsi',
-            'harga',
-            'stock',
-            'berat',
-            'status_produk'
-        ]);
+  
+            $request->validate([
+                'nama_product'  => 'required|string|max:255',
+                'deskripsi'     => 'required|string',
+                'harga'         => 'required|numeric|min:0',
+                'stock'         => 'required|integer|min:0',
+                'berat'         => 'required|numeric|min:0',
+                'foto_cover'    => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'status_produk' => 'required|in:draft,publish',
+            ]);
 
-        $data['foto_cover'] = $this->upload->save($request->file('foto_cover'));
-        $data['user_id'] = auth()->id();
+            $data = $request->only([
+                'nama_product',
+                'deskripsi',
+                'harga',
+                'stock',
+                'berat',
+                'status_produk'
+            ]);
 
-        $product = Product::create($data);
+            $data['foto_cover'] = $this->upload->save($request->file('foto_cover'));
+            $data['user_id'] = auth()->id();
 
-        return response()->json([
-            'message' => 'Berhasil Menambahkan Produk',
-            'data' => $product
-        ]);
+            $product = Product::create($data);
+
+            return response()->json([
+                'message' => 'Berhasil Menambahkan Produk',
+                'data' => $product
+            ]);
 
     }
 
@@ -75,19 +77,21 @@ class ProductController extends Controller
     public function edit(Request $request, Product $product)
     {
 
-        $validated = $request->validate([
-            'nama_product' => 'nullable|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'harga' => 'nullable|numeric|min:0',
-            'stock' => 'nullable|integer|min:0',
-            'berat' => 'nullable|numeric|min:0',
-            'foto_cover' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'status_produk' => 'nullable|in:draft,publish',
-        ]);
 
-        if ($request->hasFile('foto_cover')) {
-            $validated['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
-        }
+            $validated = $request->validate([
+                'nama_product'  => 'nullable|string|max:255',
+                'deskripsi'     => 'nullable|string',
+                'harga'         => 'nullable|numeric|min:0',
+                'stock'         => 'nullable|integer|min:0',
+                'berat'         => 'nullable|numeric|min:0',
+                'foto_cover'    => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'status_produk' => 'nullable|in:draft,publish',
+            ]);
+            
+            if ($request->hasFile('foto_cover')) {
+                $validated['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
+            }
+
 
         $validated['user_id'] = auth()->id();
 
