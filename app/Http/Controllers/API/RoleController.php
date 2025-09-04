@@ -23,9 +23,16 @@ class RoleController extends Controller
     {
 
             $validate = Validator::make($request->all(), [
-                'nama_role' => 'required',
+                'nama_role' => 'required|string|max:100',
             ]);
 
+            $existingRole = Role::where('nama_role', $request->nama_role)->first();
+            if ($existingRole) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Role sudah ada, tidak boleh duplikat.'
+                ], 409);
+            }
             if ($validate->fails()) {
                 return response()->json([
                     'message' => 'Invalid Data',

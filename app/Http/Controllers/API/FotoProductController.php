@@ -25,7 +25,7 @@ class FotoProductController extends Controller
     {
 
         $validate = Validator::make($request->all(), [
-            'foto_id' => 'required',
+            'foto_id'    => 'required',
             'product_id' => 'required',
         ]);
 
@@ -51,7 +51,7 @@ class FotoProductController extends Controller
     {
 
         $validate = Validator::make($request->all(), [
-            'foto_id' => 'nullable',
+            'foto_id'    => 'nullable',
             'product_id' => 'nullable',
         ]);
 
