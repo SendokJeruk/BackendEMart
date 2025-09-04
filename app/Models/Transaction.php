@@ -43,6 +43,12 @@ class Transaction extends Model
         return $this->belongsTo(AlamatToko::class);
     }
 
+    public function pengiriman()
+    {
+        return $this->hasOne(Pengiriman::class, 'kode_transaksi', 'kode_transaksi');
+    }
+
+
     public function scopeFilter($query, $request)
     {
         return $query

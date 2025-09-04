@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Models\Income;
+use App\Models\Pengiriman;
 use App\Models\Transaction;
 use App\Models\DetailIncome;
 use Illuminate\Support\Facades\DB;
@@ -66,6 +67,11 @@ class SuccessPaymentRepository
                 ];
             }
 
+            Pengiriman::create([
+                'kode_transaksi' => $transaction->kode_transaksi,
+                'status_pengiriman' => 'dibuat',
+            ]);
+
             DB::commit();
 
             return response('OK', 200);
@@ -77,7 +83,7 @@ class SuccessPaymentRepository
                 'error' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file' => $e->getFile(),
-                'trace' => $e->getTraceAsString(), // Bisa dihapus kalau terlalu panjang
+                'trace' => $e->getTraceAsString(),
             ], 500);
         }
     }
