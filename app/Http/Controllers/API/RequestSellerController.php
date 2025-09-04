@@ -48,7 +48,8 @@ class RequestSellerController extends Controller
             }
 
             return response()->json([
-                'message' => 'Berhasil Menampilkan Request',
+                'status' => 'Success',
+                'message' => 'Request retrieved successfully',
                 'data' => $requestSeller
             ]);
 
@@ -101,9 +102,10 @@ class RequestSellerController extends Controller
             $requestSeller->save();
 
             return response()->json([
-                'message' => 'Permohonan Berhasil Dikirim',
+                'status' => 'Success',
+                'message' => 'Request submitted successfully',
                 'data' => $requestSeller
-            ]);
+            ],201);
 
     }
 
@@ -150,7 +152,8 @@ class RequestSellerController extends Controller
         }
 
             return response()->json([
-                'message' => 'Permohonan Berhasil Diubah',
+                'status' => 'Success',
+                'message' => 'Request updated successfully',
                 'data' => $requestSeller
             ]);
 
