@@ -105,6 +105,7 @@ class RequestSellerController extends Controller
                 'status' => 'Success',
                 'message' => 'Request submitted successfully',
                 'data' => $requestSeller
+
             ],201);
 
     }

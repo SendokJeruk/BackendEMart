@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->string('status');
             $table->datetime('tanggal_transaksi');
             $table->string('kode_transaksi')->unique();
+            $table->integer('payment_attempt')->default(0);
             // $table->foreignId('id_alamat_user')->nullable();
             // $table->foreignId('id_alamat_toko')->nullable();
             $table->timestamps();

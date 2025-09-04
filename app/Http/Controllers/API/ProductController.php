@@ -42,7 +42,6 @@ class ProductController extends Controller
     public function store(Request $request)
     {
 
-
             $request->validate([
                 'nama_product'  => 'required|string|max:255',
                 'deskripsi'     => 'required|string',
@@ -93,8 +92,7 @@ class ProductController extends Controller
             if ($request->hasFile('foto_cover')) {
                 $validated['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
             }
-
-
+      
         $validated['user_id'] = auth()->id();
 
         $product->update($validated);

@@ -55,7 +55,8 @@ class MidtransCallback extends Controller
         $orderId = $request->order_id;
 
         // Cek jika order ditemukan
-        $order = Transaction::where('kode_transaksi', $orderId)->first();
+        $kode = preg_replace('/ATTEMPT\d+$/', '', $orderId);
+        $order = Transaction::where('kode_transaksi', $kode)->first();
 
         if (!$order) {
             Log::error('Order not found: ' . $orderId);
@@ -79,7 +80,7 @@ class MidtransCallback extends Controller
                 break;
             case 'settlement':
                 Log::info('MASUK SETTLEMENT OTW IMPLEN KE DE BE');
-                $this->successPayment->PaymentSuccess($orderId);
+                $this->successPayment->PaymentSuccess($kode);
                 $order->update(['status' => 'success']);
                 break;
             case 'pending':
@@ -100,7 +101,7 @@ class MidtransCallback extends Controller
         }
 
         // Log perubahan status order
-        Log::info('Order updated for order ID: ' . $orderId . ' with status: ' . $order->status);
+        Log::info('Order updated for order ID: ' . $kode . ' with status: ' . $order->status);
 
         // Kirim response OK ke Midtrans
         return response('OK', 200);
