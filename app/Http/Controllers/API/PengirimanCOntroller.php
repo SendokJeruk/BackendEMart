@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\Income;
 use App\Models\Pengiriman;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -107,6 +109,64 @@ class PengirimanCOntroller extends Controller
         $pengiriman->delete();
         return response()->json([
             'message' => 'Berhasil Menghapus Data Pengiriman',
+        ]);
+    }
+
+    public function confirmReceived($kode_transaksi) {
+        $pengiriman = Pengiriman::where('kode_transaksi', $kode_transaksi)
+            ->whereHas('transaction', function ($query) {
+                $query->where('user_id', auth()->id());
+            })
+            ->first();
+
+        if (!$pengiriman) {
+            return response()->json([
+                'message' => 'Data pengiriman tidak ditemukan',
+            ], 404);
+        }
+
+        if ($pengiriman->status_pengiriman !== 'tiba') {
+            return response()->json([
+                'message' => 'Pengiriman belum tiba. Tidak dapat mengonfirmasi penerimaan.',
+            ], 400);
+        }
+
+        $pengiriman->status_pengiriman = 'diterima';
+        $pengiriman->save();
+
+        $transaction = Transaction::with('detail_transaction.product.user')
+                ->where('kode_transaksi', $kode_transaksi)
+                ->first();
+
+        $groupedByUser = $transaction->detail_transaction->groupBy(fn($item) => $item->product->user_id);
+            foreach ($groupedByUser as $userId => $details) {
+                $total = $details->sum('subtotal');
+
+                $income = Income::firstOrNew(['user_id' => $userId]);
+                $income->jumlah_total = ($income->exists ? $income->jumlah_total : 0) + $total;
+                $income->total_penjualan += 1;
+                $income->save();
+
+                $detailIncomeList = [];
+
+                foreach ($details as $detail) {
+                    $createdDetail = $income->detail_incomes()->create([
+                        'detail_transaction_id' => $detail->id,
+                        'jumlah' => $detail->subtotal,
+                    ]);
+
+                    $detailIncomeList[] = $createdDetail;
+                }
+
+                $debugIncomes[] = [
+                    'income' => $income,
+                    'detail_incomes' => $detailIncomeList
+                ];
+            }
+
+        return response()->json([
+            'message' => 'Pengiriman telah dikonfirmasi sebagai diterima.',
+            'data' => $pengiriman
         ]);
     }
 

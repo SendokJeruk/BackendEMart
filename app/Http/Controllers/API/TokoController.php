@@ -23,6 +23,9 @@ class TokoController extends Controller
         if ($request->has('id')) {
             $query->where('id', $request->id);
         }
+        if ($request->has('self')) {
+            $query->where('user_id', auth()->id());
+        }
 
         $toko = $query->with(['alamatToko', 'products'])->paginate(10);
 

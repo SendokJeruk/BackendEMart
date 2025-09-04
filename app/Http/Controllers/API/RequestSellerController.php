@@ -104,7 +104,6 @@ class RequestSellerController extends Controller
                 'message' => 'Permohonan Berhasil Dikirim',
                 'data' => $requestSeller
             ]);
-
     }
 
     public function update(Request $request, RequestSeller $requestSeller)
