@@ -35,6 +35,7 @@ class User extends Authenticatable
         'google_refresh_token',
     ];
 
+
     public function product(): HasMany
     {
         return $this->hasMany(related: Product::class, foreignKey: 'user_id');
@@ -90,6 +91,13 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'timestamps',
+        'created_at',
+        'updated_at',
+        'email_verified_at',
+        'google_id',
+        'google_refresh_token',
+        'google_token'
     ];
 
     /**

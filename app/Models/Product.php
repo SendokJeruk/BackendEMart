@@ -16,6 +16,7 @@ class Product extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 
     public function detail_transaction(): HasMany
     {
@@ -63,7 +64,7 @@ class Product extends Model
 
             ->when($request->filled('id'), fn($q) =>
             $q->where('id', $request->id))
-            
+
             ->when($request->filled('user_id'), fn($q) =>
             $q->where('user_id', $request->user_id));
     }
