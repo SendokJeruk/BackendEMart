@@ -75,6 +75,7 @@ class ProductController extends Controller
     public function edit(Request $request, Product $product)
     {
 
+
             $validated = $request->validate([
                 'nama_product'  => 'nullable|string|max:255',
                 'deskripsi'     => 'nullable|string',
@@ -88,7 +89,7 @@ class ProductController extends Controller
             if ($request->hasFile('foto_cover')) {
                 $validated['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
             }
-
+      
         $validated['user_id'] = auth()->id();
 
         $product->update($validated);
