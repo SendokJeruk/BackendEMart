@@ -28,6 +28,7 @@ use App\Http\Controllers\API\DetailIncomeController;
 use App\Http\Controllers\API\RequestSellerController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
+use App\Http\Controllers\API\PengirimanCOntroller;
 use App\Http\Controllers\API\TestController;
 
 /*
@@ -205,6 +206,15 @@ Route::group(['prefix' => 'requestseller', 'as' => 'requestseller.', 'middleware
 Route::put('/requestseller/{requestSeller}', [RequestSellerController::class, 'update'])->middleware(['auth:sanctum', 'checkrole']);
 Route::group(['prefix' => 'detailIncome', 'as' => 'detailIncome.', 'middleware' => ['auth:sanctum', ]], function () {
     Route::get('/', [DetailIncomeController::class, 'index']);
+});
+
+Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/', [PengirimanCOntroller::class, 'getAllPengiriman']);
+    Route::get('/{kode_transaksi}', [PengirimanCOntroller::class, 'getPengirimanByKodeTransaksi']);
+    Route::post('/', [PengirimanCOntroller::class, 'store']);
+    Route::post('/confirm-received/{kode_transaksi}', [PengirimanCOntroller::class, 'confirmReceived']);
+    Route::put('/{pengiriman}', [PengirimanCOntroller::class, 'update']);
+    Route::delete('/{pengiriman}', [PengirimanCOntroller::class, 'delete']);
 });
 
 

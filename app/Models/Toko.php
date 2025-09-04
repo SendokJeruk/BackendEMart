@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Toko extends Model
@@ -22,8 +23,10 @@ class Toko extends Model
         return $this->BelongsTo(AlamatToko::class);
     }
 
-    public function products()
+    public function products(): HasMany
     {
-        return $this->hasMany(Product::class, 'user_id', 'user_id');
+        return $this->HasMany(Product::class, 'user_id', 'user_id');
     }
+
+
 }

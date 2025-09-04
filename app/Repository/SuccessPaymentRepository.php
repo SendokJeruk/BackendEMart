@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Models\Income;
+use App\Models\Pengiriman;
 use App\Models\Transaction;
 use App\Models\DetailIncome;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +31,7 @@ class SuccessPaymentRepository
                 $product = $detail->product;
                 if ($product->stock >= $detail->jumlah) {
                     $product->decrement('stock', $detail->jumlah);
+                    $product->increment('terjual', $detail->jumlah);
                 } else {
                     DB::rollBack();
                     return response()->json([
@@ -39,32 +41,37 @@ class SuccessPaymentRepository
             }
 
             // Kelompokkan detail transaksi berdasarkan user_id (penjual)
-            $groupedByUser = $transaction->detail_transaction->groupBy(fn($item) => $item->product->user_id);
-            Log::info('Success get groupedByUser => ' . json_encode($groupedByUser));
-            foreach ($groupedByUser as $userId => $details) {
-                $total = $details->sum('subtotal');
+            // $groupedByUser = $transaction->detail_transaction->groupBy(fn($item) => $item->product->user_id);
+            // Log::info('Success get groupedByUser => ' . json_encode($groupedByUser));
+            // foreach ($groupedByUser as $userId => $details) {
+            //     $total = $details->sum('subtotal');
 
-                $income = Income::firstOrNew(['user_id' => $userId]);
-                $income->jumlah_total = ($income->exists ? $income->jumlah_total : 0) + $total;
-                $income->total_penjualan += 1;
-                $income->save();
+            //     $income = Income::firstOrNew(['user_id' => $userId]);
+            //     $income->jumlah_total = ($income->exists ? $income->jumlah_total : 0) + $total;
+            //     $income->total_penjualan += 1;
+            //     $income->save();
 
-                $detailIncomeList = [];
+            //     $detailIncomeList = [];
 
-                foreach ($details as $detail) {
-                    $createdDetail = $income->detail_incomes()->create([
-                        'detail_transaction_id' => $detail->id,
-                        'jumlah' => $detail->subtotal,
-                    ]);
+            //     foreach ($details as $detail) {
+            //         $createdDetail = $income->detail_incomes()->create([
+            //             'detail_transaction_id' => $detail->id,
+            //             'jumlah' => $detail->subtotal,
+            //         ]);
 
-                    $detailIncomeList[] = $createdDetail;
-                }
+            //         $detailIncomeList[] = $createdDetail;
+            //     }
 
-                $debugIncomes[] = [
-                    'income' => $income,
-                    'detail_incomes' => $detailIncomeList
-                ];
-            }
+            //     $debugIncomes[] = [
+            //         'income' => $income,
+            //         'detail_incomes' => $detailIncomeList
+            //     ];
+            // }
+
+            Pengiriman::create([
+                'kode_transaksi' => $transaction->kode_transaksi,
+                'status_pengiriman' => 'dibuat',
+            ]);
 
             DB::commit();
 
@@ -77,7 +84,7 @@ class SuccessPaymentRepository
                 'error' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file' => $e->getFile(),
-                'trace' => $e->getTraceAsString(), // Bisa dihapus kalau terlalu panjang
+                'trace' => $e->getTraceAsString(),
             ], 500);
         }
     }

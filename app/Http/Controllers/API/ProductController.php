@@ -20,29 +20,26 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
+        $products = Product::with(['categories', 'user.toko', 'rating', 'foto'])
+            ->withAvg('rating', 'rating')
+            ->filter($request)
+            ->paginate(10);
 
+        $products->getCollection()->transform(function ($product) {
+            $product->average_rating = round($product->rating_avg_rating, 1);
+            unset($product->rating_avg_rating);
+            return $product;
+        });
 
-            $products = Product::with(['categories', 'user.toko', 'foto', 'rating', 'foto'])
-                ->withAvg('rating', 'rating')
-                ->filter($request)
-                ->paginate(10);
-
-            $products->getCollection()->transform(function ($product) {
-                $product->average_rating = round($product->rating_avg_rating, 1);
-                unset($product->rating_avg_rating);
-                return $product;
-            });
-
-            return response()->json([
-                'message' => 'Berhasil Dapatkan Data Produk',
-                'data' => $products
-            ]);
+        return response()->json([
+            'message' => 'Berhasil Dapatkan Data Produk',
+            'data' => $products
+        ]);
 
     }
 
     public function store(Request $request)
     {
-
             $request->validate([
                 'nama_product'  => 'required|string|max:255',
                 'deskripsi'     => 'required|string',
@@ -92,25 +89,25 @@ class ProductController extends Controller
                 $validated['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
             }
 
-            $validated['user_id'] = auth()->id();
+        $validated['user_id'] = auth()->id();
 
-            $product->update($validated);
+        $product->update($validated);
 
-            return response()->json([
-                'message' => 'Berhasil Edit Produk',
-                'data' => $product->fresh()
-            ]);
+        return response()->json([
+            'message' => 'Berhasil Edit Produk',
+            'data' => $product->fresh()
+        ]);
 
     }
 
     public function delete(Product $product)
     {
 
-            $this->upload->delete($product->foto_cover);
-            $product->delete();
-            return response()->json([
-                'message' => 'Data berhasil dihapus'
-            ]);
+        $this->upload->delete($product->foto_cover);
+        $product->delete();
+        return response()->json([
+            'message' => 'Data berhasil dihapus'
+        ]);
 
     }
 }
