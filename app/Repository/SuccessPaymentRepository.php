@@ -31,6 +31,7 @@ class SuccessPaymentRepository
                 $product = $detail->product;
                 if ($product->stock >= $detail->jumlah) {
                     $product->decrement('stock', $detail->jumlah);
+                    $product->increment('terjual', $detail->jumlah);
                 } else {
                     DB::rollBack();
                     return response()->json([
