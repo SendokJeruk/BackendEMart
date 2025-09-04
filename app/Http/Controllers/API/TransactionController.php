@@ -46,6 +46,12 @@ class TransactionController extends Controller
             ], 422);
         }
 
+        if ($transaction->status == 'success') {
+            return response()->json([
+                'message' => 'Transaksi sudah berhasil, silahkan cek riwayat transaksi anda'
+            ], 400);
+        }
+
         $payment_type = [];
         $payment_type[] = $request->payment_type;
 
@@ -81,10 +87,9 @@ class TransactionController extends Controller
             'price' => $ongkir,
             'quantity' => 1,
         ]);
-
-        $order_id = $transaction->kode_transaksi;
+        $transaction->payment_attempt += 1;
+        $order_id = $transaction->kode_transaksi.'ATTEMPT'.str_pad($transaction->payment_attempt, 2, '0', STR_PAD_LEFT);
         $transaction->total_harga = $transaction->total_harga + $ongkir;
-        $transaction->save();
 
         $params = [
             'transaction_details' => [
@@ -117,8 +122,11 @@ class TransactionController extends Controller
             return response()->json(['error' => $result['error']], 400);
         }
 
+        $transaction->save();
+
         return response()->json([
             'message' => 'Payment Berhasil Dibuat',
+            'payment_attempt' => $transaction->payment_attempt,
             'data' => [
                 'snap_token' => $result['snap_token'],
                 'redirect_url' => $result['redirect_url']

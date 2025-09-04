@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('stock');
             $table->integer('berat');
             $table->string('foto_cover');
+            $table->integer('terjual')->default(0);
             $table->enum('status_produk', ['draft', 'publish']);
             $table->timestamps();
         });

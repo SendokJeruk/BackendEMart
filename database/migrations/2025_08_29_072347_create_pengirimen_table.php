@@ -22,7 +22,8 @@ return new class extends Migration
                 'dijadwalkan',
                 'kurir_ditugaskan',
                 'dalam_proses',
-                'tiba'
+                'tiba',
+                'diterima',
             ])->default('dibuat');
             $table->timestamp('estimasi_tiba')->nullable();
             $table->string('bukti_pengiriman')->nullable();
