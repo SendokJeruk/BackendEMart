@@ -213,7 +213,7 @@ Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => [
     Route::get('/', [ShipmentController::class, 'getAllPengiriman']);
     Route::get('/{kode_transaksi}', [ShipmentController::class, 'getPengirimanByKodeTransaksi']);
     Route::post('/', [ShipmentController::class, 'store']);
-    Route::post('/confirm-received/{kode_transaksi}', [ShipmentController::class, 'confirmReceived']);
+    Route::post('/confirm-received/{pengiriman}', [ShipmentController::class, 'confirmReceived']);
     Route::put('/{pengiriman}', [ShipmentController::class, 'update']);
     Route::delete('/{pengiriman}', [ShipmentController::class, 'delete']);
 });
