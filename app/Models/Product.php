@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Models\Rating;
 use App\Models\Category;
 use App\Models\DetailTransaction;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +24,7 @@ class Product extends Model
     }
     public function rating(): HasMany
     {
-        return $this->hasMany(related: rating::class, foreignKey: 'product_id');
+        return $this->hasMany(related: Rating::class, foreignKey: 'product_id');
     }
 
     public function categories(): BelongsToMany
@@ -63,7 +64,7 @@ class Product extends Model
 
             ->when($request->filled('id'), fn($q) =>
             $q->where('id', $request->id))
-            
+
             ->when($request->filled('user_id'), fn($q) =>
             $q->where('user_id', $request->user_id));
     }
