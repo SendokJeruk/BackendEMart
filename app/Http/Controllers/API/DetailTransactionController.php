@@ -22,13 +22,14 @@ class DetailTransactionController extends Controller
 
         if ($detailTransaction->isEmpty()) {
             return response()->json([
-                'message' => 'Detail transaksi tidak ditemukan',
+                'message' => 'Detail Transaction Not Found',
                 'data' => []
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Berhasil Menampilkan detail transaksi',
+            'status' => 'Success',
+            'message' => 'Transaction details retrieved successfully',
             'data' => $detailTransaction
         ], 200);
 
@@ -73,9 +74,10 @@ class DetailTransactionController extends Controller
         $transaction->save();
 
         return response()->json([
-            'message' => 'Berhasil menambahkan data Detail transaksi',
+            'status' => 'Success',
+            'message' => 'Transaction detail added successfully',
             'data' => $detailTransaction
-        ]);
+        ], 201);
 
     }
 
@@ -117,7 +119,8 @@ class DetailTransactionController extends Controller
         $transaction->save();
 
         return response()->json([
-            'message' => 'Berhasil Edit Detail transaksi',
+            'status' => 'Success',
+            'message' => 'Transaction detail updated successfully',
             'data' => $detailTransaction
         ]);
     }
@@ -133,7 +136,8 @@ class DetailTransactionController extends Controller
         $transaction->save();
 
         return response()->json([
-            'message' => 'Data berhasil dihapus'
+            'status' => 'Success',
+            'message' => 'Data deleted successfully'
         ]);
 
     }

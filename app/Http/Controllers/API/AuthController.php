@@ -47,7 +47,8 @@ class AuthController extends Controller
         $user->token_type = 'Bearer';
 
         return response()->json([
-            'message' => 'Login Berhasil',
+            'status' => 'Success',
+            'message' => 'Login successful',
             'data' => $user
         ]);
 
@@ -98,9 +99,10 @@ class AuthController extends Controller
         $user->save();
 
         return response()->json([
-            'message' => 'Registrasi Berhasil',
+            'status' => 'Success',
+            'message' => 'Registration successful',
             'data' => $user
-        ]);
+        ],201);
 
     }
 
@@ -110,7 +112,8 @@ class AuthController extends Controller
         auth()->user()->tokens()->delete();
 
         return response()->json([
-            'message' => 'Logout berhasil',
+            'status' => 'Success',
+            'message' => 'Logout successful',
         ]);
 
     }

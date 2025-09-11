@@ -17,7 +17,8 @@ class FotoProductController extends Controller
 
         $fotoProduct = FotoProduct::paginate(10);
         return response()->json([
-            'message' => 'Berhasil Dapatkan Data FotoProduct',
+            'status' => 'Success',
+            'message' => 'Product photo data retrieved successfully',
             'data' => $fotoProduct
         ]);
     }
@@ -41,9 +42,10 @@ class FotoProductController extends Controller
         $fotoProduct->product_id = $request->input('product_id');
         $fotoProduct->save();
         return response()->json([
-            'message' => 'Berhasil Menambahkan FotoProduct',
+            'status' => 'Success',
+            'message' => 'Product photo added successfully',
             'data' => $fotoProduct
-        ]);
+        ],201);
 
     }
 
@@ -67,7 +69,8 @@ class FotoProductController extends Controller
             'product_id' => $request->product_id
         ]);
         return response()->json([
-            'message' => 'berhasil mengupdate FotoProduct',
+            'status' => 'Success',
+            'message' => 'Product photo updated successfully',
             'data' => $fotoProduct
         ], 200);
 
@@ -78,7 +81,8 @@ class FotoProductController extends Controller
 
         $fotoProduct->delete();
         return response()->json([
-            'message' => 'Data berhasil dihapus'
+            'status' => 'Success',
+            'message' => 'Data deleted successfully'
         ]);
 
     }

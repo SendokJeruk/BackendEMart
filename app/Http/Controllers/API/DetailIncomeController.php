@@ -22,7 +22,8 @@ class DetailIncomeController extends Controller
             ->get();
 
         return response()->json([
-            'message' => 'Berhasil mendapatkan data income',
+            'status' => 'Success',
+            'message' => 'Income data retrieved successfully',
             'data' => $detailIncomes
         ]);
 
