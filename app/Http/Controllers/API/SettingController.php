@@ -14,7 +14,8 @@ class SettingController extends Controller
 
             $keys = Setting::filter($request)->get();
             return response()->json([
-                'message' => 'Berhasil Dapatkan Data Setting ',
+                'status' => 'Success',
+                'message' => 'Settings data retrieved successfully',
                 'data' => $keys
             ]);
 
@@ -50,6 +51,7 @@ class SettingController extends Controller
             }
 
             return response()->json([
+                'status' => 'Success',
                 'message' => 'Settings updated successfully'
             ]);
 

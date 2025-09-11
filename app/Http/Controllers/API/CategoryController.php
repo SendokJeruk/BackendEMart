@@ -21,7 +21,8 @@ class CategoryController extends Controller
 
         $category = $query->paginate(10);
         return response()->json([
-            'message' => 'Berhasil Dapatkan Data category',
+            'status' => 'Success',
+            'message' => 'Category data retrieved successfully',
             'data' => $category
         ]);
 
@@ -44,9 +45,10 @@ class CategoryController extends Controller
         $category->nama_category = $request->input('nama_category');
         $category->save();
         return response()->json([
-            'message' => 'Category telah dibuat',
+            'status' => 'Success',
+            'message' => 'Category created successfully',
             'data' => $category
-        ], 200);
+        ], 201);
 
 
     }
@@ -69,7 +71,8 @@ class CategoryController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Data berhasil di update',
+            'status' => 'Success',
+            'message' => 'Data updated successfully',
             'data' => $category
         ], 200);
 
@@ -81,7 +84,8 @@ class CategoryController extends Controller
         $category->delete();
 
         return response()->json([
-            'message' => 'Data berhasil dihapus'
+            'status' => 'Success',
+            'message' => 'Data deleted successfully'
         ]);
 
     }

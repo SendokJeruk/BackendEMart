@@ -15,7 +15,8 @@ class AlamatController extends Controller
     {
         $data = Auth::user()->alamat()->paginate(5);
         return response()->json([
-            'message' => 'Berhasil mendapatkan semua data alamat user',
+            'status' => 'Success',
+            'message' => 'Successfully retrieved all user address data',
             'data' => $data
         ], );
     }
@@ -47,9 +48,10 @@ class AlamatController extends Controller
 
 
         return response()->json([
-            'message' => 'Berhasil Menambahkan Alamat',
+            'status' => 'Success',
+            'message' => 'Address added successfully',
             'data' => $alamat
-        ]);
+        ], 201);
 
 
     }
@@ -88,7 +90,8 @@ class AlamatController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Data berhasil di update',
+            'status' => 'Success',
+            'message' => 'Data updated successfully',
             'data' => $alamat
         ], 200);
 
@@ -101,7 +104,8 @@ class AlamatController extends Controller
         $alamat->delete();
 
         return response()->json([
-            'message' => 'data berhasil di hapus'
+            'status' => 'Success',
+            'message' => 'Data deleted successfully'
         ], 200);
 
     }

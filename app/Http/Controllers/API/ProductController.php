@@ -32,7 +32,8 @@ class ProductController extends Controller
         });
 
         return response()->json([
-            'message' => 'Berhasil Dapatkan Data Produk',
+            'status' => 'Success',
+            'message' => 'Product data retrieved successfully',
             'data' => $products
         ]);
 
@@ -40,6 +41,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+
             $request->validate([
                 'nama_product'  => 'required|string|max:255',
                 'deskripsi'     => 'required|string',
@@ -65,9 +67,10 @@ class ProductController extends Controller
             $product = Product::create($data);
 
             return response()->json([
-                'message' => 'Berhasil Menambahkan Produk',
+                'status' => 'Success',
+                'message' => 'Product added successfully',
                 'data' => $product
-            ]);
+            ], 201);
 
     }
 
@@ -85,7 +88,7 @@ class ProductController extends Controller
                 'foto_cover'    => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
                 'status_produk' => 'nullable|in:draft,publish',
             ]);
-            
+
             if ($request->hasFile('foto_cover')) {
                 $validated['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
             }
@@ -95,7 +98,8 @@ class ProductController extends Controller
         $product->update($validated);
 
         return response()->json([
-            'message' => 'Berhasil Edit Produk',
+            'status' => 'Success',
+            'message' => 'Product updated successfully',
             'data' => $product->fresh()
         ]);
 
@@ -107,7 +111,8 @@ class ProductController extends Controller
         $this->upload->delete($product->foto_cover);
         $product->delete();
         return response()->json([
-            'message' => 'Data berhasil dihapus'
+            'status' => 'Success',
+            'message' => 'Data deleted successfully'
         ]);
 
     }

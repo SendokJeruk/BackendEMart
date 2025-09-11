@@ -29,7 +29,8 @@ class TokoController extends Controller
         $toko = $query->with(['alamatToko', 'products'])->paginate(10);
 
         return response()->json([
-            'message' => 'Berhasil Dapatkan Data toko',
+            'status' => 'Success',
+            'message' => 'Store data retrieved successfully',
             'data' => $toko
         ]);
     }
@@ -62,7 +63,7 @@ class TokoController extends Controller
             $user = Auth::user();
             if ($user->toko) {
                 return response()->json([
-                    'message' => 'User sudah memiliki toko',
+                    'message' => 'User already has a store',
                 ], 422);
             }
 
@@ -96,9 +97,10 @@ class TokoController extends Controller
         }
 
         return response()->json([
-            'message' => 'Toko telah terbuat',
+            'status' => 'Success',
+            'message' => 'Store created successfully',
             'data' => $toko
-        ], 200);
+        ], 201);
 
     }
 
@@ -152,7 +154,8 @@ class TokoController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Alamat Toko telah diperbarui',
+            'status' => 'Success',
+            'message' => 'Store address updated successfully',
             'data' => $toko
         ], 200);
 
@@ -184,7 +187,8 @@ class TokoController extends Controller
             ]);
 
         return response()->json([
-            'message' => 'Toko telah diperbarui',
+            'status' => 'Success',
+            'message' => 'Store updated successfully',
             'data' => $toko
         ], 200);
 
@@ -196,7 +200,8 @@ class TokoController extends Controller
         $toko->delete();
 
         return response()->json([
-            'message' => 'Data toko beserta alamat berhasil dihapus'
+            'status' => 'Success',
+            'message' => 'Store and address data deleted successfully'
         ]);
 
     }

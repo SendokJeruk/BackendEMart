@@ -34,7 +34,8 @@ class ManageUserController extends Controller
 
             $manage_user = $query->paginate(10);
             return response()->json([
-                'message' => 'Berhasil Dapatkan Data',
+                'status' => 'Success',
+                'message' => 'Data retrieved successfully',
                 'data' => $manage_user
             ]);
 
@@ -72,9 +73,10 @@ class ManageUserController extends Controller
             $manage_user->save();
 
             return response()->json([
-                'message' => 'data telah di tambahkan',
+                'status' => 'Success',
+                'message' => 'Successful added data',
                 'data' => $manage_user
-                ], 200);
+                ], 201);
 
     }
 
@@ -116,7 +118,8 @@ class ManageUserController extends Controller
         }
         $manage_user->save();
         return response()->json([
-            'message' => 'data telah di perbarui',
+            'status' => 'Success',
+            'message' => 'Data updated successfully',
             'data' => $manage_user
             ], 200);
     }
@@ -126,7 +129,8 @@ class ManageUserController extends Controller
             $manage_user->delete();
 
             return response()->json([
-             'message' => 'Data berhasil dihapus'
+            'status' => 'Success',
+             'message' => 'Data deleted successfully'
             ]);
 
     }

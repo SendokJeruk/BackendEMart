@@ -32,7 +32,8 @@ class ProfileController extends Controller
         ];
 
         return response()->json([
-            'message' => "Berhasil Mendapatkan Data Profil",
+            'status' => 'Success',
+            'message' => "Data Profile retrieved successfully",
             'data' => $data
         ]);
     }
@@ -92,7 +93,8 @@ class ProfileController extends Controller
         }
 
         return response()->json([
-            'message' => 'Profil telah diperbarui',
+            'status' => 'Success',
+            'message' => 'Profile updated successfully',
             'data' => $updateUser
         ], 200);
     }

@@ -14,7 +14,8 @@ class RoleController extends Controller
 
             $roles = Role::all();
             return response()->json([
-                'message' => 'Berhasil Menampilkan Role',
+                'status' => 'Success',
+                'message' => 'Role retrieved successfully',
                 'data' => $roles
             ]);
 
@@ -45,9 +46,10 @@ class RoleController extends Controller
             $role->save();
 
             return response()->json([
-                'message' => 'Berhasil Menambahkan Role',
+                'status' => 'Success',
+                'message' => 'Role added successfully',
                 'data' => $role
-            ]);
+            ],201);
 
     }
 
@@ -69,7 +71,8 @@ class RoleController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'role telah di update',
+                'status' => 'Success',
+                'message' => 'Role updated successfully',
                 'data' => $role
                 ], 200);
 
@@ -80,7 +83,8 @@ class RoleController extends Controller
             $role->delete();
 
             return response()->json([
-             'message' => 'Data berhasil dihapus'
+                'status' => 'Success',
+                'message' => 'Data deleted successfully'
          ]);
 
     }
