@@ -43,9 +43,9 @@ class Transaction extends Model
         return $this->belongsTo(AlamatToko::class);
     }
 
-    public function pengiriman()
+    public function shipment()
     {
-        return $this->hasOne(Pengiriman::class, 'kode_transaksi', 'kode_transaksi');
+        return $this->hasMany(Shipment::class, 'kode_transaksi', 'kode_transaksi');
     }
 
 

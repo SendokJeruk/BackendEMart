@@ -88,7 +88,7 @@ class TransactionController extends Controller
             'quantity' => 1,
         ]);
         $transaction->payment_attempt += 1;
-        $order_id = $transaction->kode_transaksi.'ATTEMPT'.str_pad($transaction->payment_attempt, 2, '0', STR_PAD_LEFT);
+        $order_id = $transaction->kode_transaksi . 'ATTEMPT' . str_pad($transaction->payment_attempt, 2, '0', STR_PAD_LEFT);
         $transaction->total_harga = $transaction->total_harga + $ongkir;
 
         $params = [
@@ -138,33 +138,33 @@ class TransactionController extends Controller
     public function handleCallback(Request $request)
     {
 
-            $notif = new Notification();
+        $notif = new Notification();
 
-            $status = $notif->transaction_status;
-            $order_id = $notif->order_id;
-            $signature_key = $notif->signature_key;
+        $status = $notif->transaction_status;
+        $order_id = $notif->order_id;
+        $signature_key = $notif->signature_key;
 
-            $expected_signature = hash('sha512', $notif->order_id . $notif->status_code . $notif->gross_amount . env('MIDTRANS_SERVER_KEY'));
+        $expected_signature = hash('sha512', $notif->order_id . $notif->status_code . $notif->gross_amount . env('MIDTRANS_SERVER_KEY'));
 
-            if ($signature_key != $expected_signature) {
-                abort(400, 'Invalid signature');
-            }
+        if ($signature_key != $expected_signature) {
+            abort(400, 'Invalid signature');
+        }
 
-            if ($status == 'success') {
-                $transaction = Transaction::where('kode_transaksi', $order_id)->first();
-                $transaction->status = 'success';
-                $transaction->save();
-            } elseif ($status == 'pending') {
-                $transaction = Transaction::where('kode_transaksi', $order_id)->first();
-                $transaction->status = 'pending';
-                $transaction->save();
-            } elseif ($status == 'deny') {
-                $transaction = Transaction::where('kode_transaksi', $order_id)->first();
-                $transaction->status = 'failed';
-                $transaction->save();
-            }
+        if ($status == 'success') {
+            $transaction = Transaction::where('kode_transaksi', $order_id)->first();
+            $transaction->status = 'success';
+            $transaction->save();
+        } elseif ($status == 'pending') {
+            $transaction = Transaction::where('kode_transaksi', $order_id)->first();
+            $transaction->status = 'pending';
+            $transaction->save();
+        } elseif ($status == 'deny') {
+            $transaction = Transaction::where('kode_transaksi', $order_id)->first();
+            $transaction->status = 'failed';
+            $transaction->save();
+        }
 
-            return response()->json(['status' => 'OK']);
+        return response()->json(['status' => 'OK']);
 
     }
 
@@ -314,119 +314,124 @@ class TransactionController extends Controller
     public function getAllTransaction()
     {
 
-            $transaction = Transaction::with('detail_transaction')->paginate(10);
-            return response()->json([
-                'message' => 'Berhasil Menampilkan transaksi',
-                'data' => $transaction
-            ]);
+        $transaction = Transaction::with('detail_transaction')->paginate(10);
+        return response()->json([
+            'message' => 'Berhasil Menampilkan transaksi',
+            'data' => $transaction
+        ]);
 
     }
 
     public function index()
     {
 
-            $user = Auth::user();
-            $transaction = $user->transaction()->with('detail_transaction.product.user.toko.alamatToko')->paginate(5);
-            return response()->json([
-                'message' => 'Berhasil Menampilkan transaksi ' . $user->name,
-                'data' => $transaction
-            ]);
+        $user = Auth::user();
+        $transaction = $user->transaction()->with('detail_transaction.product.user.toko.alamatToko')->paginate(5);
+        return response()->json([
+            'message' => 'Berhasil Menampilkan transaksi ' . $user->name,
+            'data' => $transaction
+        ]);
 
     }
 
     public function getTransactionDetail(Transaction $transaction)
     {
+        if ($transaction->user_id != auth()->id()) {
+            return response()->json([
+                'message' => 'Forbidden'
+            ], 403);
+        }
 
-            if ($transaction->user_id != auth()->id()) {
-                return response()->json([
-                    'message' => 'Forbidden'
-                ], 403);
-            }
+        $result = [];
 
-            $result = [];
+        foreach ($transaction->detail_transaction as $detail) {
+            $toko = $detail->product->user->toko;
 
-            foreach ($transaction->detail_transaction as $detail) {
-                $group = $detail->product->user->toko->alamatToko->kode_domestik;
+            // pakai id toko biar unik
+            $group = $toko->id;
 
-                if (!isset($result[$group])) {
-                    $result[$group] = [];
-                }
-
-                $result[$group][] = [
-                    'product_id' => $detail->product_id,
-                    'harga' => $detail->harga,
-                    'jumlah' => $detail->jumlah,
-                    'subtotal' => $detail->subtotal,
-                    'totalberat' => $detail->totalberat,
+            if (!isset($result[$group])) {
+                $result[$group] = [
+                    'toko_id' => $toko->id,
+                    'nama_toko' => $toko->nama_toko ?? null,
+                    'kode_domestik' => $toko->alamatToko->kode_domestik ?? null,
+                    'items' => []
                 ];
             }
 
-            return response()->json([
-                'message' => 'Berhasil mendapatkan detail dari transaksi ' . $transaction->kode_transaksi,
-                'data' => $result
-            ]);
+            $result[$group]['items'][] = [
+                'product_id' => $detail->product_id,
+                'harga' => $detail->harga,
+                'jumlah' => $detail->jumlah,
+                'subtotal' => $detail->subtotal,
+                'totalberat' => $detail->totalberat,
+            ];
+        }
 
-
-
+        return response()->json([
+            'message' => 'Berhasil mendapatkan detail dari transaksi ' . $transaction->kode_transaksi,
+            'data' => $result
+        ]);
     }
+
 
 
     public function store(Request $request)
     {
 
-            $validate = Validator::make($request->all(), [
-                'status' => 'required',
-            ]);
+        $validate = Validator::make($request->all(), [
+            'status' => 'required',
+        ]);
 
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
-            }
-            $transaction = new Transaction();
-            $transaction->user_id = auth()->id();
-            $transaction->status = $request->status;
-            $transaction->tanggal_transaksi = now();
-            $transaction->kode_transaksi = 'SJK-' . time() . strtoupper(Str::random(5));
-            $transaction->save();
+        if ($validate->fails()) {
             return response()->json([
-                'message' => 'Berhasil menambahkan transaksi',
-                'data' => $transaction
-            ], 200);
+                'message' => 'Invalid Data',
+                'errors' => $validate->errors()
+            ], 422);
+        }
+        $transaction = new Transaction();
+        $transaction->user_id = auth()->id();
+        $transaction->status = $request->status;
+        $transaction->tanggal_transaksi = now();
+        $transaction->kode_transaksi = 'SJK-' . time() . strtoupper(Str::random(5));
+        $transaction->save();
+        return response()->json([
+            'message' => 'Berhasil menambahkan transaksi',
+            'data' => $transaction
+        ], 200);
 
     }
 
     public function update(Request $request, Transaction $transaction)
     {
 
-            $validate = Validator::make($request->all(), [
-                'status' => 'nullable|string',
-                'total_ongkir' => 'nullable|numeric'
-            ]);
+        $validate = Validator::make($request->all(), [
+            'status' => 'nullable|string',
+            'total_ongkir' => 'nullable|numeric'
+        ]);
 
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
-            }
-
-            if ($request->has('total_ongkir')) {
-                $transaction->total_ongkir = $request->input('total_ongkir');
-                $transaction->total_harga = $transaction->detail_transaction->sum('subtotal') + $transaction->total_ongkir;
-            }
-
-            if ($request->filled('status')) {
-                $transaction->status = $request->input('status');
-            }
-
-            $transaction->save();
-
+        if ($validate->fails()) {
             return response()->json([
-                'message' => 'Berhasil Update transaksi',
-                'data' => $transaction->fresh()
-            ]);
+                'message' => 'Invalid Data',
+                'errors' => $validate->errors()
+            ], 422);
+        }
+
+        if ($request->has('total_ongkir')) {
+            $transaction->total_ongkir = $request->input('total_ongkir');
+            $transaction->total_harga = $transaction->detail_transaction->sum('subtotal') + $transaction->total_ongkir;
+        }
+
+        if ($request->filled('status')) {
+            $transaction->status = $request->input('status');
+        }
+
+        $transaction->save();
+
+        return response()->json([
+            'message' => 'Berhasil Update transaksi',
+            'data' => $transaction->fresh()
+        ]);
 
     }
 
@@ -434,38 +439,38 @@ class TransactionController extends Controller
     public function delete(Transaction $transaction)
     {
 
-            $transaction->delete();
+        $transaction->delete();
 
-            return response()->json([
-                'message' => 'Data berhasil dihapus'
-            ]);
+        return response()->json([
+            'message' => 'Data berhasil dihapus'
+        ]);
 
     }
 
     public function pesananMasuk(Request $request)
     {
 
-            $sellerId = auth()->id(); // atau ambil dari $request->user_id
+        $sellerId = auth()->id(); // atau ambil dari $request->user_id
 
-            $transactions = Transaction::whereHas('detail_transaction.product', function ($query) use ($sellerId) {
-                $query->where('user_id', $sellerId); // user_id adalah pemilik produk
-            })
-                ->with([
-                    'detail_transaction' => function ($q) use ($sellerId) {
-                        $q->whereHas('product', function ($query) use ($sellerId) {
-                            $query->where('user_id', $sellerId);
-                        })->with('product');
-                    },
-                    'user'
-                ])
-                ->latest()
-                ->paginate(10);
+        $transactions = Transaction::whereHas('detail_transaction.product', function ($query) use ($sellerId) {
+            $query->where('user_id', $sellerId); // user_id adalah pemilik produk
+        })
+            ->with([
+                'detail_transaction' => function ($q) use ($sellerId) {
+                    $q->whereHas('product', function ($query) use ($sellerId) {
+                        $query->where('user_id', $sellerId);
+                    })->with('product');
+                },
+                'user'
+            ])
+            ->latest()
+            ->paginate(10);
 
 
-            return response()->json([
-                'message' => 'Berhasil menampilkan pesanan masuk',
-                'data' => $transactions
-            ]);
+        return response()->json([
+            'message' => 'Berhasil menampilkan pesanan masuk',
+            'data' => $transactions
+        ]);
 
     }
 }

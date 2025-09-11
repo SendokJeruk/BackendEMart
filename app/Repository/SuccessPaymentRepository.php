@@ -6,6 +6,8 @@ use App\Models\Income;
 use App\Models\Pengiriman;
 use App\Models\Transaction;
 use App\Models\DetailIncome;
+use App\Models\DetailShipment;
+use App\Models\Shipment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -40,38 +42,21 @@ class SuccessPaymentRepository
                 }
             }
 
-            // Kelompokkan detail transaksi berdasarkan user_id (penjual)
-            // $groupedByUser = $transaction->detail_transaction->groupBy(fn($item) => $item->product->user_id);
-            // Log::info('Success get groupedByUser => ' . json_encode($groupedByUser));
-            // foreach ($groupedByUser as $userId => $details) {
-            //     $total = $details->sum('subtotal');
+            $groupedByUser = $transaction->detail_transaction->groupBy(fn($item) => $item->product->user_id);
 
-            //     $income = Income::firstOrNew(['user_id' => $userId]);
-            //     $income->jumlah_total = ($income->exists ? $income->jumlah_total : 0) + $total;
-            //     $income->total_penjualan += 1;
-            //     $income->save();
+            foreach ($groupedByUser as $userId => $details) {
+                $shipment = Shipment::create([
+                    'kode_transaksi' => $transaction->kode_transaksi,
+                    'status_pengiriman' => 'dibuat',
+                ]);
 
-            //     $detailIncomeList = [];
-
-            //     foreach ($details as $detail) {
-            //         $createdDetail = $income->detail_incomes()->create([
-            //             'detail_transaction_id' => $detail->id,
-            //             'jumlah' => $detail->subtotal,
-            //         ]);
-
-            //         $detailIncomeList[] = $createdDetail;
-            //     }
-
-            //     $debugIncomes[] = [
-            //         'income' => $income,
-            //         'detail_incomes' => $detailIncomeList
-            //     ];
-            // }
-
-            Pengiriman::create([
-                'kode_transaksi' => $transaction->kode_transaksi,
-                'status_pengiriman' => 'dibuat',
-            ]);
+                foreach ($details as $detail) {
+                    DetailShipment::create([
+                        'id_shipment' => $shipment->id,
+                        'detail_transaksi_id' => $detail->id,
+                    ]);
+                }
+            }
 
             DB::commit();
 
