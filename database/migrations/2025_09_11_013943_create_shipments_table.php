@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pengirimen', function (Blueprint $table) {
+        Schema::create('shipments', function (Blueprint $table) {
             $table->id();
             $table->string('kode_transaksi')->index();
             $table->string('kurir')->nullable();
@@ -24,9 +24,11 @@ return new class extends Migration
                 'dalam_proses',
                 'tiba',
                 'diterima',
+                'batal',
             ])->default('dibuat');
             $table->timestamp('estimasi_tiba')->nullable();
-            $table->string('bukti_pengiriman')->nullable();
+            $table->timestamp('tiba_di_tujuan')->nullable();
+            $table->text('bukti_pengiriman')->nullable();
             $table->timestamps();
         });
     }
@@ -36,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pengirimen');
+        Schema::dropIfExists('shipments');
     }
 };
