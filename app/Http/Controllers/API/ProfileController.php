@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
 use App\Repository\UploadProfileRepository;
 
 class ProfileController extends Controller
@@ -31,7 +32,8 @@ class ProfileController extends Controller
         ];
 
         return response()->json([
-            'message' => "Berhasil Mendapatkan Data Profil",
+            'status' => 'Success',
+            'message' => "Data Profile retrieved successfully",
             'data' => $data
         ]);
     }
@@ -41,11 +43,17 @@ class ProfileController extends Controller
         $updateUser = auth()->user();
 
         $validate = Validator::make($request->all(), [
-            'name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'no_telp' => 'nullable|string|max:20',
-            'password' => 'nullable|min:6',
-            'role_id' => 'nullable|integer',
+            'name'        => 'nullable|string|max:255',
+            'email'       => 'nullable|email|max:255',
+            'no_telp'     => 'nullable|string|max:13',
+            'password'    => [ 'nullable',
+                Password::min(8)
+                    ->mixedCase()
+                    ->letters()
+                    ->numbers()
+                    ->symbols()
+            ],
+            'role_id'     => 'nullable|integer',
             'foto_profil' => 'nullable|file|image|max:2048',
         ]);
 
@@ -85,7 +93,8 @@ class ProfileController extends Controller
         }
 
         return response()->json([
-            'message' => 'Profil telah diperbarui',
+            'status' => 'Success',
+            'message' => 'Profile updated successfully',
             'data' => $updateUser
         ], 200);
     }

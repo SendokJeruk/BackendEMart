@@ -12,7 +12,8 @@ class Toko extends Model
 {
     use HasFactory;
     protected $guarded = [];
-
+    protected $hidden = ['timestamps', 'created_at', 'updated_at'];
+    
     public function user(): BelongsTo
     {
         return $this->BelongsTo(User::class, 'user_id');
@@ -27,6 +28,5 @@ class Toko extends Model
     {
         return $this->HasMany(Product::class, 'user_id', 'user_id');
     }
-
 
 }

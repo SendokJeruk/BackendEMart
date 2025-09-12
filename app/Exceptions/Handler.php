@@ -7,6 +7,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -76,6 +77,12 @@ class Handler extends ExceptionHandler
                 'message' => 'Forbidden',
             ], 403);
         }
+        if ($e instanceof ThrottleRequestsException) {
+            $retryAfter = $e->getHeaders()['Retry-After'] ?? 60;
+            return response()->json([
+                'message' => "Too many requests. Please try again in {$retryAfter} seconds."
+            ], 429);
+    }
 
         return response()->json([
             'message' => 'Internal Server Error',

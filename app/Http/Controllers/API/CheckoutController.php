@@ -18,7 +18,7 @@ class CheckoutController extends Controller
 
         if (!$user->cart || $user->cart->cart_detail->isEmpty()) {
             return response()->json([
-                'message' => 'Keranjang tidak boleh kosong, masukan produk ke keranjang terlebih dahulu'
+                'message' => 'Your cart is empty, please add products first'
             ], 422);
         }
 
@@ -53,7 +53,8 @@ class CheckoutController extends Controller
         $user->cart->save();
 
         return response()->json([
-            'message' => 'Checkout berhasil',
+            'status' => 'Success',
+            'message' => 'Checkout Successful',
             'data' => $transaction->load('detail_transaction.product')
         ]);
 

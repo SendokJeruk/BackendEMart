@@ -15,7 +15,8 @@ class AlamatController extends Controller
     {
         $data = Auth::user()->alamat()->paginate(5);
         return response()->json([
-            'message' => 'Berhasil mendapatkan semua data alamat user',
+            'status' => 'Success',
+            'message' => 'Successfully retrieved all user address data',
             'data' => $data
         ], );
     }
@@ -24,14 +25,14 @@ class AlamatController extends Controller
     {
 
         $validate = Validator::make($request->all(), [
-            'kode_domestik' => 'required|integer',
-            'label' => 'required',
-            'province_name' => 'required',
-            'city_name' => 'required',
-            'district_name' => 'required',
-            'subdistrict_name' => 'required',
-            'zip_code' => 'required|digits:5',
-            'detail_alamat' => 'required',
+            'kode_domestik'    => 'required|integer',
+            'label'            => 'required|string|max:100',
+            'province_name'    => 'required|string|max:100',
+            'city_name'        => 'required|string|max:100',
+            'district_name'    => 'required|string|max:100',
+            'subdistrict_name' => 'required|string|max:100',
+            'zip_code'         => 'required|digits:5',
+            'detail_alamat'    => 'required|string|max:255',
         ]);
 
         if ($validate->fails()) {
@@ -47,9 +48,10 @@ class AlamatController extends Controller
 
 
         return response()->json([
-            'message' => 'Berhasil Menambahkan Alamat',
+            'status' => 'Success',
+            'message' => 'Address added successfully',
             'data' => $alamat
-        ]);
+        ], 201);
 
 
     }
@@ -59,14 +61,14 @@ class AlamatController extends Controller
     {
 
         $validate = Validator::make($request->all(), [
-            'kode_domestik' => 'required|integer',
-            'label' => 'required',
-            'province_name' => 'required',
-            'city_name' => 'required',
-            'district_name' => 'required',
-            'subdistrict_name' => 'required',
-            'zip_code' => 'required|digits:5',
-            'detail_alamat' => 'nullable',
+            'kode_domestik'    => 'required|integer',
+            'label'            => 'required|string|max:100',
+            'province_name'    => 'required|string|max:100',
+            'city_name'        => 'required|string|max:100',
+            'district_name'    => 'required|string|max:100',
+            'subdistrict_name' => 'required|string|max:100',
+            'zip_code'         => 'required|digits:5',
+            'detail_alamat'    => 'nullable',
         ]);
 
         if ($validate->fails()) {
@@ -88,7 +90,8 @@ class AlamatController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Data berhasil di update',
+            'status' => 'Success',
+            'message' => 'Data updated successfully',
             'data' => $alamat
         ], 200);
 
@@ -101,7 +104,8 @@ class AlamatController extends Controller
         $alamat->delete();
 
         return response()->json([
-            'message' => 'data berhasil di hapus'
+            'status' => 'Success',
+            'message' => 'Data deleted successfully'
         ], 200);
 
     }

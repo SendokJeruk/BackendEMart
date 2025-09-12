@@ -18,7 +18,8 @@ class IncomeController extends Controller
         $income = Income::where('user_id', $user->id)->first();
 
         return response()->json([
-            'message' => 'Berhasil mendapatkan data income',
+            'status' => 'Success',
+            'message' => 'Data Income retrieved successful',
             'data' => [
                 'income' => $income,
                 'total_income' => $income ? $income->jumlah_total : 0,

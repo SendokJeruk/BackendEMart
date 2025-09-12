@@ -48,7 +48,8 @@ class RequestSellerController extends Controller
             }
 
             return response()->json([
-                'message' => 'Berhasil Menampilkan Request',
+                'status' => 'Success',
+                'message' => 'Request retrieved successfully',
                 'data' => $requestSeller
             ]);
 
@@ -65,14 +66,14 @@ class RequestSellerController extends Controller
             }
 
             $validate = Validator::make($request->all(), [
-                'note' => 'required|string|max:100',
-                'nik' => 'required|digits:16|unique:request_sellers,nik',
-                'nama_lengkap' => 'required|string|max:255',
-                'tempat_lahir' => 'required|string|max:100',
-                    'tanggal_lahir' => 'required|date|before:today',
+                'note'          => 'required|string|max:100',
+                'nik'           => 'required|digits:16|unique:request_sellers,nik',
+                'nama_lengkap'  => 'required|string|max:255',
+                'tempat_lahir'  => 'required|string|max:100',
+                'tanggal_lahir' => 'required|date|before:today',
                 'jenis_kelamin' => 'required|in:L,P',
-                'alamat_ktp' => 'required|string|max:500',
-                'foto_ktp' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+                'alamat_ktp'    => 'required|string|max:500',
+                'foto_ktp'      => 'required|image|mimes:jpg,jpeg,png|max:2048'
             ]);
 
             if ($validate->fails()) {
@@ -101,9 +102,12 @@ class RequestSellerController extends Controller
             $requestSeller->save();
 
             return response()->json([
-                'message' => 'Permohonan Berhasil Dikirim',
+                'status' => 'Success',
+                'message' => 'Request submitted successfully',
                 'data' => $requestSeller
-            ]);
+
+            ],201);
+
     }
 
     public function update(Request $request, RequestSeller $requestSeller)
@@ -133,8 +137,24 @@ class RequestSellerController extends Controller
                 $user->save();
             }
 
+            if ($requestSeller->foto_ktp) {
+                try {
+                    $fotoPath = Crypt::decryptString($requestSeller->foto_ktp);
+                    $this->ktp->delete($fotoPath);
+            } catch (\Exception $e) {
+                return response()->json([
+                'message' => 'Gagal Menghapus Foto KTP',
+            ], 500);
+            }
+
+            $requestSeller->update([
+                'foto_ktp' => null,
+            ]);
+        }
+
             return response()->json([
-                'message' => 'Permohonan Berhasil Diubah',
+                'status' => 'Success',
+                'message' => 'Request updated successfully',
                 'data' => $requestSeller
             ]);
 

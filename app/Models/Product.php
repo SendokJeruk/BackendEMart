@@ -17,6 +17,7 @@ class Product extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 
     public function detail_transaction(): HasMany
     {

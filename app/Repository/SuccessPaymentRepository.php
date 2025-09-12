@@ -58,6 +58,11 @@ class SuccessPaymentRepository
                 }
             }
 
+            Pengiriman::create([
+                'kode_transaksi' => $transaction->kode_transaksi,
+                'status_pengiriman' => 'dibuat',
+            ]);
+
             DB::commit();
 
             return response('OK', 200);

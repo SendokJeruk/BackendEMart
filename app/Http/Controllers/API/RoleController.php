@@ -14,7 +14,8 @@ class RoleController extends Controller
 
             $roles = Role::all();
             return response()->json([
-                'message' => 'Berhasil Menampilkan Role',
+                'status' => 'Success',
+                'message' => 'Role retrieved successfully',
                 'data' => $roles
             ]);
 
@@ -23,9 +24,16 @@ class RoleController extends Controller
     {
 
             $validate = Validator::make($request->all(), [
-                'nama_role' => 'required',
+                'nama_role' => 'required|string|max:100',
             ]);
 
+            $existingRole = Role::where('nama_role', $request->nama_role)->first();
+            if ($existingRole) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Role sudah ada, tidak boleh duplikat.'
+                ], 409);
+            }
             if ($validate->fails()) {
                 return response()->json([
                     'message' => 'Invalid Data',
@@ -38,9 +46,10 @@ class RoleController extends Controller
             $role->save();
 
             return response()->json([
-                'message' => 'Berhasil Menambahkan Role',
+                'status' => 'Success',
+                'message' => 'Role added successfully',
                 'data' => $role
-            ]);
+            ],201);
 
     }
 
@@ -62,7 +71,8 @@ class RoleController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'role telah di update',
+                'status' => 'Success',
+                'message' => 'Role updated successfully',
                 'data' => $role
                 ], 200);
 
@@ -73,7 +83,8 @@ class RoleController extends Controller
             $role->delete();
 
             return response()->json([
-             'message' => 'Data berhasil dihapus'
+                'status' => 'Success',
+                'message' => 'Data deleted successfully'
          ]);
 
     }

@@ -29,13 +29,13 @@ class DetailCartController extends Controller
         $product = Product::find($request->product_id);
         if (!$product) {
             return response()->json([
-                'message' => 'Produk tidak ditemukan.'
+                'message' => 'Produk Not Found.'
             ], 404);
         }
 
         if ($request->jumlah > $product->stock) {
             return response()->json([
-                'message' => 'Stok produk tidak cukup.',
+                'message' => 'Not enough stock available.',
             ], 422);
         }
 
@@ -67,9 +67,10 @@ class DetailCartController extends Controller
         $cart->save();
 
         return response()->json([
-            'message' => 'Item berhasil ditambahkan ke keranjang.',
+            'status' => 'Success',
+            'message' => 'Item added to cart successfully.',
             'data' => $cartDetail
-        ]);
+        ],201);
     }
 
 
@@ -91,13 +92,13 @@ class DetailCartController extends Controller
         $product = Product::find($request->product_id);
         if (!$product) {
             return response()->json([
-                'message' => 'Produk tidak di temukan'
+                'message' => 'Product not found'
             ], 404);
         }
 
         if ($request->jumlah > $product->stock) {
             return response()->json([
-                'message' => 'Stock Produk Tidak Cukup',
+                'message' => 'Not enough product stock',
             ], 422);
         }
 
@@ -119,7 +120,8 @@ class DetailCartController extends Controller
         }
 
         return response()->json([
-            'message' => 'berhasil perbarui cart detail',
+            'status' => 'Success',
+            'message' => 'Cart details updated successfully',
             'data' => $Cart_detail
         ]);
 
@@ -144,7 +146,8 @@ class DetailCartController extends Controller
         $Cart_detail->delete();
 
         return response()->json([
-            'message' => 'Item berhasil dihapus dari keranjang.'
+            'status' => 'Success',
+            'message' => 'Item removed from cart successfully'
         ]);
     }
 }
