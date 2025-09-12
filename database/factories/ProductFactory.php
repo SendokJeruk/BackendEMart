@@ -87,7 +87,7 @@ class ProductFactory extends Factory
                 return fake()->randomElement($adjectives) . ' ' . fake()->randomElement($productTypes);
             },
             'deskripsi' => fake()->paragraph(),
-            'harga' => (string) (fake()->numberBetween(1, 500) * 1000),
+            'harga' => (string) (fake()->numberBetween(1, 500) * 100),
             'stock' => fake()->numberBetween(1, 100),
             'berat' => fake()->numberBetween(100, 5000),
             'foto_cover' => function (array $attributes) {
