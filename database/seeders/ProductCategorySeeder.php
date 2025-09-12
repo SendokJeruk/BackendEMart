@@ -22,7 +22,7 @@ class ProductCategorySeeder extends Seeder
         }
 
         foreach ($products as $product) {
-            $randomCount = rand(1, $categories->count());
+            $randomCount = rand(1, 4);
             $randomCategoryIds = $categories->random($randomCount)->pluck('id')->toArray();
             $product->categories()->syncWithoutDetaching($randomCategoryIds);
         }

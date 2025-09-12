@@ -117,7 +117,7 @@ class ShipmentController extends Controller
     public function update(Request $request, Shipment $shipment)
     {
         $request->validate([
-            'kode_transaksi' => 'required|unique:pengirimen,kode_transaksi,' . $shipment->id,
+            'kode_transaksi' => 'required' . $shipment->id,
             'status_pengiriman' => 'required|string|in:dibuat,dijadwalkan,kurir_ditugaskan,dalam_proses,tiba',
             'resi' => 'nullable|string',
             'ekspedisi' => 'nullable|string',
