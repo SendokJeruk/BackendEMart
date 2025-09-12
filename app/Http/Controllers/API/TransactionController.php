@@ -89,7 +89,6 @@ class TransactionController extends Controller
         ]);
         $transaction->payment_attempt += 1;
         $order_id = $transaction->kode_transaksi . 'ATTEMPT' . str_pad($transaction->payment_attempt, 2, '0', STR_PAD_LEFT);
-        $transaction->total_harga = $transaction->total_harga + $ongkir;
 
         $params = [
             'transaction_details' => [
