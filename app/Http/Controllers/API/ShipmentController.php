@@ -117,7 +117,7 @@ class ShipmentController extends Controller
     public function update(Request $request, Shipment $shipment)
     {
         $request->validate([
-            'kode_transaksi' => 'required|unique:pengirimen,kode_transaksi,' . $shipment->id,
+            'kode_transaksi' => 'required' . $shipment->id,
             'status_pengiriman' => 'required|string|in:dibuat,dijadwalkan,kurir_ditugaskan,dalam_proses,tiba',
             'resi' => 'nullable|string',
             'ekspedisi' => 'nullable|string',
@@ -150,14 +150,8 @@ class ShipmentController extends Controller
         ]);
     }
 
-    public function confirmReceived($kode_transaksi)
+    public function confirmReceived(Shipment $pengiriman)
     {
-        $pengiriman = Shipment::where('kode_transaksi', $kode_transaksi)
-            ->whereHas('transaction', function ($query) {
-                $query->where('user_id', auth()->id());
-            })
-            ->first();
-
         if (!$pengiriman) {
             return response()->json([
                 'message' => 'Data pengiriman tidak ditemukan',
@@ -173,34 +167,26 @@ class ShipmentController extends Controller
         $pengiriman->status_pengiriman = 'diterima';
         $pengiriman->save();
 
-        $transaction = Transaction::with('detail_transaction.product.user')
-            ->where('kode_transaksi', $kode_transaksi)
-            ->first();
+        // Ambil detail transaksi hanya dari shipment ini
+        $details = $pengiriman->detail_shipments()->with('detail_transaction.product.user')->get();
 
-        $groupedByUser = $transaction->detail_transaction->groupBy(fn($item) => $item->product->user_id);
-        foreach ($groupedByUser as $userId => $details) {
-            $total = $details->sum('subtotal');
+        // Group per user toko
+        $groupedByUser = $details->groupBy(fn($detailShipment) => $detailShipment->detail_transaction->product->user_id);
+
+        foreach ($groupedByUser as $userId => $detailShipments) {
+            $total = $detailShipments->sum(fn($ds) => $ds->detail_transaction->subtotal);
 
             $income = Income::firstOrNew(['user_id' => $userId]);
             $income->jumlah_total = ($income->exists ? $income->jumlah_total : 0) + $total;
-            $income->total_penjualan += 1;
+            $income->total_penjualan = ($income->exists ? $income->total_penjualan : 0) + 1;
             $income->save();
 
-            $detailIncomeList = [];
-
-            foreach ($details as $detail) {
-                $createdDetail = $income->detail_incomes()->create([
-                    'detail_transaction_id' => $detail->id,
-                    'jumlah' => $detail->subtotal,
+            foreach ($detailShipments as $ds) {
+                $income->detail_incomes()->create([
+                    'detail_transaction_id' => $ds->detail_transaction->id,
+                    'jumlah' => $ds->detail_transaction->subtotal,
                 ]);
-
-                $detailIncomeList[] = $createdDetail;
             }
-
-            $debugIncomes[] = [
-                'income' => $income,
-                'detail_incomes' => $detailIncomeList
-            ];
         }
 
         return response()->json([
@@ -208,4 +194,5 @@ class ShipmentController extends Controller
             'data' => $pengiriman
         ]);
     }
+
 }
