@@ -200,7 +200,8 @@ Route::group(['prefix' => 'cart', 'as' => 'cart.', 'middleware' => ['auth:sanctu
 });
 
 Route::group(['prefix' => 'checkout', 'as' => 'checkout.', 'middleware' => ['auth:sanctum']], function () {
-    Route::post('/', [CheckoutController::class, 'checkout']);
+    Route::post('/checkoutAll', [CheckoutController::class, 'checkoutAll']);
+    Route::post('/products', [CheckoutController::class, 'checkout']);
 });
 
 Route::group(['prefix' => 'income', 'as' => 'income.', 'middleware' => ['auth:sanctum']], function () {

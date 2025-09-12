@@ -14,7 +14,6 @@ class DetailCartController extends Controller
 {
     public function store(Request $request)
     {
-
         $validate = Validator::make($request->all(), [
             'product_id' => 'required|exists:products,id',
             'jumlah' => 'required|integer|min:1',
@@ -40,25 +39,32 @@ class DetailCartController extends Controller
             ], 422);
         }
 
-        $amount = $product->harga * $request->jumlah;
-
-        $cartDetail = new Cart_detail();
-        $cartDetail->product_id = $request->product_id;
-        $cartDetail->jumlah = $request->jumlah;
-        $cartDetail->harga = $amount;
-
         $userId = auth()->id();
         $cart = Cart::firstOrCreate(
             ['user_id' => $userId],
             ['total_harga' => 0, 'total_jumlah' => 0]
         );
 
-        $cart->total_harga += $amount;
-        $cart->total_jumlah += $request->jumlah;
-        $cart->save();
+        $cartDetail = Cart_detail::where('cart_id', $cart->id)
+            ->where('product_id', $request->product_id)
+            ->first();
 
-        $cartDetail->cart_id = $cart->id;
-        $cartDetail->save();
+        if ($cartDetail) {
+            $cartDetail->jumlah += $request->jumlah;
+            $cartDetail->harga = $cartDetail->jumlah * $product->harga;
+            $cartDetail->save();
+        } else {
+            $cartDetail = new Cart_detail();
+            $cartDetail->cart_id = $cart->id;
+            $cartDetail->product_id = $request->product_id;
+            $cartDetail->jumlah = $request->jumlah;
+            $cartDetail->harga = $product->harga * $request->jumlah;
+            $cartDetail->save();
+        }
+
+        $cart->total_harga = $cart->cart_detail->sum('harga');
+        $cart->total_jumlah = $cart->cart_detail->sum('jumlah');
+        $cart->save();
 
         return response()->json([
             'status' => 'Success',
@@ -66,6 +72,7 @@ class DetailCartController extends Controller
             'data' => $cartDetail
         ],201);
     }
+
 
     public function update(Request $request, Cart_detail $Cart_detail)
     {
