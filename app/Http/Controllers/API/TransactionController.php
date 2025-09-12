@@ -361,6 +361,7 @@ class TransactionController extends Controller
 
             $result[$group]['items'][] = [
                 'nama_product' => $detail->product->nama_product,
+                'foto_cover' => $detail->product->foto_cover,
                 'harga' => $detail->harga,
                 'jumlah' => $detail->jumlah,
                 'subtotal' => $detail->subtotal,
