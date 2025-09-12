@@ -49,11 +49,16 @@ use App\Http\Controllers\API\TestController;
 //     return $request->user();
 // });
 
+Route::get('/test-limit', function () {
+    return response()->json(['ok' => true]);
+})->middleware('throttle:test');
+
+
 Route::post('midtrans/callback', [MidtransCallback::class, 'callback']);
 
 Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('register', [AuthController::class, 'register']);
+        Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login');
+        Route::post('register', [AuthController::class, 'register'])->middleware('throttle:register');
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
     // GOOGLE OAUTH
