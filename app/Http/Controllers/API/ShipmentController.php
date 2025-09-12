@@ -67,7 +67,7 @@ class ShipmentController extends Controller
                     'shipment_id' => $shipment->id,
                     'kode_transaksi' => $shipment->kode_transaksi,
                     'status_pengiriman' => $shipment->status_pengiriman,
-                    'product_id' => $product->id,
+                    'nama_product' => $product->nama_product,
                     'harga' => $detailTransaksi->harga,
                     'jumlah' => $detailTransaksi->jumlah,
                     'subtotal' => $detailTransaksi->subtotal,
