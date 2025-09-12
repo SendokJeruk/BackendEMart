@@ -15,7 +15,8 @@ class CategoryProductController extends Controller
 
         $category_product = CategoryProduct::paginate(10);
         return response()->json([
-            'message' => 'Berhasil Dapatkan Category Product',
+            'status' => 'Success',
+            'message' => 'Product categories retrieved successfully',
             'data' => $category_product
         ]);
 
@@ -40,9 +41,10 @@ class CategoryProductController extends Controller
         $category_product->product_id = $request->input('product_id');
         $category_product->save();
         return response()->json([
-            'message' => 'data telah di tambahkan',
+            'status' => 'Success',
+            'message' => 'Data created successfully',
             'data' => $category_product
-        ], 200);
+        ], 201);
 
     }
 
@@ -67,7 +69,8 @@ class CategoryProductController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Category product telah di perbarui',
+            'status' => 'Success',
+            'message' => 'Product category updated successfully',
             'data' => $category_product
         ], 200);
 
@@ -80,6 +83,7 @@ class CategoryProductController extends Controller
         $category_product->delete();
 
         return response()->json([
+            'status' => 'Success',
             'message' => 'Data berhasil dihapus'
         ]);
 

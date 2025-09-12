@@ -21,7 +21,8 @@ class PengirimanCOntroller extends Controller
             ->paginate(10);
 
         return response()->json([
-            'message' => 'Berhasil mendapatkan data pengiriman',
+            'status' => 'Success',
+            'message' => 'Shipping data retrieved successfully',
             'data' => $pengiriman
         ]);
     }
@@ -42,7 +43,8 @@ class PengirimanCOntroller extends Controller
         }
 
         return response()->json([
-            'message' => 'Berhasil mendapatkan data pengiriman',
+            'status' => 'Success',
+            'message' => 'Shipping data retrieved successfully',
             'data' => $pengiriman
         ]);
     }
@@ -71,7 +73,8 @@ class PengirimanCOntroller extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Berhasil Menambahkan Data Pengiriman',
+            'status' => 'Success',
+            'message' => 'Shipping data added successfully',
             'data' => $pengiriman
         ], 201);
     }
@@ -99,7 +102,8 @@ class PengirimanCOntroller extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Berhasil Mengupdate Data Pengiriman',
+            'status' => 'Success',
+            'message' => 'Shipping data updated successfully',
             'data' => $pengiriman
         ]);
     }
@@ -108,7 +112,8 @@ class PengirimanCOntroller extends Controller
     {
         $pengiriman->delete();
         return response()->json([
-            'message' => 'Berhasil Menghapus Data Pengiriman',
+            'status' => 'Success',
+            'message' => 'Shipping data updated successfully',
         ]);
     }
 

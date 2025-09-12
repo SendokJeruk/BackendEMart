@@ -34,7 +34,8 @@ class ManageUserController extends Controller
 
             $manage_user = $query->paginate(10);
             return response()->json([
-                'message' => 'Berhasil Dapatkan Data',
+                'status' => 'Success',
+                'message' => 'Data retrieved successfully',
                 'data' => $manage_user
             ]);
 
@@ -43,15 +44,15 @@ class ManageUserController extends Controller
     public function store(Request $request){
 
             $validate = Validator::make($request->all(),[
-                'name' => 'required|string|min:3|max:50',
-                'email' => 'required|email|unique:users,email',
-                'no_telp' => 'required|integer',
-                'password' => ['required', Password::min(8)
+                'name'      => 'required|string|min:3|max:50',
+                'email'     => 'required|email|unique:users,email',
+                'no_telp'   => 'required|max:12',
+                'password'  => ['required', Password::min(8)
                 ->mixedCase()
                 ->letters()
                 ->numbers()
                 ->symbols()],
-                'role_id' => 'required',
+                'role_id'   => 'required',
                 'foto_profil' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             ]);
 
@@ -72,23 +73,24 @@ class ManageUserController extends Controller
             $manage_user->save();
 
             return response()->json([
-                'message' => 'data telah di tambahkan',
+                'status' => 'Success',
+                'message' => 'Successful added data',
                 'data' => $manage_user
-                ], 200);
+                ], 201);
 
     }
 
     public function update(Request $request, User $manage_user){
         $validate = Validator::make($request->all(),[
-            'name' => 'nullable|string|min:3|max:50',
-            'email' => 'nullable|email|unique:users,email',
-            'no_telp' => 'nullable|integer',
+            'name'     => 'nullable|string|min:3|max:50',
+            'email'    => 'nullable|email|unique:users,email',
+            'no_telp'  => 'nullable|max:12',
             'password' => ['nullable', Password::min(8)
                         ->mixedCase()
                         ->letters()
                         ->numbers()
                         ->symbols()],
-            'role_id' => 'nullable',
+            'role_id'  => 'nullable',
             'foto_profil' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
@@ -116,7 +118,8 @@ class ManageUserController extends Controller
         }
         $manage_user->save();
         return response()->json([
-            'message' => 'data telah di perbarui',
+            'status' => 'Success',
+            'message' => 'Data updated successfully',
             'data' => $manage_user
             ], 200);
     }
@@ -126,7 +129,8 @@ class ManageUserController extends Controller
             $manage_user->delete();
 
             return response()->json([
-             'message' => 'Data berhasil dihapus'
+            'status' => 'Success',
+             'message' => 'Data deleted successfully'
             ]);
 
     }

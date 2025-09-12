@@ -26,7 +26,8 @@ class RatingController extends Controller
             })->get();
 
             return response()->json([
-                'message' => 'Berhasil menampilkan data rating',
+                'status' => 'Success',
+                'message' => 'Rating data retrieved successfully',
                 'data' => $ratings
             ]);
 
@@ -37,8 +38,8 @@ class RatingController extends Controller
 
             $validate = Validator::make($request->all(), [
                 'product_id' => 'required',
-                'rating' => 'required|integer',
-                'deskripsi' => 'nullable'
+                'rating'     => 'required|integer',
+                'deskripsi'  => 'nullable'
             ]);
 
             if ($validate->fails()) {
@@ -61,9 +62,10 @@ class RatingController extends Controller
             $rating->save();
 
             return response()->json([
-                'message' => 'Berhasil menambahkan rating',
+                'status' => 'Success',
+                'message' => 'Rating added successfully',
                 'data' => $rating
-            ], 200);
+            ], 201);
 
 
     }

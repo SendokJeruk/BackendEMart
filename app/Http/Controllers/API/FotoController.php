@@ -23,7 +23,8 @@ class FotoController extends Controller
 
         $foto = Foto::paginate(10);
         return response()->json([
-            'message' => 'Berhasil Dapatkan Data foto',
+            'status' => 'Success',
+            'message' => 'Photo data retrieved successfully',
             'data' => $foto
         ]);
     }
@@ -48,9 +49,10 @@ class FotoController extends Controller
         $foto = foto::create($data);
 
         return response()->json([
-            'message' => 'Berhasil Menambahkan foto',
+            'status' => 'Success',
+            'message' => 'Photo added successfully',
             'data' => $foto
-        ]);
+        ],201 );
     }
 
     public function update(Request $request, Foto $foto)
@@ -76,7 +78,8 @@ class FotoController extends Controller
         $foto->update($data);
 
         return response()->json([
-            'message' => 'Berhasil Edit foto',
+            'status' => 'Success',
+            'message' => 'Photo updated successfully',
             'data' => $foto->fresh()
         ]);
 
@@ -88,7 +91,8 @@ class FotoController extends Controller
         $this->upload->delete($foto->Foto);
         $foto->delete();
         return response()->json([
-            'message' => 'Data berhasil dihapus'
+            'status' => 'Success',
+            'message' => 'Data deleted successfully'
         ]);
 
     }
