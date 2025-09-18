@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use App\Models\DetailIncome;
 use Illuminate\Http\Request;
 use App\Services\MidtransService;
+use App\Services\ShipmentService;
 use Illuminate\Support\Facades\DB;
 use App\Services\RajaOngkirService;
 use Illuminate\Support\Facades\Log;
@@ -25,18 +26,21 @@ class TransactionController extends Controller
 
     protected $rajaOngkir;
     protected $successPayment;
+    protected $shipment;
 
-    public function __construct(MidtransService $midtransService, RajaOngkirService $rajaOngkir, SuccessPaymentRepository $successPaymentRepository)
+    public function __construct(MidtransService $midtransService, RajaOngkirService $rajaOngkir, SuccessPaymentRepository $successPaymentRepository, ShipmentService $shipment)
     {
         $this->midtransService = $midtransService;
         $this->rajaOngkir = $rajaOngkir;
         $this->successPayment = $successPaymentRepository;
+        $this->shipment = $shipment;
     }
 
     public function createTransaction(Transaction $transaction, Request $request)
     {
         $validate = Validator::make($request->all(), [
             'payment_type' => 'nullable',
+            'data_ongkir' => 'required',
         ]);
 
         if ($validate->fails()) {
@@ -51,6 +55,8 @@ class TransactionController extends Controller
                 'message' => 'Transaksi sudah berhasil, silahkan cek riwayat transaksi anda'
             ], 400);
         }
+
+        $dataOngkir = $request->input('data_ongkir');
 
         $payment_type = [];
         $payment_type[] = $request->payment_type;
@@ -67,18 +73,6 @@ class TransactionController extends Controller
             ];
         })->toArray();
 
-        // $origin = $request->origin; // ! ambil dari alamat toko -> olah data disini
-        // $destination = $request->destination; //? get alamat user 4917
-        // $weight = $transaction->total_berat;
-
-        // $kurir = $this->rajaOngkir->getCost(
-        //     $origin,
-        //     $destination,
-        //     $weight,
-        //     "jnt",
-        //     "lowest"
-        // );
-
         $ongkir = $transaction->total_ongkir;
 
         array_push($products, [
@@ -89,7 +83,6 @@ class TransactionController extends Controller
         ]);
         $transaction->payment_attempt += 1;
         $order_id = $transaction->kode_transaksi . 'ATTEMPT' . str_pad($transaction->payment_attempt, 2, '0', STR_PAD_LEFT);
-        $transaction->total_harga = $transaction->total_harga + $ongkir;
 
         $params = [
             'transaction_details' => [
@@ -123,6 +116,7 @@ class TransactionController extends Controller
         }
 
         $transaction->save();
+        $this->shipment->createShipment($transaction, $dataOngkir);
 
         return response()->json([
             'message' => 'Payment Berhasil Dibuat',
@@ -360,6 +354,7 @@ class TransactionController extends Controller
             }
 
             $result[$group]['items'][] = [
+                'detail_transaction_id' => $detail->id,
                 'nama_product' => $detail->product->nama_product,
                 'foto_cover' => $detail->product->foto_cover,
                 'harga' => $detail->harga,
