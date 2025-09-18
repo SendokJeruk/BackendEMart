@@ -42,21 +42,22 @@ class SuccessPaymentRepository
                 }
             }
 
-            $groupedByUser = $transaction->detail_transaction->groupBy(fn($item) => $item->product->user_id);
+            // // Entri shipment
+            // $groupedByUser = $transaction->detail_transaction->groupBy(fn($item) => $item->product->user_id);
 
-            foreach ($groupedByUser as $userId => $details) {
-                $shipment = Shipment::create([
-                    'kode_transaksi' => $transaction->kode_transaksi,
-                    'status_pengiriman' => 'dibuat',
-                ]);
+            // foreach ($groupedByUser as $userId => $details) {
+            //     $shipment = Shipment::create([
+            //         'kode_transaksi' => $transaction->kode_transaksi,
+            //         'status_pengiriman' => 'dibuat',
+            //     ]);
 
-                foreach ($details as $detail) {
-                    DetailShipment::create([
-                        'id_shipment' => $shipment->id,
-                        'detail_transaksi_id' => $detail->id,
-                    ]);
-                }
-            }
+            //     foreach ($details as $detail) {
+            //         DetailShipment::create([
+            //             'id_shipment' => $shipment->id,
+            //             'detail_transaksi_id' => $detail->id,
+            //         ]);
+            //     }
+            // }
 
             DB::commit();
 
