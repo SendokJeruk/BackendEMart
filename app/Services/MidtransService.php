@@ -7,7 +7,7 @@ use Midtrans\Config;
 
 class MidtransService
 {
-    public function __construct()
+    public function init()
     {
         Config::$serverKey = config('midtrans.server_key');
         Config::$isProduction = config('midtrans.is_production');
@@ -18,6 +18,8 @@ class MidtransService
     public function createTransaction(array $params)
     {
         try {
+            $this->init();
+
             $transaction = Snap::createTransaction($params);
             return [
                 'snap_token' => $transaction->token,

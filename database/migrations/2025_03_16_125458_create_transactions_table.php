@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,10 +14,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->integer('total_harga')->default(0);
+            $table->integer('total_ongkir')->default(0);
             $table->integer('total_berat')->default(0);
             $table->string('status');
             $table->datetime('tanggal_transaksi');
             $table->string('kode_transaksi')->unique();
+            $table->integer('payment_attempt')->default(0);
+            // $table->foreignId('id_alamat_user')->nullable();
+            // $table->foreignId('id_alamat_toko')->nullable();
             $table->timestamps();
         });
     }

@@ -9,9 +9,20 @@ use App\Http\Controllers\Controller;
 
 class SettingController extends Controller
 {
+    public function index(Request $request)
+    {
+
+            $keys = Setting::filter($request)->get();
+            return response()->json([
+                'status' => 'Success',
+                'message' => 'Settings data retrieved successfully',
+                'data' => $keys
+            ]);
+
+    }
     public function update(Request $request)
     {
-        try {
+
             $request->validate([
                 'MIDTRANS_SERVER_KEY' => 'nullable|string',
                 'MIDTRANS_CLIENT_KEY' => 'nullable|string',
@@ -40,19 +51,15 @@ class SettingController extends Controller
             }
 
             return response()->json([
+                'status' => 'Success',
                 'message' => 'Settings updated successfully'
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
-    public function test()
-    {
-        return Setting::getValue('MIDTRANS_SERVER_KEY');
-        return Setting::where('name', 'MIDTRANS_SERVER_KEY')->first()->value;
-    }
+    // public function test()
+    // {
+    //     return Setting::getValue('MIDTRANS_SERVER_KEY');
+    //     return Setting::where('name', 'MIDTRANS_SERVER_KEY')->first()->value;
+    // }
 }

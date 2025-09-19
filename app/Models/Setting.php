@@ -27,10 +27,25 @@ class Setting extends Model
         return Crypt::decryptString($value);
     }
 
-    public static function getValue($name)
+    public function scopeFilter($query, $request)
     {
-        $setting = self::where('name', $name)->first();
-        return $setting ? $setting->value : null;
+        return $query->where(function ($q) use ($request) {
+            if ($request->has('server_midtrans')) {
+                $q->orWhere('name', 'MIDTRANS_SERVER_KEY');
+            }
+            if ($request->has('client_midtrans')) {
+                $q->orWhere('name', 'MIDTRANS_CLIENT_KEY');
+            }
+            if ($request->has('midtrans_prod')) {
+                $q->orWhere('name', 'MIDTRANS_IS_PRODUCTION');
+            }
+            if ($request->has('rajaongkir_ship')) {
+                $q->orWhere('name', 'RAJAONGKIR_SHIPPING_KEY');
+            }
+            if ($request->has('rajaongkir_delivery')) {
+                $q->orWhere('name', 'RAJAONGKIR_DELIVERY_KEY');
+            }
+        });
     }
 
 }

@@ -12,92 +12,79 @@ use Illuminate\Support\Facades\Validator;
 class FotoProductController extends Controller
 {
 
-    public function index(){
-       try {
+    public function index()
+    {
+
         $fotoProduct = FotoProduct::paginate(10);
         return response()->json([
-            'message' => 'Berhasil Dapatkan Data FotoProduct',
+            'status' => 'Success',
+            'message' => 'Product photo data retrieved successfully',
             'data' => $fotoProduct
         ]);
-       } catch (Exception $e) {
+    }
+    public function store(Request $request)
+    {
+
+        $validate = Validator::make($request->all(), [
+            'foto_id'    => 'required',
+            'product_id' => 'required',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => 'Invalid Data',
+                'errors' => $validate->errors()
+            ], 422);
+        }
+
+        $fotoProduct = new FotoProduct();
+        $fotoProduct->foto_id = $request->input('foto_id');
+        $fotoProduct->product_id = $request->input('product_id');
+        $fotoProduct->save();
         return response()->json([
-            'message' => 'Internal Server Error',
-            'error' => $e->getMessage()
-        ], 500);
-       }
-    }
-    public function store(Request $request){
-        try {
-            $validate = Validator::make($request->all(), [
-                'foto_id' => 'required',
-                'product_id' => 'required',
-            ]);
+            'status' => 'Success',
+            'message' => 'Product photo added successfully',
+            'data' => $fotoProduct
+        ],201);
 
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
-            }
-
-            $fotoProduct= new FotoProduct();
-            $fotoProduct->foto_id = $request->input('foto_id');
-            $fotoProduct->product_id = $request->input('product_id');
-            $fotoProduct->save();
-            return response()->json([
-                'message' => 'Berhasil Menambahkan FotoProduct',
-                'data' => $fotoProduct
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
     }
 
-    public function update(Request $request, FotoProduct $fotoProduct){
-        try {
-                 $validate = Validator::make($request->all(), [
-                    'foto_id' => 'nullable',
-                    'product_id' => 'nullable',
-            ]);
+    public function update(Request $request, FotoProduct $fotoProduct)
+    {
 
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
-            }
+        $validate = Validator::make($request->all(), [
+            'foto_id'    => 'nullable',
+            'product_id' => 'nullable',
+        ]);
 
-            $fotoProduct->update([
-                'foto_id' => $request->foto_id,
-                'product_id' => $request->product_id
-            ]);
+        if ($validate->fails()) {
             return response()->json([
-                'message' => 'Category Updated',
-                'data' => $fotoProduct
-                ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => 'Invalid Data',
+                'errors' => $validate->errors()
+            ], 422);
         }
+
+        $fotoProduct->update([
+            'foto_id' => $request->foto_id,
+            'product_id' => $request->product_id
+        ]);
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Product photo updated successfully',
+            'data' => $fotoProduct
+        ], 200);
+
     }
 
-    public function delete(FotoProduct $fotoProduct){
-        try {
-            $fotoProduct->delete();
-            return response()->json([
-                'message' => 'Data berhasil dihapus'
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+    public function delete(FotoProduct $fotoProduct)
+    {
+
+        $fotoProduct->delete();
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Data deleted successfully'
+        ]);
+
     }
 
 }

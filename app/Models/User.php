@@ -4,7 +4,9 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Role;
+use App\Models\Withdraw;
 use App\Models\AlamatUser;
+use App\Models\RequestSeller;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -33,13 +35,14 @@ class User extends Authenticatable
         'google_refresh_token',
     ];
 
+
     public function product(): HasMany
     {
-        return $this->hasMany(related: Product::class, foreignKey: 'product_id');
+        return $this->hasMany(related: Product::class, foreignKey: 'user_id');
     }
     public function transaction(): HasMany
     {
-        return $this->hasMany(related: Transaction::class, foreignKey: 'transaction_id');
+        return $this->hasMany(related: Transaction::class, foreignKey: 'user_id');
     }
 
     public function rating(): HasMany
@@ -61,6 +64,25 @@ class User extends Authenticatable
     {
         return $this->hasMany(related: AlamatUser::class, foreignKey: 'user_id');
     }
+
+    public function cart(): hasOne
+    {
+        return $this->hasOne(Cart::class, 'user_id');
+    }
+
+    public function income(): hasMany
+    {
+        return $this->hasMany(Income::class, 'user_id');
+    }
+
+    public function RequestSeller(): hasOne
+    {
+        return $this->hasOne(RequestSeller::class);
+    }
+    public function withdraw(): hasMany
+    {
+        return $this->hasMany(Withdraw::class);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -69,6 +91,13 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'timestamps',
+        'created_at',
+        'updated_at',
+        'email_verified_at',
+        'google_id',
+        'google_refresh_token',
+        'google_token'
     ];
 
     /**

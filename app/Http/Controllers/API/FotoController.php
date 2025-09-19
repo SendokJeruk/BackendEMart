@@ -18,95 +18,83 @@ class FotoController extends Controller
         $this->upload = new UploadRepository();
     }
 
-    public function index(){
-       try {
+    public function index()
+    {
+
         $foto = Foto::paginate(10);
         return response()->json([
-            'message' => 'Berhasil Dapatkan Data foto',
+            'status' => 'Success',
+            'message' => 'Photo data retrieved successfully',
             'data' => $foto
         ]);
-       } catch (Exception $e) {
+    }
+
+    public function store(Request $request)
+    {
+
+        $validate = Validator::make($request->all(), [
+            'foto' => 'required|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => 'Invalid Data',
+                'errors' => $validate->errors()
+            ], 422);
+        }
+
+        $data = $request->all();
+        $data['foto'] = $this->upload->save($request->file('foto'));
+        $foto = foto::create($data);
+
         return response()->json([
-            'message' => 'Internal Server Error',
-            'error' => $e->getMessage()
-        ], 500);
-       }
-    }
-    public function store(Request $request){
-        try {
-            $validate = Validator::make($request->all(), [
-                'foto' => 'required|mimes:jpg,jpeg,png,webp|max:2048',
-            ]);
-
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
-            }
-
-            $data = $request->all();
-            $data['foto'] = $this->upload->save($request->file('foto'));
-            $foto = foto::create($data);
-
-            return response()->json([
-                'message' => 'Berhasil Menambahkan foto',
-                'data' => $foto
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+            'status' => 'Success',
+            'message' => 'Photo added successfully',
+            'data' => $foto
+        ],201 );
     }
 
-    public function update(Request $request, Foto $foto){
-        try {
-                 $validate = Validator::make($request->all(), [
-                'foto' => 'nullable|mimes:jpg,jpeg,png,webp|max:2048',
-            ]);
+    public function update(Request $request, Foto $foto)
+    {
 
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
-            }
+        $validate = Validator::make($request->all(), [
+            'foto' => 'nullable|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
 
-            $data = $request->all();
-
-            if ($request->file('foto')) {
-                $data['foto'] = $this->upload->update($foto->foto, $request->file('foto'));
-            }
-
-            $foto->update($data);
-
+        if ($validate->fails()) {
             return response()->json([
-                'message' => 'Berhasil Edit foto',
-                'data' => $foto->fresh()
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => 'Invalid Data',
+                'errors' => $validate->errors()
+            ], 422);
         }
+
+        $data = $request->all();
+
+        if ($request->file('foto')) {
+            $data['foto'] = $this->upload->update($foto->foto, $request->file('foto'));
+        }
+
+        $foto->update($data);
+
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Photo updated successfully',
+            'data' => $foto->fresh()
+        ]);
+
     }
 
-    public function delete(Foto $foto){
-        try {
-            $this->upload->delete($foto->Foto);
-            $foto->delete();
-            return response()->json([
-                'message' => 'Data berhasil dihapus'
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+    public function delete(Foto $foto)
+    {
+
+        $this->upload->delete($foto->Foto);
+        $foto->delete();
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Data deleted successfully'
+        ]);
+
     }
 
 }

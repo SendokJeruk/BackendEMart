@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            //$table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->string('nama_product');
             $table->text('deskripsi');
             $table->string('harga');
             $table->integer('stock');
             $table->integer('berat');
             $table->string('foto_cover');
+            $table->integer('terjual')->default(0);
             $table->enum('status_produk', ['draft', 'publish']);
             $table->timestamps();
         });

@@ -11,8 +11,10 @@ class Transaction extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 
-    public function getRouteKeyName() {
+    public function getRouteKeyName()
+    {
         return 'kode_transaksi';
     }
 
@@ -26,4 +28,33 @@ class Transaction extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function income()
+    {
+        return $this->hasOne(Income::class);
+    }
+
+    public function alamat_user(): BelongsTo
+    {
+        return $this->belongsTo(AlamatUser::class);
+    }
+
+    public function alamat_toko(): BelongsTo
+    {
+        return $this->belongsTo(AlamatToko::class);
+    }
+
+    public function shipment()
+    {
+        return $this->hasMany(Shipment::class, 'kode_transaksi', 'kode_transaksi');
+    }
+
+
+    public function scopeFilter($query, $request)
+    {
+        return $query
+            ->when($request->has('kode_transaksi'), fn($q) =>
+                $q->where('kode_transaksi', $request->kode_transaksi));
+    }
+
 }

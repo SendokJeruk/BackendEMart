@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('alamat_users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('nama_penerima');
             $table->string('kode_domestik');
             $table->string('label');
             $table->string('province_name');

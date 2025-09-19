@@ -10,6 +10,7 @@ class DetailTransaction extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 
     public function transaction(): BelongsTo
     {
@@ -18,5 +19,16 @@ class DetailTransaction extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
+    }
+    public function detailIncomes()
+    {
+        return $this->hasMany(DetailIncome::class);
+    }
+
+    public function scopeFilter($query, $request)
+    {
+        return $query
+            ->when($request->filled('transaction_id'), fn($q) =>
+            $q->where('transaction_id', $request->transaction_id));
     }
 }

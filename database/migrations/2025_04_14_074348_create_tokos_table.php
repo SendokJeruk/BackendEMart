@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('nama_toko');
             $table->string('deskripsi');
             $table->string('no_telp');
+            $table->foreignId('alamat_toko_id')->nullable()->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -1,25 +1,38 @@
 <?php
 
-use App\Http\Controllers\API\AlamatController;
+use App\Models\AlamatUser;
+use App\Models\DetailIncome;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\CartController;
 use App\Http\Controllers\API\FotoController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\TokoController;
+use App\Http\Controllers\API\AlamatController;
+use App\Http\Controllers\API\IncomeController;
 use App\Http\Controllers\API\MidtransCallback;
 use App\Http\Controllers\API\RatingController;
+use App\Http\Controllers\API\EncryptController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ProfileController;
+use App\Http\Controllers\API\SettingController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\CheckoutController;
+use App\Http\Controllers\API\DetailCartController;
 use App\Http\Controllers\API\ManageUserController;
 use App\Http\Controllers\API\RajaOngkirController;
 use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
+use App\Http\Controllers\API\DetailIncomeController;
+use App\Http\Controllers\API\RequestSellerController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
-use App\Http\Controllers\API\SettingController;
-use App\Models\AlamatUser;
+use App\Http\Controllers\API\PengirimanCOntroller;
+use App\Http\Controllers\API\ShipmentController;
+use App\Http\Controllers\API\TestController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -36,11 +49,16 @@ use App\Models\AlamatUser;
 //     return $request->user();
 // });
 
+Route::get('/test-limit', function () {
+    return response()->json(['ok' => true]);
+})->middleware('throttle:test');
+
+
 Route::post('midtrans/callback', [MidtransCallback::class, 'callback']);
 
 Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('register', [AuthController::class, 'register']);
+        Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login');
+        Route::post('register', [AuthController::class, 'register'])->middleware('throttle:register');
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
     // GOOGLE OAUTH
@@ -53,11 +71,15 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 });
 
 
+Route::get('/product/mobile', [ProductController::class, 'index'])->middleware('auth:sanctum');
 Route::get('/product', [ProductController::class, 'index']);
+
 Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => ['auth:sanctum', 'seller'] ], function () {
+    Route::get('/myproducts', [ProductController::class, 'getMyProducts']);
     Route::post('/', [ProductController::class, 'store']);
     Route::put('/{product}', [ProductController::class, 'edit']);
     Route::delete('/{product}', [ProductController::class, 'delete']);
+    Route::get('/statistic', [ProductController::class, 'getStatisticProduct']);
 });
 
 Route::get('/category', [CategoryController::class, 'index']);
@@ -81,13 +103,20 @@ Route::group(['prefix' => 'role', 'as' => 'role.'], function () {
 
 Route::group(['prefix' => 'transaction', 'as' => 'transaction.', 'middleware' => 'auth:sanctum'], function () {
     Route::get('/', [TransactionController::class, 'index']);
+    Route::get('/get-all-transaction', [TransactionController::class, 'getAllTransaction'])->middleware('checkrole');
+    Route::get('/get-transaction-detail/{transaction}', [TransactionController::class, 'getTransactionDetail']);
+
     Route::post('/', [TransactionController::class, 'store']);
     Route::put('/{transaction}', [TransactionController::class, 'update']);
     Route::delete('/{transaction}', [TransactionController::class, 'delete']);
 
+    Route::get('/pesanan-masuk', [TransactionController::class, 'pesananMasuk']);
+
     // MIDTRANS CUY
     Route::post('/payment/{transaction}', [TransactionController::class, 'createTransaction']);
 });
+Route::get('/transaction', [TransactionController::class, 'index'])->middleware('auth:sanctum');
+Route::post('/test',[TestController::class, 'test']);
 Route::post('/transaction/payment/callback', [TransactionController::class, 'callback'])->withoutMiddleware('auth:sanctum');
 
 Route::group(['prefix' => 'detail-transaction', 'as' => 'detail-transaction.', 'middleware' => 'auth:sanctum'], function () {
@@ -111,12 +140,13 @@ Route::group(['prefix' => 'manage-user', 'as' => 'manage-user.', 'middleware' =>
     Route::delete('/{manage_user}', [ManageUserController::class, 'delete']);
 });
 
-Route::group(['prefix' => 'toko', 'as' => 'toko.', 'middleware' => ['auth:sanctum', 'checkrole',]], function () {
-    Route::get('/', [TokoController::class, 'index']);
+Route::group(['prefix' => 'toko', 'as' => 'toko.', 'middleware' => ['auth:sanctum', 'seller',]], function () {
     Route::post('/', [TokoController::class, 'store']);
+    Route::put('/alamat/{toko}', [TokoController::class, 'updateAlamat']);
     Route::put('/{toko}', [TokoController::class, 'update']);
     Route::delete('/{toko}', [TokoController::class, 'delete']);
 });
+Route::get('/toko', [TokoController::class, 'index'])->middleware('auth:sanctum');
 
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'middleware' => 'auth:sanctum'], function () {
     Route::get('/', [ProfileController::class, 'index']);
@@ -144,14 +174,63 @@ Route::group(['prefix' => 'rajaongkir', 'as' => 'rajaongkir.'], function () {
     Route::post('/track', [RajaOngkirController::class, 'track']);
 });
 
-Route::group(['prefix' => 'alamat', 'as' => 'alamat.'], function () {
-    // Route::get('/domestic', [RajaOngkirController::class, 'domestic']);
-    // Route::get('/cities', [RajaOngkirController::class, 'cities']);
+Route::group(['prefix' => 'alamat', 'as' => 'alamat.', 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/', [AlamatController::class, 'get']);
     Route::post('/', [AlamatController::class, 'store']);
-    // Route::post('/track', [RajaOngkirController::class, 'track']);
+    Route::put('/{alamat}', [AlamatController::class, 'update']);
+    Route::delete('/{alamat}', [AlamatController::class, 'delete']);
 });
 
 Route::group(['prefix' => 'setting', 'as' => 'setting.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
-    Route::get('/tes', [SettingController::class, 'test']);
+    Route::get('/', [SettingController::class, 'index']);
     Route::post('/', [SettingController::class, 'update']);
 });
+
+Route::group(['prefix' => 'detailcart', 'as' => 'detailcart.', 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/', [DetailCartController::class, 'index']);
+    Route::post('/', [DetailCartController::class, 'store']);
+    Route::put('/{Cart_detail}', [DetailCartController::class, 'update']);
+    Route::delete('/{Cart_detail}', [DetailCartController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'cart', 'as' => 'cart.', 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/', [CartController::class, 'index']);
+    Route::post('/', [CartController::class, 'store']);
+    Route::put('/{Cart_detail}', [CartController::class, 'update']);
+    Route::delete('/{Cart_detail}', [CartController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'checkout', 'as' => 'checkout.', 'middleware' => ['auth:sanctum']], function () {
+    Route::post('/checkoutAll', [CheckoutController::class, 'checkoutAll']);
+    Route::post('/products', [CheckoutController::class, 'checkout']);
+});
+
+Route::group(['prefix' => 'income', 'as' => 'income.', 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/', [IncomeController::class, 'index']);
+});
+
+Route::group(['prefix' => 'requestseller', 'as' => 'requestseller.', 'middleware' => ['auth:sanctum', ]], function () {
+    Route::get('/', [RequestSellerController::class, 'index']);
+    Route::post('/', [RequestSellerController::class, 'store']);
+});
+Route::put('/requestseller/{requestSeller}', [RequestSellerController::class, 'update'])->middleware(['auth:sanctum', 'checkrole']);
+Route::group(['prefix' => 'detailIncome', 'as' => 'detailIncome.', 'middleware' => ['auth:sanctum', ]], function () {
+    Route::get('/', [DetailIncomeController::class, 'index']);
+});
+
+Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/', [ShipmentController::class, 'getAllPengiriman']);
+    Route::get('/{id}', [ShipmentController::class, 'getPengirimanById']);
+    Route::get('/{kode_transaksi}', [ShipmentController::class, 'getPengirimanByKodeTransaksi']);
+    Route::post('/', [ShipmentController::class, 'store']);
+    Route::post('/confirm-received/{pengiriman}', [ShipmentController::class, 'confirmReceived']);
+    Route::put('/{pengiriman}', [ShipmentController::class, 'update']);
+    Route::delete('/{pengiriman}', [ShipmentController::class, 'delete']);
+});
+
+
+// TES ENKRIPSI
+Route::post('/enkrypt', [EncryptController::class, 'enkrypt']);
+Route::post('/decrypt', [EncryptController::class, 'decrypt']);
+
+Route::post('/testincome', [TransactionController::class, 'test']);

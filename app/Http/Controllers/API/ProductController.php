@@ -5,8 +5,10 @@ namespace App\Http\Controllers\API;
 use Exception;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Repository\UploadRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
@@ -20,132 +22,136 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        try {
+        $products = Product::with(['categories', 'user.toko', 'rating', 'foto'])
+            ->withAvg('rating', 'rating')
+            ->filter($request)
+            ->paginate(10);
 
-            $query = Product::query();
+        $products->getCollection()->transform(function ($product) {
+            $product->average_rating = round($product->rating_avg_rating, 1);
+            unset($product->rating_avg_rating);
+            return $product;
+        });
 
-            if ($request->has('nama_product')) {
-                $query->where('nama_product', 'like', "%{$request->nama_product}%");
-            }
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Product data retrieved successfully',
+            'data' => $products
+        ]);
 
-            elseif ($request->has('publish')) {
-                $query->where('status_produk', 'publish');
-            }
-
-            elseif ($request->has('draft')) {
-                $query->where('status_produk', 'draft');
-            }
-
-            elseif ($request->has('id')) {
-                $query->where('id', $request->id);
-            }
-
-            $products = $query->with(['categories', 'user.toko', 'foto'])->paginate(10);
-
-            return response()->json([
-                'message' => 'Berhasil Dapatkan Data Produk',
-                'data' => $products
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
     }
+
+    public function getMyProducts(Request $request)
+    {
+        $products = Product::with(['rating', 'foto'])
+            ->withAvg('rating', 'rating')
+            ->filter($request)
+            ->paginate(10);
+
+        $products->getCollection()->transform(function ($product) {
+            $product->average_rating = round($product->rating_avg_rating, 1);
+            unset($product->rating_avg_rating);
+            return $product;
+        });
+
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Product data retrieved successfully',
+            'data' => $products
+        ]);
+    }
+
+
 
     public function store(Request $request)
     {
-        try {
-            $validate = Validator::make($request->all(), [
-                'user_id' => 'required',
-                'nama_product' => 'required',
-                'deskripsi' => 'required',
-                'harga' => 'required',
-                'stock' => 'required',
-                'berat' => 'required',
-                'foto_cover' => 'required',
-                'status_produk' => 'required|in:draft,publish',
 
-            ]);
+        $request->validate([
+            'nama_product' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'harga' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'berat' => 'required|numeric|min:0',
+            'foto_cover' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'status_produk' => 'required|in:draft,publish',
+        ]);
 
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
-            }
+        $data = $request->only([
+            'nama_product',
+            'deskripsi',
+            'harga',
+            'stock',
+            'berat',
+            'status_produk'
+        ]);
 
-            $data = $request->all();
-            $data['foto_cover'] = $this->upload->save($request->file('foto_cover'));
-            $product = Product::create($data);
+        $data['foto_cover'] = $this->upload->save($request->file('foto_cover'));
+        $data['user_id'] = auth()->id();
 
-            return response()->json([
-                'message' => 'Berhasil Menambahkan Produk',
-                'data' => $product
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        $product = Product::create($data);
+
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Product added successfully',
+            'data' => $product
+        ], 201);
+
     }
+
 
     public function edit(Request $request, Product $product)
     {
-        try {
-            $validate = Validator::make($request->all(), [
-                'user_id' => 'nullable',
-                'nama_product' => 'nullable',
-                'deskripsi' => 'nullable',
-                'harga' => 'nullable',
-                'stock' => 'nullable',
-                'berat' => 'nullable',
-                'foto_cover' => 'nullable',
-                'status_produk' => 'nullable|in:draft,publish',
-            ]);
 
-            if ($validate->fails()) {
-                return response()->json([
-                    'message' => 'Invalid Data',
-                    'errors' => $validate->errors()
-                ], 422);
-            }
 
-            $data = $request->all();
+        $validated = $request->validate([
+            'nama_product' => 'nullable|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'harga' => 'nullable|numeric|min:0',
+            'stock' => 'nullable|integer|min:0',
+            'berat' => 'nullable|numeric|min:0',
+            'foto_cover' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'status_produk' => 'nullable|in:draft,publish',
+        ]);
 
-            if ($request->file('foto_cover')) {
-                $data['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
-            }
-
-            $product->update($data);
-
-            return response()->json([
-                'message' => 'Berhasil Edit Produk',
-                'data' => $product->fresh()
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
+        if ($request->hasFile('foto_cover')) {
+            $validated['foto_cover'] = $this->upload->update($product->foto_cover, $request->file('foto_cover'));
         }
+
+        $validated['user_id'] = auth()->id();
+
+        $product->update($validated);
+
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Product updated successfully',
+            'data' => $product->fresh()
+        ]);
+
     }
 
     public function delete(Product $product)
     {
-        try {
-            $this->upload->delete($product->foto_cover);
-            $product->delete();
-            return response()->json([
-                'message' => 'Data berhasil dihapus'
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
+        $this->upload->delete($product->foto_cover);
+        $product->delete();
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Data deleted successfully'
+        ]);
+
+    }
+
+    public function getStatisticProduct()
+    {
+        $products = Product::orderByDesc('terjual')
+            ->take(5)
+            ->get(['id', 'nama_product', 'terjual']);
+
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Top 5 products retrieved successfully',
+            'data' => $products
+        ]);
+
     }
 }

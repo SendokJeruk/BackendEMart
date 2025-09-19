@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
+use App\Models\Setting;
 use Illuminate\Support\Facades\Http;
 
 class RajaongkirService
 {
     protected $shippingKey;
     protected $deliveryKey;
-
+    // ! DISABLE SEMENTARA
     public function __construct()
     {
         $this->shippingKey = config('rajaongkir.shipping_key');
@@ -30,26 +31,35 @@ class RajaongkirService
         $response = Http::withHeaders([
             'key' => $this->shippingKey,
         ])->asForm()->post('https://rajaongkir.komerce.id/api/v1/calculate/domestic-cost', [
-            'origin' => $origin,
-            'destination' => $destination,
-            'weight' => $weight,
-            'courier' => $courier,
-            'price' => $price,
-        ]);
+                    'origin' => $origin,
+                    'destination' => $destination,
+                    'weight' => $weight,
+                    'courier' => $courier,
+                    'price' => $price,
+                ]);
 
         return $response->json();
     }
 
-    public function trackDelivery($waybill, $courier)
-{
-    $response = Http::withHeaders([
-        'key' => $this->deliveryKey,
-    ])->post('https://api.komerce.id/delivery/track', [
-        'waybill' => $waybill,
-        'courier' => $courier,
-    ]);
+    public function trackShipment($awb, $courier, $lastPhone = null)
+    {
+        $data = [
+            'awb' => $awb,
+            'courier' => $courier,
+        ];
 
-    return $response->json();
-}
+        if ($courier === 'jne' && $lastPhone) {
+            $data['last_phone_number'] = $lastPhone;
+        }
+
+        $response = Http::withHeaders([
+            'accept' => 'application/json',
+            'key' => $this->deliveryKey,
+        ])->post('https://rajaongkir.komerce.id/api/v1/track/waybill', $data);
+
+        return $response->json();
+    }
+
+
 
 }

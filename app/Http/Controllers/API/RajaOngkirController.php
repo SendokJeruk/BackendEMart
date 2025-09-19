@@ -25,11 +25,11 @@ class RajaOngkirController extends Controller
     public function cost(Request $request)
     {
         $data = $request->validate([
-            'origin' => 'required',
+            'origin'      => 'required',
             'destination' => 'required',
-            'weight' => 'required|integer',
-            'courier' => 'required',
-            'price' => 'required'
+            'weight'      => 'required|integer',
+            'courier'     => 'required',
+            'price'       => 'required'
         ]);
 
         return response()->json($this->rajaOngkir->getCost(
@@ -48,7 +48,7 @@ class RajaOngkirController extends Controller
         'courier' => 'required|string',
     ]);
 
-    return response()->json($this->rajaOngkir->trackDelivery(
+    return response()->json($this->rajaOngkir->trackShipment(
         $data['waybill'],
         $data['courier']
     ));

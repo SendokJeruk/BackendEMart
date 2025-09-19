@@ -2,8 +2,13 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
 {
@@ -44,5 +49,52 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    public function render($request, Throwable $e)
+    {
+        if ($e instanceof ValidationException) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
+        }
+
+        if ($e instanceof ModelNotFoundException) {
+            return response()->json([
+                'message' => 'Resource not found',
+            ], 404);
+        }
+
+        if ($e instanceof AuthenticationException) {
+            return response()->json([
+                'message' => 'Unauthenticated',
+            ], 401);
+        }
+
+        if ($e instanceof AuthorizationException) {
+            return response()->json([
+                'message' => 'Forbidden',
+            ], 403);
+        }
+        if ($e instanceof ThrottleRequestsException) {
+            $retryAfter = $e->getHeaders()['Retry-After'] ?? 60;
+            return response()->json([
+                'message' => "Too many requests. Please try again in {$retryAfter} seconds."
+            ], 429);
+    }
+
+        return response()->json([
+            'message' => 'Internal Server Error',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+
+
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        return response()->json([
+            'message' => 'Unauthenticated',
+        ], 401);
     }
 }

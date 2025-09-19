@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Repository\UploadProfileRepository;
+use Illuminate\Validation\Rules\Password;
 
 
 class ManageUserController extends Controller
@@ -20,7 +21,7 @@ class ManageUserController extends Controller
         $this->upload = new UploadProfileRepository();
     }
     public function index(Request $request){
-        try {
+
             $query = User::query();
 
             if ($request->has('name')) {
@@ -33,26 +34,26 @@ class ManageUserController extends Controller
 
             $manage_user = $query->paginate(10);
             return response()->json([
-                'message' => 'Berhasil Dapatkan Data',
+                'status' => 'Success',
+                'message' => 'Data retrieved successfully',
                 'data' => $manage_user
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 
     public function store(Request $request){
-        try {
+
             $validate = Validator::make($request->all(),[
-                'name' => 'required',
-                'email' => 'required',
-                'no_telp' => 'required',
-                'password' => 'required|min:8',
-                'role_id' => 'required',
-                'foto_profil' => 'nullable|image',
+                'name'      => 'required|string|min:3|max:50',
+                'email'     => 'required|email|unique:users,email',
+                'no_telp'   => 'required|max:12',
+                'password'  => ['required', Password::min(8)
+                ->mixedCase()
+                ->letters()
+                ->numbers()
+                ->symbols()],
+                'role_id'   => 'required',
+                'foto_profil' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             ]);
 
             if($validate->fails()) {
@@ -72,25 +73,25 @@ class ManageUserController extends Controller
             $manage_user->save();
 
             return response()->json([
-                'message' => 'data telah di tambahkan',
+                'status' => 'Success',
+                'message' => 'Successful added data',
                 'data' => $manage_user
-                ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+                ], 201);
+
     }
 
     public function update(Request $request, User $manage_user){
         $validate = Validator::make($request->all(),[
-            'name' => 'nullable',
-            'email' => 'nullable',
-            'no_telp' => 'nullable',
-            'password' => 'nullable',
-            'role_id' => 'nullable',
-            'foto_profil' => 'nullable',
+            'name'     => 'nullable|string|min:3|max:50',
+            'email'    => 'nullable|email|unique:users,email',
+            'no_telp'  => 'nullable|max:12',
+            'password' => ['nullable', Password::min(8)
+                        ->mixedCase()
+                        ->letters()
+                        ->numbers()
+                        ->symbols()],
+            'role_id'  => 'nullable',
+            'foto_profil' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         if($validate->fails()) {
@@ -117,23 +118,23 @@ class ManageUserController extends Controller
         }
         $manage_user->save();
         return response()->json([
-            'message' => 'data telah di perbarui',
+            'status' => 'Success',
+            'message' => 'Data updated successfully',
             'data' => $manage_user
             ], 200);
     }
 
     public function delete(User $manage_user){
-        try {
+
             $manage_user->delete();
 
             return response()->json([
-             'message' => 'Data berhasil dihapus'
+            'status' => 'Success',
+             'message' => 'Data deleted successfully'
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
     }
 }
+
+
+

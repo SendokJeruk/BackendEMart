@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace App\Repository;
 
 use Illuminate\Support\Facades\File;
@@ -30,7 +30,7 @@ class UploadRepository {
 
     public function delete($image) {
         $array = explode('/', $image);
-        
+
         if(isset($array[5])) {
             File::delete(public_path('upload/img/' . $array[5]));
         }
