@@ -49,11 +49,16 @@ use App\Http\Controllers\API\TestController;
 //     return $request->user();
 // });
 
+Route::get('/test-limit', function () {
+    return response()->json(['ok' => true]);
+})->middleware('throttle:test');
+
+
 Route::post('midtrans/callback', [MidtransCallback::class, 'callback']);
 
 Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('register', [AuthController::class, 'register']);
+        Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login');
+        Route::post('register', [AuthController::class, 'register'])->middleware('throttle:register');
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
     // GOOGLE OAUTH
@@ -69,11 +74,12 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 Route::get('/product/mobile', [ProductController::class, 'index'])->middleware('auth:sanctum');
 Route::get('/product', [ProductController::class, 'index']);
 
-
 Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => ['auth:sanctum', 'seller'] ], function () {
+    Route::get('/myproducts', [ProductController::class, 'getMyProducts']);
     Route::post('/', [ProductController::class, 'store']);
     Route::put('/{product}', [ProductController::class, 'edit']);
     Route::delete('/{product}', [ProductController::class, 'delete']);
+    Route::get('/statistic', [ProductController::class, 'getStatisticProduct']);
 });
 
 Route::get('/category', [CategoryController::class, 'index']);
@@ -195,7 +201,8 @@ Route::group(['prefix' => 'cart', 'as' => 'cart.', 'middleware' => ['auth:sanctu
 });
 
 Route::group(['prefix' => 'checkout', 'as' => 'checkout.', 'middleware' => ['auth:sanctum']], function () {
-    Route::post('/', [CheckoutController::class, 'checkout']);
+    Route::post('/checkoutAll', [CheckoutController::class, 'checkoutAll']);
+    Route::post('/products', [CheckoutController::class, 'checkout']);
 });
 
 Route::group(['prefix' => 'income', 'as' => 'income.', 'middleware' => ['auth:sanctum']], function () {
@@ -213,6 +220,7 @@ Route::group(['prefix' => 'detailIncome', 'as' => 'detailIncome.', 'middleware' 
 
 Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => ['auth:sanctum']], function () {
     Route::get('/', [ShipmentController::class, 'getAllPengiriman']);
+    Route::get('/{id}', [ShipmentController::class, 'getPengirimanById']);
     Route::get('/{kode_transaksi}', [ShipmentController::class, 'getPengirimanByKodeTransaksi']);
     Route::post('/', [ShipmentController::class, 'store']);
     Route::post('/confirm-received/{pengiriman}', [ShipmentController::class, 'confirmReceived']);
