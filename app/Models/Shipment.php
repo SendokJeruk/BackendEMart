@@ -19,4 +19,9 @@ class Shipment extends Model
         return $this->hasMany(DetailShipment::class, 'id_shipment');
     }
 
+    public function history_shipments()
+    {
+        return $this->hasMany(HistoryShipment::class, 'id_shipment');
+    }
+
 }

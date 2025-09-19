@@ -48,7 +48,7 @@ class RajaOngkirController extends Controller
         'courier' => 'required|string',
     ]);
 
-    return response()->json($this->rajaOngkir->trackDelivery(
+    return response()->json($this->rajaOngkir->trackShipment(
         $data['waybill'],
         $data['courier']
     ));
