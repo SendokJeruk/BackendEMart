@@ -219,6 +219,7 @@ Route::group(['prefix' => 'detailIncome', 'as' => 'detailIncome.', 'middleware' 
 
 Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => ['auth:sanctum']], function () {
     Route::get('/', [ShipmentController::class, 'getAllPengiriman']);
+    Route::get('/{id}', [ShipmentController::class, 'getPengirimanById']);
     Route::get('/{kode_transaksi}', [ShipmentController::class, 'getPengirimanByKodeTransaksi']);
     Route::post('/', [ShipmentController::class, 'store']);
     Route::post('/confirm-received/{pengiriman}', [ShipmentController::class, 'confirmReceived']);

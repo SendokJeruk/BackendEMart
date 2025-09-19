@@ -3,9 +3,10 @@
 namespace App\Services;
 
 use App\Models\Shipment;
-use App\Models\DetailShipment;
 use App\Models\Transaction;
+use App\Models\DetailShipment;
 use App\Services\RajaOngkirService;
+use Illuminate\Support\Facades\Log;
 
 
 class ShipmentService
@@ -17,44 +18,57 @@ class ShipmentService
         $this->rajaOngkir = $rajaOngkir;
     }
 
-    public function createShipment(string $kode_transaksi, array $dataOngkir)
+    public function createShipment(Transaction $transaction, array $dataOngkir)
     {
-        $transaction = Transaction::where('kode_transaksi', $kode_transaksi)->firstOrFail();
+        try {
+            Log::info('Creating shipment for transaction: ' . $transaction->kode_transaksi);
+            Log::info('Data Ongkir:', $dataOngkir);
 
-        // Cek shipment yang sudah ada
-        $existingShipment = Shipment::where('kode_transaksi', $kode_transaksi)->first();
-
-        if ($existingShipment)
-            return; // jika sudah ada, hentikan
-
-        // Group detail transaksi berdasarkan user_id
-        $groupedByUser = $transaction->detail_transaction->groupBy(fn($item) => $item->product->user_id);
-
-        foreach ($groupedByUser as $userId => $details) {
-            // Ambil toko_id user ini dari salah satu produk
-            $tokoId = $details->first()->product->toko_id ?? null;
-            if (!$tokoId)
-                continue;
-
-            // Cari data ongkir untuk toko ini
-            $ongkirForToko = collect($dataOngkir)->firstWhere('toko_id', $tokoId);
-            if (!$ongkirForToko)
-                continue;
-
-            $shipment = Shipment::create([
-                'kode_transaksi' => $transaction->kode_transaksi,
-                'kurir' => $ongkirForToko['kurir'], // pakai kurir sesuai toko
-                'status_pengiriman' => 'dibuat',
-            ]);
-
-            foreach ($details as $detail) {
-                DetailShipment::create([
-                    'id_shipment' => $shipment->id,
-                    'detail_transaksi_id' => $detail->id,
-                ]);
+            $existingShipment = Shipment::where('kode_transaksi', $transaction->kode_transaksi)->first();
+            if ($existingShipment) {
+                return;
             }
+
+            $groupedByUser = $transaction->detail_transaction->groupBy(fn($item) => $item->product->user_id);
+
+            foreach ($groupedByUser as $userId => $details) {
+                $tokoId = $details->first()->product->user->toko->id ?? null;
+                if (!$tokoId) {
+                    Log::warning("No toko_id found for user_id {$userId}");
+                    continue;
+                }
+
+                $ongkirForToko = collect($dataOngkir)->firstWhere('toko_id', $tokoId);
+                if (!$ongkirForToko) {
+                    Log::warning("No ongkir found for toko_id {$tokoId}");
+                    continue;
+                }
+
+                $shipment = Shipment::create([
+                    'kode_transaksi' => $transaction->kode_transaksi,
+                    'kurir' => $ongkirForToko['kurir'],
+                    'ongkir' => $ongkirForToko['ongkir'],
+                    'status_pengiriman' => 'belum dibayar',
+                ]);
+
+                Log::info('Created shipment with ID: ' . $shipment->id);
+
+                foreach ($details as $detail) {
+                    DetailShipment::create([
+                        'id_shipment' => $shipment->id,
+                        'detail_transaksi_id' => $detail->id,
+                    ]);
+                }
+            }
+
+        } catch (\Throwable $e) {
+            Log::error('Error creating shipment: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
+
+
 
 
     public function trackShipment($id_shipment)

@@ -26,6 +26,8 @@ class SuccessPaymentRepository
 
             DB::beginTransaction();
 
+            Shipment::where('kode_transaksi', $transaction->kode_transaksi)
+                ->update(['status_pengiriman' => 'dibuat']);
 
             $debugIncomes = [];
 
