@@ -47,6 +47,7 @@ class Product extends Model
     {
         return $this->HasMany(Cart_detail::class, 'cartDetail_id');
     }
+    
 
     public function scopeFilter($query, $request)
     {

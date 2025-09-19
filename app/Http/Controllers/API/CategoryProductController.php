@@ -13,12 +13,17 @@ class CategoryProductController extends Controller
     public function index()
     {
 
-        $category_product = CategoryProduct::paginate(10);
+        $category_product = CategoryProduct::with([
+            'category:id,nama_category',
+            'product:id,nama_product'
+        ])->paginate(10);
+
         return response()->json([
             'status' => 'Success',
             'message' => 'Product categories retrieved successfully',
             'data' => $category_product
         ]);
+
 
     }
 
