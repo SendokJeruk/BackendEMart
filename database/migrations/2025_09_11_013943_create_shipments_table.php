@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('kurir')->nullable();
             $table->string('plat_nomor')->nullable();
             $table->string('kode_resi')->nullable();
+            $table->integer('ongkir')->default(0);
             $table->enum('status_pengiriman', [
                 'belum dibayar',
                 'dibuat',

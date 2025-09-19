@@ -74,11 +74,12 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 Route::get('/product/mobile', [ProductController::class, 'index'])->middleware('auth:sanctum');
 Route::get('/product', [ProductController::class, 'index']);
 
-
 Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => ['auth:sanctum', 'seller'] ], function () {
+    Route::get('/myproducts', [ProductController::class, 'getMyProducts']);
     Route::post('/', [ProductController::class, 'store']);
     Route::put('/{product}', [ProductController::class, 'edit']);
     Route::delete('/{product}', [ProductController::class, 'delete']);
+    Route::get('/statistic', [ProductController::class, 'getStatisticProduct']);
 });
 
 Route::get('/category', [CategoryController::class, 'index']);
