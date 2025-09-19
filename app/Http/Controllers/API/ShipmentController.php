@@ -20,7 +20,7 @@ class ShipmentController extends Controller
     public function getAllPengiriman()
     {
         // return Shipment::with(['transaction.user'])->paginate(10);
-        $pengiriman = Shipment::with(['transaction.user' , 'detail_shipments.detail_transaction.product'])
+        $pengiriman = Shipment::with(['transaction.user', 'detail_shipments.detail_transaction.product'])
             ->whereHas('transaction', function ($query) {
                 $query->where('user_id', auth()->id());
             })
@@ -47,11 +47,11 @@ class ShipmentController extends Controller
             ], 404);
         }
 
-        //todo handle api shipping
-        // ? Uncomment jika sudah aman
-        // $shippingData =$this->shipment->trackShipment($pengiriman->id);
-
-        // $pengiriman['shippingData'] = $shippingData;
+        if ($pengiriman->kode_resi || $pengiriman->kurir) {
+            // TODO Handle API tracking
+            $shippingData = $this->shipment->trackShipment($pengiriman->id);
+            $pengiriman['shippingData'] = $shippingData;
+        }
 
         return response()->json([
             'message' => 'Berhasil mendapatkan data pengiriman dengan ID ' . $id,
