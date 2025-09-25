@@ -70,4 +70,11 @@ class Product extends Model
             ->when($request->filled('user_id'), fn($q) =>
             $q->where('user_id', $request->user_id));
     }
+
+
+public function seller()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
+
 }

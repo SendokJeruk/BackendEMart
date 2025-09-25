@@ -8,19 +8,23 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CartController;
 use App\Http\Controllers\API\FotoController;
 use App\Http\Controllers\API\RoleController;
+use App\Http\Controllers\API\TestController;
 use App\Http\Controllers\API\TokoController;
 use App\Http\Controllers\API\AlamatController;
 use App\Http\Controllers\API\IncomeController;
 use App\Http\Controllers\API\MidtransCallback;
 use App\Http\Controllers\API\RatingController;
+use App\Http\Controllers\API\ReportController;
 use App\Http\Controllers\API\EncryptController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\SettingController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\CheckoutController;
+use App\Http\Controllers\API\ShipmentController;
 use App\Http\Controllers\API\DetailCartController;
 use App\Http\Controllers\API\ManageUserController;
+use App\Http\Controllers\API\PengirimanCOntroller;
 use App\Http\Controllers\API\RajaOngkirController;
 use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
@@ -227,13 +231,18 @@ Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => [
     Route::delete('/{pengiriman}', [ShipmentController::class, 'delete']);
 });
 
+Route::group(['prefix' => 'report', 'as' => 'report.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
+   Route::get('/admin', [ReportController::class, 'adminMonthlyReport'])->name('admin');
+});
+Route::get('report/seller/{seller_id}', [ReportController::class, 'sellerTransactionReport'])->middleware(['auth:sanctum', 'seller']);
+Route::get('report/user/{user_id}', [ReportController::class, 'userTransactionReport'])->middleware('auth:sanctum');
+
 Route::group(['prefix' => 'withdraw', 'as' => 'withdraw.', 'middleware' => ['auth:sanctum']], function () {
     Route::post('/submit', [WithdrawController::class, 'submitWithdraw'])->middleware('seller');
     Route::post('/handle/{withdraw}', [WithdrawController::class, 'handleWithdrawal'])->middleware('checkrole');
     Route::get('/', [WithdrawController::class, 'index'])->middleware('checkrole');
     Route::get('/self', [WithdrawController::class, 'selfWithdraw'])->middleware('seller');
 });
-
 
 // TES ENKRIPSI
 Route::post('/enkrypt', [EncryptController::class, 'enkrypt']);
