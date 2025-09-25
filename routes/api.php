@@ -24,7 +24,6 @@ use App\Http\Controllers\API\CheckoutController;
 use App\Http\Controllers\API\ShipmentController;
 use App\Http\Controllers\API\DetailCartController;
 use App\Http\Controllers\API\ManageUserController;
-use App\Http\Controllers\API\PengirimanCOntroller;
 use App\Http\Controllers\API\RajaOngkirController;
 use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
@@ -32,9 +31,6 @@ use App\Http\Controllers\API\DetailIncomeController;
 use App\Http\Controllers\API\RequestSellerController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
-use App\Http\Controllers\API\PengirimanCOntroller;
-use App\Http\Controllers\API\ShipmentController;
-use App\Http\Controllers\API\TestController;
 use App\Http\Controllers\API\WithdrawController;
 
 /*
