@@ -6,14 +6,21 @@ use App\Models\Income;
 use App\Models\Shipment;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use App\Services\ShipmentService;
 use App\Http\Controllers\Controller;
 
 class ShipmentController extends Controller
 {
+    protected $shipment;
+
+    public function __construct(ShipmentService $shipment)
+    {
+        $this->shipment = $shipment;
+    }
     public function getAllPengiriman()
     {
         // return Shipment::with(['transaction.user'])->paginate(10);
-        $pengiriman = Shipment::with(['transaction.user'])
+        $pengiriman = Shipment::with(['transaction.user', 'detail_shipments.detail_transaction.product'])
             ->whereHas('transaction', function ($query) {
                 $query->where('user_id', auth()->id());
             })
@@ -21,6 +28,33 @@ class ShipmentController extends Controller
 
         return response()->json([
             'message' => 'Berhasil mendapatkan data pengiriman',
+            'data' => $pengiriman
+        ]);
+    }
+
+    public function getPengirimanById($id)
+    {
+        $pengiriman = Shipment::with(['detail_shipments.detail_transaction.product.user.toko'])
+            ->where('id', $id)
+            ->whereHas('transaction', function ($query) {
+                $query->where('user_id', auth()->id());
+            })
+            ->first();
+
+        if (!$pengiriman) {
+            return response()->json([
+                'message' => 'Data pengiriman tidak ditemukan',
+            ], 404);
+        }
+
+        if ($pengiriman->kode_resi || $pengiriman->kurir) {
+            // TODO Handle API tracking
+            $shippingData = $this->shipment->trackShipment($pengiriman->id);
+            $pengiriman['shippingData'] = $shippingData;
+        }
+
+        return response()->json([
+            'message' => 'Berhasil mendapatkan data pengiriman dengan ID ' . $id,
             'data' => $pengiriman
         ]);
     }
@@ -67,7 +101,7 @@ class ShipmentController extends Controller
                     'shipment_id' => $shipment->id,
                     'kode_transaksi' => $shipment->kode_transaksi,
                     'status_pengiriman' => $shipment->status_pengiriman,
-                    'product_id' => $product->id,
+                    'nama_product' => $product->nama_product,
                     'harga' => $detailTransaksi->harga,
                     'jumlah' => $detailTransaksi->jumlah,
                     'subtotal' => $detailTransaksi->subtotal,
@@ -75,8 +109,6 @@ class ShipmentController extends Controller
                 ];
             }
         }
-
-
 
         return response()->json([
             'message' => 'Berhasil mendapatkan data pengiriman dengan kode transaksi ' . $kode_transaksi,
@@ -89,7 +121,7 @@ class ShipmentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kode_transaksi' => 'required|unique:pengirimen,kode_transaksi',
+            'kode_transaksi' => 'required|unique:shipment,kode_transaksi',
             'status_pengiriman' => 'required|string|in:dibuat,dijadwalkan,kurir_ditugaskan,dalam_proses,tiba',
             'kode_resi' => 'nullable|string',
             'kurir' => 'nullable|string',

@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('shipments', function (Blueprint $table) {
+        Schema::create('history_shipments', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_transaksi')->index();
-            $table->string('kurir')->nullable();
-            $table->string('plat_nomor')->nullable();
-            $table->string('kode_resi')->nullable();
-            $table->integer('ongkir')->default(0);
+            $table->foreignId('id_shipment')->constrained('shipments')->cascadeOnDelete();
             $table->enum('status_pengiriman', [
-                'belum dibayar',
                 'dibuat',
                 'dijadwalkan',
                 'kurir_ditugaskan',
@@ -27,10 +22,7 @@ return new class extends Migration
                 'tiba',
                 'diterima',
                 'batal',
-            ])->default('belum dibayar');
-            $table->timestamp('estimasi_tiba')->nullable();
-            $table->timestamp('tiba_di_tujuan')->nullable();
-            $table->text('bukti_pengiriman')->nullable();
+            ])->default('dibuat');
             $table->timestamps();
         });
     }
@@ -40,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('shipments');
+        Schema::dropIfExists('history_shipments');
     }
 };

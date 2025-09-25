@@ -2,13 +2,29 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Http\Controllers\API\ProductController;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class CategoryProduct extends Model
+
+class CategoryProduct extends Pivot
 {
-    use HasFactory;
-    protected $guarded = [];
-    protected $hidden = ['timestamps', 'created_at', 'updated_at'];
+    protected $table = 'category_products';
 
+    protected $guarded = [];
+
+    protected $hidden = ['created_at', 'updated_at'];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }
+

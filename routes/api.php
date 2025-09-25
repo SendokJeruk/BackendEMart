@@ -32,8 +32,10 @@ use App\Http\Controllers\API\DetailIncomeController;
 use App\Http\Controllers\API\RequestSellerController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
-
-
+use App\Http\Controllers\API\PengirimanCOntroller;
+use App\Http\Controllers\API\ShipmentController;
+use App\Http\Controllers\API\TestController;
+use App\Http\Controllers\API\WithdrawController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,11 +77,12 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 Route::get('/product/mobile', [ProductController::class, 'index'])->middleware('auth:sanctum');
 Route::get('/product', [ProductController::class, 'index']);
 
-
 Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => ['auth:sanctum', 'seller'] ], function () {
+    Route::get('/myproducts', [ProductController::class, 'getMyProducts']);
     Route::post('/', [ProductController::class, 'store']);
     Route::put('/{product}', [ProductController::class, 'edit']);
     Route::delete('/{product}', [ProductController::class, 'delete']);
+    Route::get('/statistic', [ProductController::class, 'getStatisticProduct']);
 });
 
 Route::get('/category', [CategoryController::class, 'index']);
@@ -220,6 +223,7 @@ Route::group(['prefix' => 'detailIncome', 'as' => 'detailIncome.', 'middleware' 
 
 Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => ['auth:sanctum']], function () {
     Route::get('/', [ShipmentController::class, 'getAllPengiriman']);
+    Route::get('/{id}', [ShipmentController::class, 'getPengirimanById']);
     Route::get('/{kode_transaksi}', [ShipmentController::class, 'getPengirimanByKodeTransaksi']);
     Route::post('/', [ShipmentController::class, 'store']);
     Route::post('/confirm-received/{pengiriman}', [ShipmentController::class, 'confirmReceived']);
@@ -232,6 +236,13 @@ Route::group(['prefix' => 'report', 'as' => 'report.', 'middleware' => ['auth:sa
 });
 Route::get('report/seller/{seller_id}', [ReportController::class, 'sellerTransactionReport'])->middleware(['auth:sanctum', 'seller']);
 Route::get('report/user/{user_id}', [ReportController::class, 'userTransactionReport'])->middleware('auth:sanctum');
+
+Route::group(['prefix' => 'withdraw', 'as' => 'withdraw.', 'middleware' => ['auth:sanctum']], function () {
+    Route::post('/submit', [WithdrawController::class, 'submitWithdraw'])->middleware('seller');
+    Route::post('/handle/{withdraw}', [WithdrawController::class, 'handleWithdrawal'])->middleware('checkrole');
+    Route::get('/', [WithdrawController::class, 'index'])->middleware('checkrole');
+    Route::get('/self', [WithdrawController::class, 'selfWithdraw'])->middleware('seller');
+});
 
 // TES ENKRIPSI
 Route::post('/enkrypt', [EncryptController::class, 'enkrypt']);
