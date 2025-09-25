@@ -31,8 +31,7 @@ use App\Http\Controllers\API\DetailTransactionController;
 use App\Http\Controllers\API\PengirimanCOntroller;
 use App\Http\Controllers\API\ShipmentController;
 use App\Http\Controllers\API\TestController;
-
-
+use App\Http\Controllers\API\WithdrawController;
 
 /*
 |--------------------------------------------------------------------------
@@ -226,6 +225,13 @@ Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => [
     Route::post('/confirm-received/{pengiriman}', [ShipmentController::class, 'confirmReceived']);
     Route::put('/{pengiriman}', [ShipmentController::class, 'update']);
     Route::delete('/{pengiriman}', [ShipmentController::class, 'delete']);
+});
+
+Route::group(['prefix' => 'withdraw', 'as' => 'withdraw.', 'middleware' => ['auth:sanctum']], function () {
+    Route::post('/submit', [WithdrawController::class, 'submitWithdraw'])->middleware('seller');
+    Route::post('/handle/{withdraw}', [WithdrawController::class, 'handleWithdrawal'])->middleware('checkrole');
+    Route::get('/', [WithdrawController::class, 'index'])->middleware('checkrole');
+    Route::get('/self', [WithdrawController::class, 'selfWithdraw'])->middleware('seller');
 });
 
 

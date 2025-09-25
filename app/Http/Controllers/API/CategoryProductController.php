@@ -20,7 +20,7 @@ class CategoryProductController extends Controller
 
         return response()->json([
             'status' => 'Success',
-            'message' => 'Product categories retrieved successfully',
+            'message' => 'Product categories retrieved successfully', 
             'data' => $category_product
         ]);
 
