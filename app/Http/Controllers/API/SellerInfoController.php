@@ -18,7 +18,7 @@ class SellerInfoController extends Controller
 
     $data = $sellers->map(function ($seller) {
         return [
-            'seller' => ($seller->user->toko ?? 'Toko') . ' - ' . $seller->user->name,
+           'seller' => ($seller->user->toko->nama_toko ?? 'Toko') . ' - ' . $seller->user->name,
             'penjualan_total' => $seller->total_penjualan ?? 0,
             'income' => $seller->jumlah_total ?? 0,
         ];
