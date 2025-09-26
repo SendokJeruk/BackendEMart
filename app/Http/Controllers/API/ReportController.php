@@ -57,7 +57,6 @@ class ReportController extends Controller
 
 
 
-
     public function userTransactionReport($user_id)
     {
         $transactions = Transaction::where('user_id', $user_id)
