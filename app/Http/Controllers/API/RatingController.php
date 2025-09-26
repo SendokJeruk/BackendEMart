@@ -20,17 +20,15 @@ class RatingController extends Controller
     }
     public function index()
     {
-
         $ratings = Rating::when(request('product_id'), function ($query, $product_id) {
             return $query->where('product_id', $product_id);
-        })->get();
+        })->with('user')->get();
 
         return response()->json([
             'status' => 'Success',
             'message' => 'Rating data retrieved successfully',
             'data' => $ratings
         ]);
-
     }
 
     public function store(Request $request)
@@ -39,6 +37,7 @@ class RatingController extends Controller
         $validate = Validator::make($request->all(), [
             'product_id' => 'required',
             'rating' => 'required|integer',
+            'detail_transaction_id' => 'required',
             'deskripsi' => 'nullable'
         ]);
 
@@ -58,6 +57,7 @@ class RatingController extends Controller
         $rating->user_id = auth()->id();
         $rating->product_id = $request->product_id;
         $rating->rating = $request->input('rating');
+        $rating->detail_transaction_id = $request->input('detail_transaction_id');
         $rating->deskripsi = $request->input('deskripsi');
         $rating->save();
 

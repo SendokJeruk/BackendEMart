@@ -25,6 +25,7 @@ use App\Http\Controllers\API\ShipmentController;
 use App\Http\Controllers\API\DetailCartController;
 use App\Http\Controllers\API\ManageUserController;
 use App\Http\Controllers\API\RajaOngkirController;
+use App\Http\Controllers\API\SellerInfoController;
 use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\DetailIncomeController;
@@ -223,8 +224,8 @@ Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => [
     Route::get('/{kode_transaksi}', [ShipmentController::class, 'getPengirimanByKodeTransaksi']);
     Route::post('/', [ShipmentController::class, 'store']);
     Route::post('/confirm-received/{pengiriman}', [ShipmentController::class, 'confirmReceived']);
-    Route::put('/{pengiriman}', [ShipmentController::class, 'update']);
-    Route::delete('/{pengiriman}', [ShipmentController::class, 'delete']);
+    Route::put('/{shipment}', [ShipmentController::class, 'update']);
+    Route::delete('/{shipment}', [ShipmentController::class, 'delete']);
 });
 
 Route::group(['prefix' => 'report', 'as' => 'report.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
@@ -241,6 +242,12 @@ Route::group(['prefix' => 'withdraw', 'as' => 'withdraw.', 'middleware' => ['aut
     Route::get('/self', [WithdrawController::class, 'selfWithdraw'])->middleware('seller');
 });
 
+
+
+
+Route::group(['prefix' => 'sellerinfo', 'as' => 'sellerinfo.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
+   Route::get('/topseller', [SellerInfoController::class, 'topsellers']);
+});
 
 
 // TES ENKRIPSI
