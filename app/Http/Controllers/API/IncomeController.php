@@ -16,7 +16,6 @@ class IncomeController extends Controller
         $user = auth()->user();
 
         $income = Income::where('user_id', $user->id)->first();
-        return $income;
 
         return response()->json([
             'status' => 'Success',
