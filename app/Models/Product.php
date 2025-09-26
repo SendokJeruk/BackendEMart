@@ -47,6 +47,7 @@ class Product extends Model
     {
         return $this->HasMany(Cart_detail::class, 'cartDetail_id');
     }
+    
 
     public function scopeFilter($query, $request)
     {
@@ -69,4 +70,11 @@ class Product extends Model
             ->when($request->filled('user_id'), fn($q) =>
             $q->where('user_id', $request->user_id));
     }
+
+
+public function seller()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
+
 }
