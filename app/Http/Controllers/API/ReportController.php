@@ -49,8 +49,7 @@ class ReportController extends Controller
             return abort(404, "Seller tidak ditemukan");
         }
 
-        $safeName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $seller->name);
-
+    $safeName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $seller->name);
 
     return $this->generatePdf($transactions, "laporan-seller-$safeName-".now().".pdf");
 }
