@@ -14,10 +14,20 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class ReportController extends Controller
 {
 
+    public function generateInvoice($kode_transaksi)
+    {
+        $transaction = Transaction::with(['user', 'detail_transaction.product', 'shipment'])
+            ->where('kode_transaksi', $kode_transaksi)
+            ->first();
+        // return $transaction;
+        $pdf = Pdf::loadView('invoice', ['transaction' => $transaction]);
+        return $pdf->download("Invoice-{$transaction->kode_transaksi}-".now().".pdf");
+    }
+
     public function adminMonthlyReport(Request $request)
     {
         $month = $request->get('month', Carbon::now()->month);
-        $year  = $request->get('year', Carbon::now()->year);
+        $year = $request->get('year', Carbon::now()->year);
 
         $transactions = Transaction::whereYear('tanggal_transaksi', $year)
             ->whereMonth('tanggal_transaksi', $month)
@@ -25,24 +35,26 @@ class ReportController extends Controller
         return $this->generateExcel($transactions, "laporan-admin-$month-$year.xlsx");
     }
 
-public function sellerTransactionReport($seller_id)
-{
-    $transactions = Transaction::whereHas('detail_transaction.product', function($q) use ($seller_id) {
+    public function sellerTransactionReport($seller_id)
+    {
+        $transactions = Transaction::whereHas('detail_transaction.product', function ($q) use ($seller_id) {
             $q->where('user_id', $seller_id);
         })
-        ->with(['user', 'detail_transaction.product.seller'])
-        ->get();
+            ->with(['user', 'detail_transaction.product.seller'])
+            ->get();
 
 
-    $seller = \App\Models\User::find($seller_id);
-    if (!$seller) {
-        return abort(404, "Seller tidak ditemukan");
-    }
+        $seller = \App\Models\User::find($seller_id);
+        if (!$seller) {
+            return abort(404, "Seller tidak ditemukan");
+        }
 
     $safeName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $seller->name);
 
     return $this->generatePdf($transactions, "laporan-seller-$safeName-".now().".pdf");
 }
+
+
 
 
 
@@ -78,18 +90,18 @@ public function sellerTransactionReport($seller_id)
         $sheet->setCellValue('F1', 'Status');
         $sheet->setCellValue('G1', 'Tanggal Transaksi');
 
-         // Isi data
-         $row = 2;
-    foreach ($transactions as $i => $trx) {
-        $sheet->setCellValue("A{$row}", $i + 1);
-        $sheet->setCellValue("B{$row}", $trx->kode_transaksi);
-        $sheet->setCellValue("C{$row}", $trx->user_id);
-        $sheet->setCellValue("D{$row}", $trx->user->role === 'seller' ? $trx->user->name : '-');
-        $sheet->setCellValue("E{$row}", $trx->total_harga);
-        $sheet->setCellValue("F{$row}", $trx->status);
-        $sheet->setCellValue("G{$row}", $trx->tanggal_transaksi);
-        $row++;
-    }
+        // Isi data
+        $row = 2;
+        foreach ($transactions as $i => $trx) {
+            $sheet->setCellValue("A{$row}", $i + 1);
+            $sheet->setCellValue("B{$row}", $trx->kode_transaksi);
+            $sheet->setCellValue("C{$row}", $trx->user_id);
+            $sheet->setCellValue("D{$row}", $trx->user->role === 'seller' ? $trx->user->name : '-');
+            $sheet->setCellValue("E{$row}", $trx->total_harga);
+            $sheet->setCellValue("F{$row}", $trx->status);
+            $sheet->setCellValue("G{$row}", $trx->tanggal_transaksi);
+            $row++;
+        }
 
         $writer = new Xlsx($spreadsheet);
 

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'accepted', 'rejected']);
             $table->text('catatan');
             $table->enum('metode', ['bank_transfer', 'gopay', 'ovo', 'dana','shopeePay'])->default('bank_transfer');
-            $table->integer('rekening_tujuan');
+            $table->string('rekening_tujuan');
             $table->timestamps();
         });
     }
