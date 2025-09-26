@@ -70,9 +70,9 @@ class User extends Authenticatable
         return $this->hasOne(Cart::class, 'user_id');
     }
 
-    public function income(): hasMany
+    public function income(): hasOne
     {
-        return $this->hasMany(Income::class, 'user_id');
+        return $this->hasOne(Income::class, 'user_id');
     }
 
     public function RequestSeller(): hasOne

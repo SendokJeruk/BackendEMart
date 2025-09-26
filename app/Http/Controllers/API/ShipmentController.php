@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Services\ShipmentService;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ShipmentController extends Controller
 {
@@ -20,11 +21,19 @@ class ShipmentController extends Controller
     public function getAllPengiriman()
     {
         // return Shipment::with(['transaction.user'])->paginate(10);
-        $pengiriman = Shipment::with(['transaction.user', 'detail_shipments.detail_transaction.product'])
-            ->whereHas('transaction', function ($query) {
-                $query->where('user_id', auth()->id());
-            })
-            ->paginate(10);
+        $user = Auth::user();
+
+        $pengiriman = Shipment::with([
+            'transaction.user',
+            'detail_shipments.detail_transaction.product'
+        ])
+        ->whereHas('detail_shipments.detail_transaction.product', function ($query) {
+            $query->where('user_id', Auth::id());
+        })
+        ->paginate(10);
+
+
+        return $pengiriman;
 
         return response()->json([
             'message' => 'Berhasil mendapatkan data pengiriman',
@@ -149,7 +158,7 @@ class ShipmentController extends Controller
     public function update(Request $request, Shipment $shipment)
     {
         $request->validate([
-            'kode_transaksi' => 'required' . $shipment->id,
+            'kode_transaksi' => 'required',
             'status_pengiriman' => 'required|string|in:dibuat,dijadwalkan,kurir_ditugaskan,dalam_proses,tiba',
             'resi' => 'nullable|string',
             'ekspedisi' => 'nullable|string',
