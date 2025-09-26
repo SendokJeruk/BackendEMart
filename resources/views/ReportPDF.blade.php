@@ -37,7 +37,7 @@
         }
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: collapse;  
             margin-bottom: 20px;
         }
         th {
