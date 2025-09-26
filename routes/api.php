@@ -232,6 +232,7 @@ Route::group(['prefix' => 'report', 'as' => 'report.', 'middleware' => ['auth:sa
 });
 Route::get('report/seller/{seller_id}', [ReportController::class, 'sellerTransactionReport'])->middleware(['auth:sanctum', 'seller']);
 Route::get('report/user/{user_id}', [ReportController::class, 'userTransactionReport'])->middleware('auth:sanctum');
+Route::get('report/invoice                                                                                          /{kode_transaksi}', [ReportController::class, 'generateInvoice'])->middleware('auth:sanctum');
 
 Route::group(['prefix' => 'withdraw', 'as' => 'withdraw.', 'middleware' => ['auth:sanctum']], function () {
     Route::post('/submit', [WithdrawController::class, 'submitWithdraw'])->middleware('seller');
@@ -239,6 +240,8 @@ Route::group(['prefix' => 'withdraw', 'as' => 'withdraw.', 'middleware' => ['aut
     Route::get('/', [WithdrawController::class, 'index'])->middleware('checkrole');
     Route::get('/self', [WithdrawController::class, 'selfWithdraw'])->middleware('seller');
 });
+
+
 
 // TES ENKRIPSI
 Route::post('/enkrypt', [EncryptController::class, 'enkrypt']);

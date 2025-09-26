@@ -44,6 +44,11 @@ Route::get('/', function (): JsonResponse {
     ]);
 });
 
+Route::get('/invoice', function () {
+    return view('invoice');
+})->name('invoice');
+
+
 // Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 //     Route::post('login', [AuthController::class, 'login']);
 //     Route::post('register', [AuthController::class, 'register']);
