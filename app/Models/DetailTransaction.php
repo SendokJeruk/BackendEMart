@@ -24,6 +24,10 @@ class DetailTransaction extends Model
     {
         return $this->hasMany(DetailIncome::class);
     }
+    public function rating()
+    {
+        return $this->hasOne(Rating::class, 'detail_transaction_id');
+    }
 
     public function scopeFilter($query, $request)
     {

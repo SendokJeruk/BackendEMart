@@ -110,11 +110,12 @@ class WithdrawController extends Controller
 
         if ($request->input('status') === 'accepted') {
             $user = $withdraw->user;
-            $userIncome = $user->income;
+            $userBalance = $user->balance;
 
-            if ($userIncome) {
-                $userIncome->jumlah_total -= $withdraw->jumlah;
-                $userIncome->save();
+            if ($userBalance) {
+                $userBalance->balance -= $withdraw->jumlah;
+                $userBalance->withdrawn_balance += $withdraw->jumlah;
+                $userBalance->save();
             }
         }
 

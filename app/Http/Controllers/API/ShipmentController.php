@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Income;
+use App\Models\SellerBalance;
 use App\Models\Shipment;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -25,13 +26,13 @@ class ShipmentController extends Controller
 
         $pengiriman = Shipment::with([
             'transaction.user',
-            'detail_shipments.detail_transaction.product'
+            'detail_shipments.detail_transaction.product',
+            'detail_shipments.detail_transaction.rating:id,detail_transaction_id,rating'
         ])
         ->whereHas('detail_shipments.detail_transaction.product', function ($query) {
             $query->where('user_id', Auth::id());
         })
         ->paginate(10);
-
 
         return $pengiriman;
 
@@ -218,9 +219,15 @@ class ShipmentController extends Controller
             $total = $detailShipments->sum(fn($ds) => $ds->detail_transaction->subtotal);
 
             $income = Income::firstOrNew(['user_id' => $userId]);
+            $balance = SellerBalance::firstOrNew(['user_id' => $userId]);
+
             $income->jumlah_total = ($income->exists ? $income->jumlah_total : 0) + $total;
+            $balance->balance = ($balance->exists ? $balance->balance : 0) + $total;
+
             $income->total_penjualan = ($income->exists ? $income->total_penjualan : 0) + 1;
+
             $income->save();
+            $balance->save();
 
             foreach ($detailShipments as $ds) {
                 $income->detail_incomes()->create([

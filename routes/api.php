@@ -25,6 +25,7 @@ use App\Http\Controllers\API\ShipmentController;
 use App\Http\Controllers\API\DetailCartController;
 use App\Http\Controllers\API\ManageUserController;
 use App\Http\Controllers\API\RajaOngkirController;
+use App\Http\Controllers\API\SellerInfoController;
 use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\DetailIncomeController;
@@ -241,6 +242,12 @@ Route::group(['prefix' => 'withdraw', 'as' => 'withdraw.', 'middleware' => ['aut
     Route::get('/self', [WithdrawController::class, 'selfWithdraw'])->middleware('seller');
 });
 
+
+
+
+Route::group(['prefix' => 'sellerinfo', 'as' => 'sellerinfo.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
+   Route::get('/topseller', [SellerInfoController::class, 'topsellers']);
+});
 
 
 // TES ENKRIPSI
