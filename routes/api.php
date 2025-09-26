@@ -26,6 +26,7 @@ use App\Http\Controllers\API\DetailCartController;
 use App\Http\Controllers\API\ManageUserController;
 use App\Http\Controllers\API\PengirimanCOntroller;
 use App\Http\Controllers\API\RajaOngkirController;
+use App\Http\Controllers\API\SellerInfoController;
 use App\Http\Controllers\API\FotoProductController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\DetailIncomeController;
@@ -232,6 +233,12 @@ Route::group(['prefix' => 'report', 'as' => 'report.', 'middleware' => ['auth:sa
 });
 Route::get('report/seller/{seller_id}', [ReportController::class, 'sellerTransactionReport'])->middleware(['auth:sanctum', 'seller']);
 Route::get('report/user/{user_id}', [ReportController::class, 'userTransactionReport'])->middleware('auth:sanctum');
+
+
+Route::group(['prefix' => 'sellerinfo', 'as' => 'sellerinfo.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
+   Route::get('/topseller', [SellerInfoController::class, 'topsellers']);
+});
+
 
 // TES ENKRIPSI
 Route::post('/enkrypt', [EncryptController::class, 'enkrypt']);

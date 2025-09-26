@@ -41,7 +41,7 @@ public function sellerTransactionReport($seller_id)
 
     $safeName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $seller->name);
 
-    return $this->generatePdf($transactions, "laporan-seller-$safeName.pdf");
+    return $this->generatePdf($transactions, "laporan-seller-$safeName-".now().".pdf");
 }
 
 
