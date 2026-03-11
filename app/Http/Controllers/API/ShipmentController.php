@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Income;
-use App\Models\SellerBalance;
 use App\Models\Shipment;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use App\Models\SellerBalance;
 use App\Services\ShipmentService;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,6 +20,28 @@ class ShipmentController extends Controller
     {
         $this->shipment = $shipment;
     }
+    // public function getAllPengiriman()
+    // {
+    //     // return Shipment::with(['transaction.user'])->paginate(10);
+    //     $user = Auth::user();
+
+    //     $pengiriman = Shipment::with([
+    //         'transaction.user',
+    //         'detail_shipments.detail_transaction.product',
+    //         'detail_shipments.detail_transaction.rating:id,detail_transaction_id,rating'
+    //     ])
+    //     ->whereHas('detail_shipments.detail_transaction.product', function ($query) {
+    //         $query->where('user_id', Auth::id());
+    //     })
+    //     ->paginate(10);
+
+    //     return $pengiriman;
+
+    //     return response()->json([
+    //         'message' => 'Berhasil mendapatkan data pengiriman',
+    //         'data' => $pengiriman
+    //     ]);
+    // }
     public function getAllPengiriman()
     {
         // return Shipment::with(['transaction.user'])->paginate(10);
@@ -29,12 +52,15 @@ class ShipmentController extends Controller
             'detail_shipments.detail_transaction.product',
             'detail_shipments.detail_transaction.rating:id,detail_transaction_id,rating'
         ])
-        ->whereHas('detail_shipments.detail_transaction.product', function ($query) {
+        // ->whereHas('detail_shipments.detail_transaction.product', function ($query) {
+        //     $query->where('user_id', Auth::id());
+        // })
+        ->whereHas('transaction', function ($query) {
             $query->where('user_id', Auth::id());
         })
         ->paginate(10);
 
-        return $pengiriman;
+        Log::info($pengiriman);
 
         return response()->json([
             'message' => 'Berhasil mendapatkan data pengiriman',
