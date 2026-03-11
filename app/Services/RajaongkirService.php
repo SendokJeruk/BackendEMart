@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Http;
 
-class RajaongkirService
+class RajaOngkirService
 {
     protected $shippingKey;
     protected $deliveryKey;
