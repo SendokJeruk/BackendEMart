@@ -45,6 +45,7 @@ class ProductController extends Controller
     {
         $products = Product::with(['rating', 'foto'])
             ->withAvg('rating', 'rating')
+            ->where('user_id', auth()->id())
             ->filter($request)
             ->paginate(10);
 

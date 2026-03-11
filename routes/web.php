@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\App;
 Route::get('/', function (): JsonResponse {
     return response()->json([
         'success' => true,
-        'message' => 'Welcome to Eleven Market API',
+        'message' => 'Welcome to Eleven Market API V0.300.03',
         'meta' => [
             'timestamp' => now()->toIso8601String(),
             'timezone' => config('app.timezone'),
