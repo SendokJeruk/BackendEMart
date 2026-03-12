@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 
-use App\Models\income;
+use App\Models\Income;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 

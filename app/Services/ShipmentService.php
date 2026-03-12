@@ -81,7 +81,7 @@ class ShipmentService
             ], 400);
         }
 
-        $trackingInfo = $this->rajaOngkir->trackShipment($shipment->kurir, $shipment->kode_resi);
+        $trackingInfo = $this->rajaOngkir->trackShipment($shipment->kode_resi, $shipment->kurir);
 
         if (!$trackingInfo) {
             return response()->json([
