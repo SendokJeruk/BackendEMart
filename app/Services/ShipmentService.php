@@ -68,6 +68,8 @@ class ShipmentService
         }
     }
 
+    
+
 
 
 
@@ -76,23 +78,46 @@ class ShipmentService
         $shipment = Shipment::findOrFail($id_shipment);
 
         if (!$shipment->kode_resi || !$shipment->kurir) {
-            return response()->json([
-                'message' => 'Resi atau kurir tidak tersedia untuk pengiriman ini.',
-            ], 400);
+            return null;
         }
 
-        $trackingInfo = $this->rajaOngkir->trackShipment($shipment->kode_resi, $shipment->kurir);
+        return $this->rajaOngkir->trackShipment($shipment->kode_resi, $shipment->kurir);
+    }
 
-        if (!$trackingInfo) {
-            return response()->json([
-                'message' => 'Gagal mendapatkan informasi pelacakan.',
-            ], 500);
-        }
+    public function confirmReceived(Shipment $pengiriman)
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($pengiriman) {
+            $pengiriman->status_pengiriman = 'diterima';
+            $pengiriman->save();
 
-        return response()->json([
-            'message' => 'Berhasil mendapatkan informasi pelacakan.',
-            'data' => $trackingInfo,
-        ]);
+            // Ambil detail transaksi hanya dari shipment ini
+            $details = $pengiriman->detail_shipments()->with('detail_transaction.product.user')->get();
 
+            // Group per user toko
+            $groupedByUser = $details->groupBy(fn($detailShipment) => $detailShipment->detail_transaction->product->user_id);
+
+            foreach ($groupedByUser as $userId => $detailShipments) {
+                $total = $detailShipments->sum(fn($ds) => $ds->detail_transaction->subtotal);
+
+                $income = \App\Models\Income::firstOrNew(['user_id' => $userId]);
+                $balance = \App\Models\SellerBalance::firstOrNew(['user_id' => $userId]);
+
+                $income->jumlah_total = ($income->exists ? $income->jumlah_total : 0) + $total;
+                $balance->balance = ($balance->exists ? $balance->balance : 0) + $total;
+                $income->total_penjualan = ($income->exists ? $income->total_penjualan : 0) + 1;
+
+                $income->save();
+                $balance->save();
+
+                foreach ($detailShipments as $ds) {
+                    $income->detail_incomes()->create([
+                        'detail_transaction_id' => $ds->detail_transaction->id,
+                        'jumlah' => $ds->detail_transaction->subtotal,
+                    ]);
+                }
+            }
+
+            return $pengiriman;
+        });
     }
 }

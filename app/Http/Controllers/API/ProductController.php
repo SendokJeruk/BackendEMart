@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Repository\UploadRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class ProductController extends Controller
 {
@@ -102,7 +103,9 @@ class ProductController extends Controller
 
     public function edit(Request $request, Product $product)
     {
-
+        if ($product->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
 
         $validated = $request->validate([
             'nama_product' => 'nullable|string|max:255',
@@ -132,6 +135,9 @@ class ProductController extends Controller
 
     public function delete(Product $product)
     {
+        if ($product->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
 
         $this->upload->delete($product->foto_cover);
         $product->delete();

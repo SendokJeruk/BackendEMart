@@ -16,7 +16,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Product extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'nama_product',
+        'deskripsi',
+        'harga',
+        'stock',
+        'berat',
+        'foto_cover',
+        'terjual',
+        'status_produk',
+    ];
     protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 
     public function detail_transaction(): HasMany

@@ -9,6 +9,7 @@ use App\Models\Cart_detail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class DetailCartController extends Controller
 {
@@ -76,6 +77,9 @@ class DetailCartController extends Controller
 
     public function update(Request $request, Cart_detail $Cart_detail)
     {
+        if ($Cart_detail->cart->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
 
         $validate = Validator::make($request->all(), [
             'product_id' => 'required',
@@ -130,6 +134,9 @@ class DetailCartController extends Controller
 
     public function delete(Cart_detail $Cart_detail)
     {
+        if ($Cart_detail->cart->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
 
         $cart = $Cart_detail->cart;
 

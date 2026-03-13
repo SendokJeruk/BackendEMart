@@ -18,8 +18,12 @@ class ReportController extends Controller
     {
         $transaction = Transaction::with(['user', 'detail_transaction.product', 'shipment'])
             ->where('kode_transaksi', $kode_transaksi)
-            ->first();
-        // return $transaction;
+            ->firstOrFail();
+
+        if ($transaction->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
+
         $pdf = Pdf::loadView('invoice', ['transaction' => $transaction]);
         return $pdf->download("Invoice-{$transaction->kode_transaksi}-".now().".pdf");
     }
@@ -37,6 +41,10 @@ class ReportController extends Controller
 
     public function sellerTransactionReport($seller_id)
     {
+        if ((int)$seller_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
+
         $transactions = Transaction::whereHas('detail_transaction.product', function ($q) use ($seller_id) {
             $q->where('user_id', $seller_id);
         })
@@ -59,6 +67,10 @@ class ReportController extends Controller
 
     public function userTransactionReport($user_id)
     {
+        if ((int)$user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
+
         $transactions = Transaction::where('user_id', $user_id)
             ->where('status', 'success')
             ->get();

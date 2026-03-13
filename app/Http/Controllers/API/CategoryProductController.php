@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\API;
 
 use Exception;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\CategoryProduct;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class CategoryProductController extends Controller
 {
@@ -20,7 +22,7 @@ class CategoryProductController extends Controller
 
         return response()->json([
             'status' => 'Success',
-            'message' => 'Product categories retrieved successfully', 
+            'message' => 'Product categories retrieved successfully',
             'data' => $category_product
         ]);
 
@@ -29,6 +31,10 @@ class CategoryProductController extends Controller
 
     public function store(Request $request)
     {
+        $product = Product::findOrFail($request->product_id);
+        if ($product->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
 
         $validate = Validator::make($request->all(), [
             'category_id' => 'required',

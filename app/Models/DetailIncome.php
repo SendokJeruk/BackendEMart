@@ -9,7 +9,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class DetailIncome extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'jumlah',
+        'income_id',
+        'detail_transaction_id',
+    ];
     protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 
     public function income()

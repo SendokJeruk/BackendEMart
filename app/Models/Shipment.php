@@ -8,7 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Shipment extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'kode_transaksi',
+        'kurir',
+        'plat_nomor',
+        'kode_resi',
+        'ongkir',
+        'status_pengiriman',
+        'estimasi_tiba',
+        'tiba_di_tujuan',
+        'bukti_pengiriman'
+    ];
     public function transaction()
     {
         return $this->belongsTo(Transaction::class, 'kode_transaksi', 'kode_transaksi');
