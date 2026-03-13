@@ -31,11 +31,11 @@ class Product extends Model
 
     public function detail_transaction(): HasMany
     {
-        return $this->hasMany(related: DetailTransaction::class, foreignKey: 'product_id');
+        return $this->hasMany( DetailTransaction::class,  'product_id');
     }
     public function rating(): HasMany
     {
-        return $this->hasMany(related: Rating::class, foreignKey: 'product_id');
+        return $this->hasMany( Rating::class,  'product_id');
     }
 
     public function categories(): BelongsToMany
@@ -57,7 +57,7 @@ class Product extends Model
     {
         return $this->HasMany(Cart_detail::class, 'cartDetail_id');
     }
-    
+
 
     public function scopeFilter($query, $request)
     {

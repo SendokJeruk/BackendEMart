@@ -226,8 +226,8 @@ Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => [
     Route::get('/{kode_transaksi}', [ShipmentController::class, 'getPengirimanByKodeTransaksi']);
     Route::post('/', [ShipmentController::class, 'store']);
     Route::post('/confirm-received/{kode_transaksi}', [ShipmentController::class, 'confirmReceived']);
-    Route::put('/{pengiriman}', [ShipmentController::class, 'update']);
-    Route::delete('/{pengiriman}', [ShipmentController::class, 'delete']);
+    Route::put('/{shipment}', [ShipmentController::class, 'update']);
+    Route::delete('/{shipment}', [ShipmentController::class, 'delete']);
 });
 
 Route::group(['prefix' => 'report', 'as' => 'report.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {

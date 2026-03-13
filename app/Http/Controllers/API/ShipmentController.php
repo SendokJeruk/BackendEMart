@@ -176,16 +176,6 @@ class ShipmentController extends Controller
 
     public function update(Request $request, Shipment $shipment)
     {
-        // Check if current user is the seller of at least one product in this shipment
-        $isOwner = $shipment->detail_shipments()
-            ->whereHas('detail_transaction.product', function ($query) {
-                $query->where('user_id', auth()->id());
-            })->exists();
-
-        if (!$isOwner) {
-            throw new AuthorizationException();
-        }
-
         $request->validate([
             'kode_transaksi' => 'required',
             'status_pengiriman' => 'required|string|in:dibuat,dijadwalkan,kurir_ditugaskan,dalam_proses,tiba',
