@@ -222,12 +222,12 @@ Route::group(['prefix' => 'detailIncome', 'as' => 'detailIncome.', 'middleware' 
 
 Route::get('/balance', [BalanceController::class, 'index'])->middleware('auth:sanctum');
 Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => ['auth:sanctum']], function () {
-    Route::get('/all', [PengirimanController::class, 'getAllPengiriman']);
-    Route::get('/{kode_transaksi}', [PengirimanController::class, 'getPengirimanByKodeTransaksi']);
-    Route::post('/', [PengirimanController::class, 'store']);
-    Route::post('/confirm-received/{kode_transaksi}', [PengirimanController::class, 'confirmReceived']);
-    Route::put('/{pengiriman}', [PengirimanController::class, 'update']);
-    Route::delete('/{pengiriman}', [PengirimanController::class, 'delete']);
+    Route::get('/', [ShipmentController::class, 'getAllPengiriman']);
+    Route::get('/{kode_transaksi}', [ShipmentController::class, 'getPengirimanByKodeTransaksi']);
+    Route::post('/', [ShipmentController::class, 'store']);
+    Route::post('/confirm-received/{kode_transaksi}', [ShipmentController::class, 'confirmReceived']);
+    Route::put('/{pengiriman}', [ShipmentController::class, 'update']);
+    Route::delete('/{pengiriman}', [ShipmentController::class, 'delete']);
 });
 
 Route::group(['prefix' => 'report', 'as' => 'report.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {

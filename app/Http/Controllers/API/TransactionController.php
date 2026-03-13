@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Repository\SuccessPaymentRepository;
 use Illuminate\Auth\Access\AuthorizationException;
-use \App\Services\TransactionService;
+use App\Services\TransactionService;
 
 class TransactionController extends Controller
 {
@@ -35,7 +35,7 @@ class TransactionController extends Controller
         RajaOngkirService $rajaOngkir,
         SuccessPaymentRepository $successPaymentRepository,
         ShipmentService $shipment,
-        $transactionService
+        TransactionService $transactionService
     ) {
         $this->midtransService = $midtransService;
         $this->rajaOngkir = $rajaOngkir;
