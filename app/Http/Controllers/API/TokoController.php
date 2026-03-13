@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class TokoController extends Controller
 {
@@ -106,6 +107,10 @@ class TokoController extends Controller
 
     public function updateAlamat(Request $request, Toko $toko)
     {
+        if ($toko->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
+
             $validate = Validator::make($request->all(), [
                 'kode_domestik'     => 'nullable',
                 'label'             => 'nullable',
@@ -165,6 +170,10 @@ class TokoController extends Controller
 
     public function update(Request $request, Toko $toko)
     {
+        if ($toko->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
+
             $validate = Validator::make($request->all(), [
                 'nama_toko' => 'required|string|max:100',
                 'deskripsi' => 'required|string|max:255',
@@ -196,6 +205,10 @@ class TokoController extends Controller
 
     public function delete(Toko $toko)
     {
+        if ($toko->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
+
         $toko->alamatToko->delete();
         $toko->delete();
 

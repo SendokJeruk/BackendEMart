@@ -13,7 +13,10 @@ class CategoryProduct extends Pivot
 {
     protected $table = 'category_products';
 
-    protected $guarded = [];
+    protected $fillable = [
+        'category_id',
+        'product_id',
+    ];
 
     protected $hidden = ['created_at', 'updated_at'];
 

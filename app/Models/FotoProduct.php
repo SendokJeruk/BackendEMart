@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class FotoProduct extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'foto_id',
+        'product_id',
+    ];
     protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 }

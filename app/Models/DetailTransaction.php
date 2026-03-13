@@ -9,7 +9,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class DetailTransaction extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'transaction_id',
+        'product_id',
+        'harga',
+        'jumlah',
+        'subtotal',
+        'totalberat',
+    ];
     protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 
     public function transaction(): BelongsTo

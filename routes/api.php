@@ -15,6 +15,7 @@ use App\Http\Controllers\API\IncomeController;
 use App\Http\Controllers\API\MidtransCallback;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\ReportController;
+use App\Http\Controllers\API\BalanceController;
 use App\Http\Controllers\API\EncryptController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ProfileController;
@@ -22,8 +23,10 @@ use App\Http\Controllers\API\SettingController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\CheckoutController;
 use App\Http\Controllers\API\ShipmentController;
+use App\Http\Controllers\API\WithdrawController;
 use App\Http\Controllers\API\DetailCartController;
 use App\Http\Controllers\API\ManageUserController;
+use App\Http\Controllers\API\PengirimanController;
 use App\Http\Controllers\API\RajaOngkirController;
 use App\Http\Controllers\API\SellerInfoController;
 use App\Http\Controllers\API\FotoProductController;
@@ -32,7 +35,6 @@ use App\Http\Controllers\API\DetailIncomeController;
 use App\Http\Controllers\API\RequestSellerController;
 use App\Http\Controllers\API\CategoryProductController;
 use App\Http\Controllers\API\DetailTransactionController;
-use App\Http\Controllers\API\WithdrawController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,7 +56,7 @@ Route::get('/test-limit', function () {
 })->middleware('throttle:test');
 
 
-Route::post('midtrans/callback', [MidtransCallback::class, 'callback']);
+Route::post('midtrans/callback', [MidtransCallback::class, 'callback']); //? YANG DIPAKE YG INI YAHH
 
 Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
         Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login');
@@ -218,12 +220,12 @@ Route::group(['prefix' => 'detailIncome', 'as' => 'detailIncome.', 'middleware' 
     Route::get('/', [DetailIncomeController::class, 'index']);
 });
 
+Route::get('/balance', [BalanceController::class, 'index'])->middleware('auth:sanctum');
 Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => ['auth:sanctum']], function () {
     Route::get('/', [ShipmentController::class, 'getAllPengiriman']);
-    Route::get('/{id}', [ShipmentController::class, 'getPengirimanById']);
     Route::get('/{kode_transaksi}', [ShipmentController::class, 'getPengirimanByKodeTransaksi']);
     Route::post('/', [ShipmentController::class, 'store']);
-    Route::post('/confirm-received/{pengiriman}', [ShipmentController::class, 'confirmReceived']);
+    Route::post('/confirm-received/{kode_transaksi}', [ShipmentController::class, 'confirmReceived']);
     Route::put('/{shipment}', [ShipmentController::class, 'update']);
     Route::delete('/{shipment}', [ShipmentController::class, 'delete']);
 });

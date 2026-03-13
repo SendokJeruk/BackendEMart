@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class AlamatController extends Controller
 {
@@ -59,6 +60,9 @@ class AlamatController extends Controller
     //todo edit
     public function update(Request $request, AlamatUser $alamat)
     {
+        if ($alamat->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
 
         $validate = Validator::make($request->all(), [
             'kode_domestik'    => 'required|integer',
@@ -100,6 +104,9 @@ class AlamatController extends Controller
     //todo hapus
     public function delete(AlamatUser $alamat)
     {
+        if ($alamat->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
 
         $alamat->delete();
 

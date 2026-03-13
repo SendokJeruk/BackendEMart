@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SellerBalance;
 use Illuminate\Http\Request;
 
-class BalanceCotroller extends Controller
+class BalanceController extends Controller
 {
     public function index()
     {
