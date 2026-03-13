@@ -5,11 +5,8 @@ namespace App\Models;
 use App\Http\Controllers\API\ProductController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 
-
-class CategoryProduct extends Pivot
+class CategoryProduct extends Model
 {
     protected $table = 'category_products';
 
