@@ -152,6 +152,7 @@ class ProductController extends Controller
     {
         $products = Product::orderByDesc('terjual')
             ->take(5)
+            ->where('user_id', auth()->id())
             ->get(['id', 'nama_product', 'terjual']);
 
         return response()->json([
