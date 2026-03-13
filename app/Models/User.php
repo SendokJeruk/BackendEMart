@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\Withdraw;
 use App\Models\AlamatUser;
 use App\Models\RequestSeller;
+use App\Models\SellerBalance;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -70,9 +71,14 @@ class User extends Authenticatable
         return $this->hasOne(Cart::class, 'user_id');
     }
 
-    public function income(): hasMany
+    public function income(): hasOne
     {
-        return $this->hasMany(Income::class, 'user_id');
+        return $this->hasOne(Income::class, 'user_id');
+    }
+
+    public function balance(): hasOne
+    {
+        return $this->hasOne(SellerBalance::class, 'user_id');
     }
 
     public function RequestSeller(): hasOne

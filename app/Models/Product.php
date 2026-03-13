@@ -47,6 +47,7 @@ class Product extends Model
     {
         return $this->HasMany(Cart_detail::class, 'cartDetail_id');
     }
+    
 
     public function scopeFilter($query, $request)
     {
@@ -58,7 +59,7 @@ class Product extends Model
             $q->where('status_produk', 'publish'))
 
             ->when($request->has('myproducts'), fn($q) =>
-            $q->where('user_id', Auth::id()))
+            $q->where('user_id', Auth::user()->id))
 
             ->when($request->has('draft'), fn($q) =>
             $q->where('status_produk', 'draft'))
@@ -69,4 +70,11 @@ class Product extends Model
             ->when($request->filled('user_id'), fn($q) =>
             $q->where('user_id', $request->user_id));
     }
+
+
+public function seller()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
+
 }

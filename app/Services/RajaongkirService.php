@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Http;
 
-class RajaongkirService
+class RajaOngkirService
 {
     protected $shippingKey;
     protected $deliveryKey;
@@ -44,8 +44,8 @@ class RajaongkirService
     public function trackShipment($awb, $courier, $lastPhone = null)
     {
         $data = [
-            'awb' => $awb,
-            'courier' => $courier,
+            'awb' => trim($awb),
+            'courier' => strtolower(trim($courier)),
         ];
 
         if ($courier === 'jne' && $lastPhone) {
@@ -53,13 +53,13 @@ class RajaongkirService
         }
 
         $response = Http::withHeaders([
+            'key' => trim($this->shippingKey),
             'accept' => 'application/json',
-            'key' => $this->deliveryKey,
-        ])->post('https://rajaongkir.komerce.id/api/v1/track/waybill', $data);
+        ])
+        ->withQueryParameters($data)
+        ->post('https://rajaongkir.komerce.id/api/v1/track/waybill');
 
         return $response->json();
     }
-
-
 
 }

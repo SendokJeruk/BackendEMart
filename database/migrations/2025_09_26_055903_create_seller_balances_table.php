@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('withdraws', function (Blueprint $table) {
+        Schema::create('seller_balances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->integer('jumlah');
-            $table->enum('status', ['pending', 'accepted', 'rejected']);
-            $table->text('catatan');
-            $table->enum('metode', ['bank_transfer', 'gopay', 'ovo', 'dana','shopeePay'])->default('bank_transfer');
-            $table->string('rekening_tujuan');
+            $table->integer('balance')->default(0);
+            $table->integer('withdrawn_balance')->default(0);
             $table->timestamps();
         });
+
     }
 
     /**
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('withdraws');
+        Schema::dropIfExists('seller_balances');
     }
 };

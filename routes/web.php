@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\App;
 Route::get('/', function (): JsonResponse {
     return response()->json([
         'success' => true,
-        'message' => 'Welcome to Eleven Market API',
+        'message' => 'Welcome to Eleven Market API V0.300.03',
         'meta' => [
             'timestamp' => now()->toIso8601String(),
             'timezone' => config('app.timezone'),
@@ -43,6 +43,11 @@ Route::get('/', function (): JsonResponse {
         'Content-Type' => 'application/json',
     ]);
 });
+
+Route::get('/invoice', function () {
+    return view('invoice');
+})->name('invoice');
+
 
 // Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 //     Route::post('login', [AuthController::class, 'login']);
