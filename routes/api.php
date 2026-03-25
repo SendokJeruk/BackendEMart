@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\ContentController;
 use App\Models\AlamatUser;
 use App\Models\DetailIncome;
 use Illuminate\Http\Request;
@@ -59,8 +60,8 @@ Route::get('/test-limit', function () {
 Route::post('midtrans/callback', [MidtransCallback::class, 'callback']); //? YANG DIPAKE YG INI YAHH
 
 Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
-        Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login');
-        Route::post('register', [AuthController::class, 'register'])->middleware('throttle:register');
+    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login');
+    Route::post('register', [AuthController::class, 'register'])->middleware('throttle:register');
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
     // GOOGLE OAUTH
@@ -76,7 +77,7 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 Route::get('/product/mobile', [ProductController::class, 'index'])->middleware('auth:sanctum');
 Route::get('/product', [ProductController::class, 'index']);
 
-Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => ['auth:sanctum', 'seller'] ], function () {
+Route::group(['prefix' => 'product', 'as' => 'product.', 'middleware' => ['auth:sanctum', 'seller']], function () {
     Route::get('/myproducts', [ProductController::class, 'getMyProducts']);
     Route::post('/', [ProductController::class, 'store']);
     Route::put('/{product}', [ProductController::class, 'edit']);
@@ -91,9 +92,9 @@ Route::group(['prefix' => 'category', 'as' => 'category.', 'middleware' => ['aut
     Route::delete('/{category}', [CategoryController::class, 'delete']);
 });
 
-Route::group(['prefix' => 'rating', 'as' => 'rating.', 'middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix' => 'rating', 'as' => 'rating.'], function () {
     Route::get('/', [RatingController::class, 'index']);
-    Route::post('/', [RatingController::class, 'store']);
+    Route::post('/', [RatingController::class, 'store'])->middleware('auth:sanctum');;
 });
 
 Route::group(['prefix' => 'role', 'as' => 'role.'], function () {
@@ -118,7 +119,7 @@ Route::group(['prefix' => 'transaction', 'as' => 'transaction.', 'middleware' =>
     Route::post('/payment/{transaction}', [TransactionController::class, 'createTransaction']);
 });
 Route::get('/transaction', [TransactionController::class, 'index'])->middleware('auth:sanctum');
-Route::post('/test',[TestController::class, 'test']);
+Route::post('/test', [TestController::class, 'test']);
 Route::post('/transaction/payment/callback', [TransactionController::class, 'callback'])->withoutMiddleware('auth:sanctum');
 
 Route::group(['prefix' => 'detail-transaction', 'as' => 'detail-transaction.', 'middleware' => 'auth:sanctum'], function () {
@@ -211,19 +212,21 @@ Route::group(['prefix' => 'income', 'as' => 'income.', 'middleware' => ['auth:sa
     Route::get('/', [IncomeController::class, 'index']);
 });
 
-Route::group(['prefix' => 'requestseller', 'as' => 'requestseller.', 'middleware' => ['auth:sanctum', ]], function () {
+Route::group(['prefix' => 'requestseller', 'as' => 'requestseller.', 'middleware' => ['auth:sanctum',]], function () {
     Route::get('/', [RequestSellerController::class, 'index']);
     Route::post('/', [RequestSellerController::class, 'store']);
 });
 Route::put('/requestseller/{requestSeller}', [RequestSellerController::class, 'update'])->middleware(['auth:sanctum', 'checkrole']);
-Route::group(['prefix' => 'detailIncome', 'as' => 'detailIncome.', 'middleware' => ['auth:sanctum', ]], function () {
+Route::group(['prefix' => 'detailIncome', 'as' => 'detailIncome.', 'middleware' => ['auth:sanctum',]], function () {
     Route::get('/', [DetailIncomeController::class, 'index']);
 });
 
 Route::get('/balance', [BalanceController::class, 'index'])->middleware('auth:sanctum');
 Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => ['auth:sanctum']], function () {
-    Route::get('/', [ShipmentController::class, 'getAllPengiriman']);
-    Route::get('/{kode_transaksi}', [ShipmentController::class, 'getPengirimanByKodeTransaksi']);
+    Route::get('/buyer', [ShipmentController::class, 'getAllPengirimanBuyer']);
+    Route::get('/seller', [ShipmentController::class, 'getAllPengirimanSeller']);
+    // Route::get('/{kode_transaksi}', [ShipmentController::class, 'getPengirimanByKodeTransaksi']);
+    Route::get('/{shipment}', [ShipmentController::class, 'getPengirimanById']);
     Route::post('/', [ShipmentController::class, 'store']);
     Route::post('/confirm-received/{kode_transaksi}', [ShipmentController::class, 'confirmReceived']);
     Route::put('/{shipment}', [ShipmentController::class, 'update']);
@@ -231,11 +234,11 @@ Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => [
 });
 
 Route::group(['prefix' => 'report', 'as' => 'report.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
-   Route::get('/admin', [ReportController::class, 'adminMonthlyReport'])->name('admin');
+    Route::get('/admin', [ReportController::class, 'adminMonthlyReport'])->name('admin');
 });
 Route::get('report/seller/{seller_id}', [ReportController::class, 'sellerTransactionReport'])->middleware(['auth:sanctum', 'seller']);
 Route::get('report/user/{user_id}', [ReportController::class, 'userTransactionReport'])->middleware('auth:sanctum');
-Route::get('report/invoice                                                                                          /{kode_transaksi}', [ReportController::class, 'generateInvoice'])->middleware('auth:sanctum');
+Route::get('report/invoice/{kode_transaksi}', [ReportController::class, 'generateInvoice'])->middleware('auth:sanctum');
 
 Route::group(['prefix' => 'withdraw', 'as' => 'withdraw.', 'middleware' => ['auth:sanctum']], function () {
     Route::post('/submit', [WithdrawController::class, 'submitWithdraw'])->middleware('seller');
@@ -244,11 +247,17 @@ Route::group(['prefix' => 'withdraw', 'as' => 'withdraw.', 'middleware' => ['aut
     Route::get('/self', [WithdrawController::class, 'selfWithdraw'])->middleware('seller');
 });
 
-
-
+Route::group(['prefix' => 'content', 'as' => 'content.'], function () {
+    Route::get('/', [ContentController::class, 'getContent']);
+    Route::middleware(['auth:sanctum', 'checkrole'])->group(function () {
+        Route::post('/', [ContentController::class, 'storeContent']);
+        Route::put('/{content}', [ContentController::class, 'updateContent']);
+        Route::delete('/{content}', [ContentController::class, 'deleteContent']);
+    });
+});
 
 Route::group(['prefix' => 'sellerinfo', 'as' => 'sellerinfo.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
-   Route::get('/topseller', [SellerInfoController::class, 'topsellers']);
+    Route::get('/topseller', [SellerInfoController::class, 'topsellers']);
 });
 
 
