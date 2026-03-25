@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\API;
 
 use Exception;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\CategoryProduct;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class CategoryProductController extends Controller
 {
@@ -16,11 +19,11 @@ class CategoryProductController extends Controller
         $category_product = CategoryProduct::with([
             'category:id,nama_category',
             'product:id,nama_product'
-        ])->paginate(10);
+        ])->get();
 
         return response()->json([
             'status' => 'Success',
-            'message' => 'Product categories retrieved successfully', 
+            'message' => 'Product categories retrieved successfully',
             'data' => $category_product
         ]);
 
@@ -29,10 +32,19 @@ class CategoryProductController extends Controller
 
     public function store(Request $request)
     {
+        Log::info("BUDI MEMANGGIL KATEGORI PRODUK LE");
+        Log::info($request->all());
+
+        $product = Product::findOrFail($request->product_id);
+
+        // Fix 403: Pastikan tipe data sama saat membandingkan
+        if ((int)$product->user_id !== (int)auth()->id()) {
+            throw new AuthorizationException();
+        }
 
         $validate = Validator::make($request->all(), [
-            'category_id' => 'required',
-            'product_id' => 'required',
+            'category_id' => 'required|exists:categories,id',
+            'product_id' => 'required|exists:products,id',
         ]);
 
         if ($validate->fails()) {
@@ -41,16 +53,19 @@ class CategoryProductController extends Controller
                 'errors' => $validate->errors()
             ], 422);
         }
-        $category_product = new CategoryProduct();
-        $category_product->category_id = $request->input('category_id');
-        $category_product->product_id = $request->input('product_id');
-        $category_product->save();
+
+        \Illuminate\Support\Facades\Log::info("BUDI MENCOBA SIMPAN KATEGORI PRODUK");
+
+        // Best Practice: Gunakan relasi syncWithoutDetaching agar tidak duplikat dan pasti masuk
+        $product->categories()->syncWithoutDetaching([$request->category_id]);
+
+        \Illuminate\Support\Facades\Log::info("SUKSES SIMPAN KATEGORI KE PRODUK");
+
         return response()->json([
             'status' => 'Success',
             'message' => 'Data created successfully',
-            'data' => $category_product
+            'data' => $product->load('categories')
         ], 201);
-
     }
 
     public function update(Request $request, CategoryProduct $category_product)

@@ -11,7 +11,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Toko extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'nama_toko',
+        'deskripsi',
+        'no_telp',
+        'alamat_toko_id',
+    ];
     protected $hidden = ['timestamps', 'created_at', 'updated_at'];
     
     public function user(): BelongsTo

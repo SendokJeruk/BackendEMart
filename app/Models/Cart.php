@@ -10,7 +10,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Cart extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'total_jumlah',
+        'total_harga',
+    ];
     protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 
     public function user(): BelongsTo

@@ -9,7 +9,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Income extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'jumlah_total',
+        'total_penjualan',
+    ];
     protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 
     public function user(): BelongsTo

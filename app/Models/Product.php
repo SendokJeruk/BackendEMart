@@ -16,16 +16,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Product extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'nama_product',
+        'deskripsi',
+        'harga',
+        'stock',
+        'berat',
+        'foto_cover',
+        'terjual',
+        'status_produk',
+    ];
     protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 
     public function detail_transaction(): HasMany
     {
-        return $this->hasMany(related: DetailTransaction::class, foreignKey: 'product_id');
+        return $this->hasMany( DetailTransaction::class,  'product_id');
     }
     public function rating(): HasMany
     {
-        return $this->hasMany(related: Rating::class, foreignKey: 'product_id');
+        return $this->hasMany( Rating::class,  'product_id');
     }
 
     public function categories(): BelongsToMany
@@ -47,7 +57,7 @@ class Product extends Model
     {
         return $this->HasMany(Cart_detail::class, 'cartDetail_id');
     }
-    
+
 
     public function scopeFilter($query, $request)
     {

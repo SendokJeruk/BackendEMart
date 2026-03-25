@@ -10,7 +10,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Transaction extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'total_harga',
+        'total_ongkir',
+        'total_berat',
+        'status',
+        'tanggal_transaksi',
+        'kode_transaksi',
+        'payment_attempt',
+        'id_alamat_user',
+        'id_alamat_toko',
+    ];
     protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 
     public function getRouteKeyName()
@@ -36,12 +47,12 @@ class Transaction extends Model
 
     public function alamat_user(): BelongsTo
     {
-        return $this->belongsTo(AlamatUser::class);
+        return $this->belongsTo(AlamatUser::class, 'id_alamat_user');
     }
 
     public function alamat_toko(): BelongsTo
     {
-        return $this->belongsTo(AlamatToko::class);
+        return $this->belongsTo(AlamatToko::class, 'id_alamat_toko');
     }
 
     public function shipment()

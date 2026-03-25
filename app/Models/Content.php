@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class FotoProduct extends Model
+class Content extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'foto_id',
-        'product_id',
+        'section',
+        'image'
     ];
-    protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 }

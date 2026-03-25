@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\DetailTransaction;
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class CheckoutController extends Controller
 {
@@ -72,6 +73,10 @@ class CheckoutController extends Controller
         $cartDetails = $user->cart->cart_detail()
             ->whereIn('id', $request->cart_detail_ids)
             ->get();
+
+        if ($cartDetails->count() !== count($request->cart_detail_ids)) {
+            throw new AuthorizationException();
+        }
 
         if ($cartDetails->isEmpty()) {
             return response()->json([

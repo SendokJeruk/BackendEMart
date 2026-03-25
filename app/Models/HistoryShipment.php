@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class HistoryShipment extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'id_shipment',
+        'status_pengiriman',
+    ];
 
     public function shipment()
     {

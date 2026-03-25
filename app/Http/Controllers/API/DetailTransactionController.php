@@ -4,11 +4,12 @@ namespace App\Http\Controllers\API;
 
 use Exception;
 use App\Models\Product;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Models\DetailTransaction;
 use App\Http\Controllers\Controller;
-use App\Models\Transaction;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class DetailTransactionController extends Controller
 {
@@ -83,6 +84,9 @@ class DetailTransactionController extends Controller
 
     public function update(Request $request, DetailTransaction $detailTransaction)
     {
+        if ($detailTransaction->transaction->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
 
         $validate = Validator::make($request->all(), [
             'transaction_id' => 'nullable',
@@ -128,6 +132,9 @@ class DetailTransactionController extends Controller
 
     public function delete(DetailTransaction $detailTransaction)
     {
+        if ($detailTransaction->transaction->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
 
         $transaction = Transaction::findOrFail($detailTransaction->transaction_id);
         $detailTransaction->delete();

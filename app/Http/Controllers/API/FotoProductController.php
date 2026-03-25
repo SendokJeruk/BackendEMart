@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repository\UploadRepository;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class FotoProductController extends Controller
 {
@@ -24,6 +25,10 @@ class FotoProductController extends Controller
     }
     public function store(Request $request)
     {
+        $product = \App\Models\Product::findOrFail($request->product_id);
+        if ($product->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
 
         $validate = Validator::make($request->all(), [
             'foto_id'    => 'required',
@@ -51,6 +56,9 @@ class FotoProductController extends Controller
 
     public function update(Request $request, FotoProduct $fotoProduct)
     {
+        if ($fotoProduct->product->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
 
         $validate = Validator::make($request->all(), [
             'foto_id'    => 'nullable',
@@ -78,6 +86,9 @@ class FotoProductController extends Controller
 
     public function delete(FotoProduct $fotoProduct)
     {
+        if ($fotoProduct->product->user_id !== auth()->id()) {
+            throw new AuthorizationException();
+        }
 
         $fotoProduct->delete();
         return response()->json([

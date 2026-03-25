@@ -11,6 +11,7 @@ use App\Services\ShipmentService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class ShipmentController extends Controller
 {
@@ -20,29 +21,26 @@ class ShipmentController extends Controller
     {
         $this->shipment = $shipment;
     }
-    // public function getAllPengiriman()
-    // {
-    //     // return Shipment::with(['transaction.user'])->paginate(10);
-    //     $user = Auth::user();
 
-    //     $pengiriman = Shipment::with([
-    //         'transaction.user',
-    //         'detail_shipments.detail_transaction.product',
-    //         'detail_shipments.detail_transaction.rating:id,detail_transaction_id,rating'
-    //     ])
-    //     ->whereHas('detail_shipments.detail_transaction.product', function ($query) {
-    //         $query->where('user_id', Auth::id());
-    //     })
-    //     ->paginate(10);
+    public function getAllPengirimanSeller()
+    {
+        $pengiriman = Shipment::with([
+            'transaction.user',
+            'detail_shipments.detail_transaction.product',
+            'detail_shipments.detail_transaction.rating:id,detail_transaction_id,rating'
+        ])
+        ->whereHas('detail_shipments.detail_transaction.product', function ($query) {
+            $query->where('user_id', Auth::id());
+        })
+        ->paginate(10);
 
-    //     return $pengiriman;
+        return response()->json([
+            'message' => 'Berhasil mendapatkan data pengiriman',
+            'data' => $pengiriman
+        ]);
+    }
 
-    //     return response()->json([
-    //         'message' => 'Berhasil mendapatkan data pengiriman',
-    //         'data' => $pengiriman
-    //     ]);
-    // }
-    public function getAllPengiriman()
+    public function getAllPengirimanBuyer()
     {
         // return Shipment::with(['transaction.user'])->paginate(10);
         $user = Auth::user();
@@ -70,23 +68,19 @@ class ShipmentController extends Controller
 
     public function getPengirimanById($id)
     {
-        $pengiriman = Shipment::with(['detail_shipments.detail_transaction.product.user.toko'])
+        $pengiriman = Shipment::with(['detail_shipments.detail_transaction.product.user.toko', 'transaction'])
             ->where('id', $id)
-            ->whereHas('transaction', function ($query) {
-                $query->where('user_id', auth()->id());
-            })
-            ->first();
+            ->firstOrFail();
 
-        if (!$pengiriman) {
-            return response()->json([
-                'message' => 'Data pengiriman tidak ditemukan',
-            ], 404);
+        if ($pengiriman->transaction->user_id !== auth()->id()) {
+            throw new AuthorizationException();
         }
 
-        if ($pengiriman->kode_resi || $pengiriman->kurir) {
-            // TODO Handle API tracking
+        if ($pengiriman->kode_resi && $pengiriman->kurir) {
             $shippingData = $this->shipment->trackShipment($pengiriman->id);
-            $pengiriman['shippingData'] = $shippingData;
+            if ($shippingData) {
+                $pengiriman->shippingData = $shippingData;
+            }
         }
 
         return response()->json([
@@ -212,6 +206,15 @@ class ShipmentController extends Controller
 
     public function delete(Shipment $shipment)
     {
+        $isOwner = $shipment->detail_shipments()
+            ->whereHas('detail_transaction.product', function ($query) {
+                $query->where('user_id', auth()->id());
+            })->exists();
+
+        if (!$isOwner) {
+            throw new AuthorizationException();
+        }
+
         $shipment->delete();
         return response()->json([
             'message' => 'Berhasil Menghapus Data Pengiriman',
@@ -220,10 +223,8 @@ class ShipmentController extends Controller
 
     public function confirmReceived(Shipment $pengiriman)
     {
-        if (!$pengiriman) {
-            return response()->json([
-                'message' => 'Data pengiriman tidak ditemukan',
-            ], 404);
+        if ($pengiriman->transaction->user_id !== auth()->id()) {
+            throw new AuthorizationException();
         }
 
         if ($pengiriman->status_pengiriman !== 'tiba') {
@@ -232,40 +233,11 @@ class ShipmentController extends Controller
             ], 400);
         }
 
-        $pengiriman->status_pengiriman = 'diterima';
-        $pengiriman->save();
-
-        // Ambil detail transaksi hanya dari shipment ini
-        $details = $pengiriman->detail_shipments()->with('detail_transaction.product.user')->get();
-
-        // Group per user toko
-        $groupedByUser = $details->groupBy(fn($detailShipment) => $detailShipment->detail_transaction->product->user_id);
-
-        foreach ($groupedByUser as $userId => $detailShipments) {
-            $total = $detailShipments->sum(fn($ds) => $ds->detail_transaction->subtotal);
-
-            $income = Income::firstOrNew(['user_id' => $userId]);
-            $balance = SellerBalance::firstOrNew(['user_id' => $userId]);
-
-            $income->jumlah_total = ($income->exists ? $income->jumlah_total : 0) + $total;
-            $balance->balance = ($balance->exists ? $balance->balance : 0) + $total;
-
-            $income->total_penjualan = ($income->exists ? $income->total_penjualan : 0) + 1;
-
-            $income->save();
-            $balance->save();
-
-            foreach ($detailShipments as $ds) {
-                $income->detail_incomes()->create([
-                    'detail_transaction_id' => $ds->detail_transaction->id,
-                    'jumlah' => $ds->detail_transaction->subtotal,
-                ]);
-            }
-        }
+        $data = $this->shipment->confirmReceived($pengiriman);
 
         return response()->json([
             'message' => 'Pengiriman telah dikonfirmasi sebagai diterima.',
-            'data' => $pengiriman
+            'data' => $data
         ]);
     }
 

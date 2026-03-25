@@ -105,23 +105,27 @@ class WithdrawController extends Controller
             ], 422);
         }
 
-        $withdraw->status = $request->input('status');
-        $withdraw->save();
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($withdraw, $request) {
+            $withdraw->status = $request->input('status');
+            $withdraw->save();
 
-        if ($request->input('status') === 'accepted') {
-            $user = $withdraw->user;
-            $userBalance = $user->balance;
+            if ($request->input('status') === 'accepted') {
+                $user = $withdraw->user;
+                $userBalance = $user->balance;
 
-            if ($userBalance) {
+                if (!$userBalance || $userBalance->balance < $withdraw->jumlah) {
+                    throw new \Exception('Insufficient balance or balance record not found');
+                }
+
                 $userBalance->balance -= $withdraw->jumlah;
                 $userBalance->withdrawn_balance += $withdraw->jumlah;
                 $userBalance->save();
             }
-        }
 
-        return response()->json([
-            'status' => 'Success',
-            'message' => 'Withdraw request has been ' . $request->input('status'),
-        ]);
+            return response()->json([
+                'status' => 'Success',
+                'message' => 'Withdraw request has been ' . $request->input('status'),
+            ]);
+        });
     }
 }
