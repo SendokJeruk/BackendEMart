@@ -20,7 +20,7 @@ class ContentController extends Controller
     {
         $section = $request->query('section');
 
-        $content = Content::where('section', $section)->first();
+        $content = Content::where('section', $section)->get();
 
         if (!$content) {
             return response()->json(['message' => 'Content not found'], 404);
@@ -45,7 +45,7 @@ class ContentController extends Controller
             'section',
         ]);
 
-        $data['image'] = $this->upload->save($request->file('foto_cover'));
+        $data['image'] = $this->upload->save($request->file('image'));
 
         $content = Content::create($data);
 
@@ -59,8 +59,8 @@ class ContentController extends Controller
     public function updateContent(Content $content, Request $request)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'section' => 'required|in:login,dashboard',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'section' => 'nullable|in:login,dashboard',
         ]);
 
         $data = $request->only([
@@ -68,7 +68,7 @@ class ContentController extends Controller
             'section',
         ]);
 
-        if ($request->hasFile('foto_cover')) {
+        if ($request->hasFile('image')) {
             $data['image'] = $this->upload->update($content->image, $request->file('image'));
         }
 
