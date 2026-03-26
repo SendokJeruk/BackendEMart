@@ -5,12 +5,16 @@ namespace App\Http\Controllers\API;
 use Exception;
 use App\Models\Role;
 use App\Models\User;
+use App\Mail\VerifyEmail;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Validator;
@@ -51,7 +55,6 @@ class AuthController extends Controller
             'message' => 'Login successful',
             'data' => $user
         ]);
-
     }
 
     public function register(Request $request)
@@ -90,20 +93,42 @@ class AuthController extends Controller
             $id = $findUserRole->id;
         }
 
-        $user = new User();
-        $user->name = $request->input('name');
-        $user->email = $request->input('email');
-        $user->no_telp = $request->input('no_telp');
-        $user->role_id = $id;
-        $user->password = Hash::make($request->input('password'));
-        $user->save();
+        $data = $request->only([
+            'name',
+            'email',
+            'no_telp',
+        ]);
+        $data['password'] = Hash::make($request->password);
+        $data['role_id'] = $id;
+
+        $token = Str::random(67);
+
+        Cache::put('pending_user_' . $token, $data, 3600); // 60 minutes
+
+        $url = route('verify', ['token' => $token]);
+
+        // return response()->json([
+        //     $data,
+        //     $url
+        // ]);
+
+        try {
+            Log::info('Queueing email via driver: ' . config('mail.default'));
+            Mail::to($data['email'])->queue(new VerifyEmail($url, $data['name']));
+            Log::info('Email successfully queued for ' . $data['email']);
+        } catch (Exception $e) {
+            Log::error('GAGAL KIRIM EMAIL');
+            return response()->json([
+                'status' => 'Error',
+                'message' => 'Failed to send email: ' . $e->getMessage()
+            ], 500);
+        }
 
         return response()->json([
             'status' => 'Success',
-            'message' => 'Registration successful',
-            'data' => $user
-        ],201);
-
+            'message' => 'Registration successful, check your email to verify',
+            'data' => $data
+        ], 201);
     }
 
     public function logout()
@@ -115,7 +140,31 @@ class AuthController extends Controller
             'status' => 'Success',
             'message' => 'Logout successful',
         ]);
+    }
 
+    public function verify($token)
+    {
+        $data = Cache::get('pending_user_' . $token);
+
+        if (!$data) {
+            return response()->json(['message' => 'Token expired'], 400);
+        }
+
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'no_telp' => $data['no_telp'],
+            'role_id' => $data['role_id'],
+            'password' => $data['password'],
+            'email_verified_at' => now(),
+        ]);
+
+        Cache::forget('pending_user_' . $token);
+
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Verify successful',
+        ]);
     }
 
     // GOOGLE AUTH

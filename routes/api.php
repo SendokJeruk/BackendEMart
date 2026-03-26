@@ -73,6 +73,9 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
     // GOOGLE OAUTH
 });
 
+Route::get('/verify-registration/{token}', [AuthController::class, 'verify'])
+    ->name('verify');
+
 
 Route::get('/product/mobile', [ProductController::class, 'index'])->middleware('auth:sanctum');
 Route::get('/product', [ProductController::class, 'index']);
