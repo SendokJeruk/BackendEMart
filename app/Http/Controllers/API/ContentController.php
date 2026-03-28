@@ -16,6 +16,16 @@ class ContentController extends Controller
         $this->upload = new UploadRepository();
     }
 
+    public function getAllContent() {
+        $contents = Content::paginate(10);
+
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Get All successfully',
+            'data' => $contents
+        ]);
+    }
+
     public function getContent(Request $request)
     {
         $section = $request->query('section');
