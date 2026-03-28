@@ -64,6 +64,9 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
     Route::post('register', [AuthController::class, 'register'])->middleware('throttle:register');
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
+    Route::post('verify-registration', [AuthController::class, 'verify']);
+    Route::post('forgot-password', [AuthController::class, 'sendResetPassword']);
+    Route::post('reset-password', [AuthController::class, 'resetPassword']);
     // GOOGLE OAUTH
     // Route::group(['middleware' => ['web']], function () {
     //     // your routes here
@@ -73,8 +76,6 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
     // GOOGLE OAUTH
 });
 
-Route::get('/verify-registration/{token}', [AuthController::class, 'verify'])
-    ->name('verify');
 
 
 Route::get('/product/mobile', [ProductController::class, 'index'])->middleware('auth:sanctum');
@@ -253,6 +254,7 @@ Route::group(['prefix' => 'withdraw', 'as' => 'withdraw.', 'middleware' => ['aut
 Route::group(['prefix' => 'content', 'as' => 'content.'], function () {
     Route::get('/', [ContentController::class, 'getContent']);
     Route::middleware(['auth:sanctum', 'checkrole'])->group(function () {
+        Route::get('/all', [ContentController::class, 'getAllContent']);
         Route::post('/', [ContentController::class, 'storeContent']);
         Route::put('/{content}', [ContentController::class, 'updateContent']);
         Route::delete('/{content}', [ContentController::class, 'deleteContent']);

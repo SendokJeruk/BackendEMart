@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Mail\ResetPasswordEmail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -103,9 +104,9 @@ class AuthController extends Controller
 
         $token = Str::random(67);
 
-        Cache::put('pending_user_' . $token, $data, 3600); // 60 minutes
+        $temp_data = Cache::put('pending_user_' . $token, $data, 3600);
 
-        $url = route('verify', ['token' => $token]);
+        $url = env('FRONTEND_URL', 'http://localhost:5173/') . 'verify?token=' . $token;
 
         // return response()->json([
         //     $data,
@@ -113,6 +114,7 @@ class AuthController extends Controller
         // ]);
 
         try {
+            Log::info('VERIFY DATA : ' . $temp_data);
             Log::info('Queueing email via driver: ' . config('mail.default'));
             Mail::to($data['email'])->queue(new VerifyEmail($url, $data['name']));
             Log::info('Email successfully queued for ' . $data['email']);
@@ -142,12 +144,20 @@ class AuthController extends Controller
         ]);
     }
 
-    public function verify($token)
+    public function verify(Request $request)
     {
+        $request->validate([
+            'token' => 'required|string',
+        ]);
+        $token = $request->input('token');
+
         $data = Cache::get('pending_user_' . $token);
 
         if (!$data) {
-            return response()->json(['message' => 'Token expired'], 400);
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'Data mismatch/expired'
+            ], 400);
         }
 
         $user = User::create([
@@ -164,6 +174,86 @@ class AuthController extends Controller
         return response()->json([
             'status' => 'Success',
             'message' => 'Verify successful',
+        ]);
+    }
+
+    public function sendResetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email'
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if ($user) {
+            $token = Str::random(67);
+            $email = $user->email;
+
+            Cache::put('pending_resetpass_' . $token, $email, now()->addMinutes(15));
+
+            $url = env('FRONTEND_URL', 'http://localhost:5173/') . 'reset-password?token=' . $token . '&email=' . $email;
+
+            Log::info('RESET PASS URL : ' . $url);
+
+            Mail::to($email)->queue(new ResetPasswordEmail($url, $user->name));
+
+            return response()->json([
+                'status' => 'Success',
+                'message' => 'Tautan reset password telah dikirim ke email Anda.',
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'Failed',
+            'message' => 'User tidak ditemukan.'
+        ], 404);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string',
+            'email' => 'required|email',
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8)
+                    ->mixedCase()
+                    ->letters()
+                    ->numbers()
+                    ->symbols()
+            ],
+        ]);
+
+        $token = $request->input('token');
+        $email = $request->input('email');
+
+        $cachedEmail = Cache::get('pending_resetpass_' . $token);
+
+        if (!$cachedEmail || $cachedEmail !== $email) {
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'Tautan tidak valid atau sudah kedaluwarsa.'
+            ], 400);
+        }
+
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'User tidak ditemukan.'
+            ], 404);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        Cache::forget('pending_resetpass_' . $token);
+
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Password berhasil diubah!'
         ]);
     }
 

@@ -61,9 +61,10 @@ class Product extends Model
 
     public function scopeFilter($query, $request)
     {
+        $nama = trim($request->nama_product ?? '');
         return $query
-            ->when($request->filled('nama_product'), fn($q) =>
-            $q->where('nama_product', 'like', "%{$request->nama_product}%"))
+            ->when($nama !== '', fn($q) =>
+            $q->where('nama_product', 'like', "%{$nama}%"))
 
             ->when($request->has('publish'), fn($q) =>
             $q->where('status_produk', 'publish'))
@@ -78,13 +79,23 @@ class Product extends Model
             $q->where('id', $request->id))
 
             ->when($request->filled('user_id'), fn($q) =>
-            $q->where('user_id', $request->user_id));
+            $q->where('user_id', $request->user_id))
+
+            ->when($request->filled('categories'), function ($q) use ($request) {
+                $categoryIds = is_array($request->categories)
+                    ? $request->categories
+                    : explode(',', $request->categories);
+
+                $q->whereHas('categories', function ($catQuery) use ($categoryIds) {
+                    $catQuery->whereIn('categories.id', $categoryIds);
+                }, '=', count($categoryIds));
+            });
     }
 
 
-public function seller()
-{
-    return $this->belongsTo(User::class, 'user_id');
-}
+    public function seller()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
 }
