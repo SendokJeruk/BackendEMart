@@ -114,9 +114,9 @@ class AuthController extends Controller
         // ]);
 
         try {
-            Log::info('VERIFY DATA : ' . $temp_data);
+            Log::info('VERIFY DATA URL : ' . $url);
             Log::info('Queueing email via driver: ' . config('mail.default'));
-            Mail::to($data['email'])->queue(new VerifyEmail($url, $data['name']));
+            Mail::to($data['email'])->send(new VerifyEmail($url, $data['name'])); //? SEMENTARA SEND SERVER GA BISA QUEUE JIR SYBAU
             Log::info('Email successfully queued for ' . $data['email']);
         } catch (Exception $e) {
             Log::error('GAGAL KIRIM EMAIL');
@@ -195,7 +195,7 @@ class AuthController extends Controller
 
             Log::info('RESET PASS URL : ' . $url);
 
-            Mail::to($email)->queue(new ResetPasswordEmail($url, $user->name));
+            Mail::to($email)->send(new ResetPasswordEmail($url, $user->name)); //? SYBAU
 
             return response()->json([
                 'status' => 'Success',
