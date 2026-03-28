@@ -13,6 +13,7 @@
         "laravel/socialite": "5.9",
         "laravel/tinker": "^2.8",
         "laravolt/indonesia": "^0.36.0",
+        "mailersend/laravel-driver": "*",
         "midtrans/midtrans-php": "^2.6",
         "phpoffice/phpspreadsheet": "^5.1"
     },
