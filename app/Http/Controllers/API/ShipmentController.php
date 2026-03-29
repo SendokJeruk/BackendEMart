@@ -150,8 +150,10 @@ class ShipmentController extends Controller
 
     public function store(Request $request)
     {
+        Log::info("INI CEK DATA YANG MASUK");
+        Log::info($request);
         $request->validate([
-            'kode_transaksi' => 'required|unique:shipment,kode_transaksi',
+            'kode_transaksi' => 'required|unique:shipments,kode_transaksi',
             'status_pengiriman' => 'required|string|in:dibuat,dijadwalkan,kurir_ditugaskan,dalam_proses,tiba',
             'kode_resi' => 'nullable|string',
             'kurir' => 'nullable|string',
