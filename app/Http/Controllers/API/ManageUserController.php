@@ -69,7 +69,12 @@ class ManageUserController extends Controller
             $manage_user->no_telp = $request->input('no_telp');
             $manage_user->role_id = $request->input('role_id');
             $manage_user->password = Hash::make($request->input('password'));
-            $manage_user->foto_profil = $this->upload->save($request->file('foto_profil'));
+            // $manage_user->foto_profil = $this->upload->save($request->file('foto_profil'));
+            if ($request->hasFile('foto_profil')) {
+                $manage_user->foto_profil = $this->upload->save($request->file('foto_profil'));
+            } else {
+                $manage_user->foto_profil = null;
+            }
             $manage_user->save();
 
             return response()->json([
@@ -135,6 +140,3 @@ class ManageUserController extends Controller
 
     }
 }
-
-
-
