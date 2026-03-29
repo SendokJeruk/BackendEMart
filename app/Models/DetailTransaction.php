@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class DetailTransaction extends Model
 {
@@ -27,9 +28,9 @@ class DetailTransaction extends Model
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
-    public function detailIncomes()
+    public function detailIncome()
     {
-        return $this->hasMany(DetailIncome::class);
+        return $this->hasOne(DetailIncome::class);
     }
     public function rating()
     {

@@ -35,22 +35,21 @@ class User extends Authenticatable
         'google_id',
         'google_token',
         'google_refresh_token',
-        'email_verified_at'
     ];
 
 
     public function product(): HasMany
     {
-        return $this->hasMany(related: Product::class, foreignKey: 'user_id');
+        return $this->hasMany( Product::class,  'user_id');
     }
     public function transaction(): HasMany
     {
-        return $this->hasMany(related: Transaction::class, foreignKey: 'user_id');
+        return $this->hasMany( Transaction::class,  'user_id');
     }
 
     public function rating(): HasMany
     {
-        return $this->hasMany(related: rating::class, foreignKey: 'rating_id');
+        return $this->hasMany( rating::class,  'rating_id');
     }
 
     public function role()
@@ -65,7 +64,7 @@ class User extends Authenticatable
 
     public function alamat(): HasMany
     {
-        return $this->hasMany(related: AlamatUser::class, foreignKey: 'user_id');
+        return $this->hasMany( AlamatUser::class,  'user_id');
     }
 
     public function cart(): hasOne

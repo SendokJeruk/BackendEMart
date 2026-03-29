@@ -18,16 +18,16 @@ class CategoryProductController extends Controller
 
         $category_product = CategoryProduct::with([
             'category:id,nama_category',
-            'product:id,nama_product'
-        ])->get();
+            'product:id,nama_product,user_id'
+            ])->whereHas('product', function ($query) {
+                $query->where('user_id', auth()->id());
+            })->get();
 
         return response()->json([
             'status' => 'Success',
             'message' => 'Product categories retrieved successfully',
             'data' => $category_product
         ]);
-
-
     }
 
     public function store(Request $request)
@@ -37,7 +37,6 @@ class CategoryProductController extends Controller
 
         $product = Product::findOrFail($request->product_id);
 
-        // Fix 403: Pastikan tipe data sama saat membandingkan
         if ((int)$product->user_id !== (int)auth()->id()) {
             throw new AuthorizationException();
         }
@@ -54,12 +53,11 @@ class CategoryProductController extends Controller
             ], 422);
         }
 
-        \Illuminate\Support\Facades\Log::info("BUDI MENCOBA SIMPAN KATEGORI PRODUK");
+        Log::info("BUDI MENCOBA SIMPAN KATEGORI PRODUK");
 
-        // Best Practice: Gunakan relasi syncWithoutDetaching agar tidak duplikat dan pasti masuk
         $product->categories()->syncWithoutDetaching([$request->category_id]);
 
-        \Illuminate\Support\Facades\Log::info("SUKSES SIMPAN KATEGORI KE PRODUK");
+        Log::info("SUKSES SIMPAN KATEGORI KE PRODUK");
 
         return response()->json([
             'status' => 'Success',
