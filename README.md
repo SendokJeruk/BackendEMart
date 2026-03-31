@@ -59,6 +59,14 @@ Sebelum menggunakan API ini, ikuti langkah-langkah berikut:
   `GET /api/product?nama_product={query}`
 - **Get publish products**  
   `GET /api/product?publish`
+- **Get my products - FOR SELLER**  
+  `GET /api/myproducts`
+- **Search my products - FOR SELLER**  
+  `GET /api/myproducts?nama_product={query}`
+- **Search products category**  
+  `GET /api/product?categories={1, 2, 3}`
+- **Search my products category**  
+  `GET /api/myproducts?categories={1, 2, 3}`   
 - **Get draft products**  
   `GET /api/product?draft`   
 - **Create a new product**  
@@ -66,11 +74,14 @@ Sebelum menggunakan API ini, ikuti langkah-langkah berikut:
 - **Update a product**  
   `PUT /api/product/{id}`  
 - **Delete a product**  
-  `DELETE /api/product/{id}`  
+  `DELETE /api/product/{id}`
+
 
 ## Categories
 - **Get all categories**  
-  `GET /api/category`  
+  `GET /api/category`
+- **Search categories**  
+  `GET /api/category?nama_category={query}`  
 - **Create a new category**  
   `POST /api/category`  
 - **Update a category**  
