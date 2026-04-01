@@ -62,7 +62,7 @@ class AlamatController extends Controller
     {
         if ($alamat->user_id !== auth()->id()) {
             throw new AuthorizationException();
-        }
+        }   
 
         $validate = Validator::make($request->all(), [
             'kode_domestik'    => 'required|integer',
