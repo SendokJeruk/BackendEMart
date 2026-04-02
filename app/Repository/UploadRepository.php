@@ -5,34 +5,36 @@ use Illuminate\Support\Facades\File;
 
 class UploadRepository {
     public static function save($image) {
-        $file = $image;
-        $file_name = url('upload/img/' . $file->hashName());
+        $filename = $image->hashName();
         $destinasi = 'upload/img/';
-        $file->move($destinasi, $file_name);
+        $image->move($destinasi, $filename);
 
-        return $file_name;
+        return url($destinasi . $filename);
     }
 
     public function update($old_image, $image) {
-        $array = explode('/', $old_image);
-
-        if(isset($array[5])) {
-            File::delete(public_path('upload/img/' . $array[5]));
+        if ($old_image) {
+            $filename = basename($old_image);
+            $filepath = public_path('upload/img/' . $filename);
+            if (File::exists($filepath) && is_file($filepath)) {
+                File::delete($filepath);
+            }
         }
 
-        $file = $image;
-        $file_name = url('upload/img/' . $file->hashName());
+        $new_filename = $image->hashName();
         $destinasi = 'upload/img/';
-        $file->move($destinasi, $file_name);
+        $image->move($destinasi, $new_filename);
 
-        return $file_name;
+        return url($destinasi . $new_filename);
     }
 
     public function delete($image) {
-        $array = explode('/', $image);
-
-        if(isset($array[5])) {
-            File::delete(public_path('upload/img/' . $array[5]));
+        if ($image) {
+            $filename = basename($image);
+            $filepath = public_path('upload/img/' . $filename);
+            if (File::exists($filepath) && is_file($filepath)) {
+                File::delete($filepath);
+            }
         }
     }
 }

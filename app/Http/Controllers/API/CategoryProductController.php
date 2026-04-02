@@ -21,7 +21,7 @@ class CategoryProductController extends Controller
             'product:id,nama_product,user_id'
             ])->whereHas('product', function ($query) {
                 $query->where('user_id', auth()->id());
-            })->get();
+            })->paginate(10);
 
         return response()->json([
             'status' => 'Success',
