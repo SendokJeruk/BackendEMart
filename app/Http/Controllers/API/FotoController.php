@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use Exception;
@@ -7,7 +6,8 @@ use App\Models\Foto;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repository\UploadRepository;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\Foto\StoreRequest;
+use App\Http\Requests\Foto\UpdateRequest;
 
 class FotoController extends Controller
 {
@@ -15,12 +15,13 @@ class FotoController extends Controller
 
     public function __construct()
     {
+        // ngejalanin fungsi __construct
         $this->upload = new UploadRepository();
     }
 
     public function index()
     {
-
+        // nampilin semua data foto yang udah disimpen
         $foto = Foto::paginate(10);
         return response()->json([
             'status' => 'Success',
@@ -29,52 +30,27 @@ class FotoController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-
-        $validate = Validator::make($request->all(), [
-            'foto' => 'required|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
-
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
-
+        // ngupload file foto ke storage trus simpen path-nya ke database
         $data = $request->all();
         $data['foto'] = $this->upload->save($request->file('foto'));
-        $foto = foto::create($data);
+        $foto = Foto::create($data);
 
         return response()->json([
             'status' => 'Success',
             'message' => 'Photo added successfully',
             'data' => $foto
-        ],201 );
+        ], 201);
     }
 
-    public function update(Request $request, Foto $foto)
+    public function update(UpdateRequest $request, Foto $foto)
     {
-
-        $validate = Validator::make($request->all(), [
-            'foto' => 'nullable|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
-
+        // ngganti file foto lama sama yang baru kalo ada, trus update datanya
         $data = $request->all();
-
         if ($request->file('foto')) {
             $data['foto'] = $this->upload->update($foto->foto, $request->file('foto'));
         }
-
         $foto->update($data);
 
         return response()->json([
@@ -82,19 +58,16 @@ class FotoController extends Controller
             'message' => 'Photo updated successfully',
             'data' => $foto->fresh()
         ]);
-
     }
 
     public function delete(Foto $foto)
     {
-
+        // ngapus file foto dari storage sekalian datanya dari database
         $this->upload->delete($foto->Foto);
         $foto->delete();
         return response()->json([
             'status' => 'Success',
             'message' => 'Data deleted successfully'
         ]);
-
     }
-
 }

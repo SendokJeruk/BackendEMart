@@ -1,20 +1,19 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use Exception;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use App\Models\DetailTransaction;
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Access\AuthorizationException;
+use App\Http\Requests\Checkout\CheckoutRequest;
 
 class CheckoutController extends Controller
 {
     public function checkoutAll()
     {
-
+        // ngubah semua isi keranjang jadi transaksi baru, ngitung total harga n berat, trus ngosongin keranjang
         $user = auth()->user();
 
         if (!$user->cart || $user->cart->cart_detail->isEmpty()) {
@@ -22,7 +21,6 @@ class CheckoutController extends Controller
                 'message' => 'Your cart is empty, please add products first'
             ], 422);
         }
-
 
         $totalBerat = $user->cart->cart_detail->sum(function ($detail) {
             return $detail->product->berat * $detail->jumlah;
@@ -58,25 +56,13 @@ class CheckoutController extends Controller
             'message' => 'Checkout Successful',
             'data' => $transaction->load('detail_transaction.product')
         ]);
-
     }
 
-    public function checkout(Request $request)
+    public function checkout(CheckoutRequest $request)
     {
+        // bikin transaksi baru tapi cuma buat barang-barang yang dipilih aja dari keranjang, sisanya dibiarin
         $user = auth()->user();
-
-        $request->validate([
-            'cart_detail_ids' => 'required|array|min:1',
-            'cart_detail_ids.*' => 'integer|exists:cart_details,id',
-        ]);
-
-        $cartDetails = $user->cart->cart_detail()
-            ->whereIn('id', $request->cart_detail_ids)
-            ->get();
-
-        if ($cartDetails->count() !== count($request->cart_detail_ids)) {
-            throw new AuthorizationException();
-        }
+        $cartDetails = $user->cart->cart_detail()->whereIn('id', $request->cart_detail_ids)->get();
 
         if ($cartDetails->isEmpty()) {
             return response()->json([
@@ -118,5 +104,4 @@ class CheckoutController extends Controller
             'data' => $transaction->load('detail_transaction.product')
         ]);
     }
-
 }

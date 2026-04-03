@@ -1,14 +1,12 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rules\Password;
 use App\Repository\UploadProfileRepository;
+use App\Http\Requests\Profile\UpdateRequest;
 
 class ProfileController extends Controller
 {
@@ -16,12 +14,14 @@ class ProfileController extends Controller
 
     public function __construct()
     {
+        // ngejalanin fungsi __construct
         $this->upload = new UploadProfileRepository();
     }
+
     public function index()
     {
+        // ngambil data profil user yang lagi login beserta rolenya
         $user = auth()->user()->load('role');
-
         $data = [
             'id' => $user->id,
             'name' => $user->name,
@@ -38,34 +38,11 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function update(Request $request)
+    public function update(UpdateRequest $request)
     {
+        // ngupdate data profil user, encrypt password kalo diganti, dan ngurus upload foto profil baru
         $updateUser = auth()->user();
-
-        $validate = Validator::make($request->all(), [
-            'name'        => 'nullable|string|max:255',
-            'email'       => 'nullable|email|max:255',
-            'no_telp'     => 'nullable|string|max:13',
-            'password'    => [ 'nullable',
-                Password::min(8)
-                    ->mixedCase()
-                    ->letters()
-                    ->numbers()
-                    ->symbols()
-            ],
-            'role_id'     => 'nullable|integer',
-            'foto_profil' => 'nullable|file|image|max:2048',
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
-
         $data = [];
-
         $fields = ['name', 'email', 'no_telp', 'password', 'role_id'];
 
         foreach ($fields as $field) {
@@ -82,13 +59,11 @@ class ProfileController extends Controller
 
         if ($request->hasFile('foto_profil')) {
             $newImage = $request->file('foto_profil');
-
             if ($updateUser->foto_profil) {
                 $updateUser->foto_profil = $this->upload->update($updateUser->foto_profil, $newImage);
             } else {
                 $updateUser->foto_profil = $this->upload->save($newImage);
             }
-
             $updateUser->save();
         }
 

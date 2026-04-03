@@ -1,11 +1,11 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use App\Services\RajaOngkirService;
+use App\Http\Requests\RajaOngkir\CostRequest;
+use App\Http\Requests\RajaOngkir\TrackRequest;
 
 class RajaOngkirController extends Controller
 {
@@ -13,25 +13,21 @@ class RajaOngkirController extends Controller
 
     public function __construct(RajaOngkirService $rajaOngkir)
     {
+        // ngejalanin fungsi __construct
         $this->rajaOngkir = $rajaOngkir;
     }
 
     public function domestic(Request $request)
     {
+        // nyari data kota atau provinsi buat keperluan pengiriman domestik via RajaOngkir
         $domestic = $request->get('search');
         return response()->json($this->rajaOngkir->getDomestic($domestic));
     }
 
-    public function cost(Request $request)
+    public function cost(CostRequest $request)
     {
-        $data = $request->validate([
-            'origin'      => 'required',
-            'destination' => 'required',
-            'weight'      => 'required|integer',
-            'courier'     => 'required',
-            'price'       => 'required'
-        ]);
-
+        // ngecek harga ongkos kirim berdasarkan berat, asal, tujuan, sama kurir yang dipilih
+        $data = $request->validated();
         return response()->json($this->rajaOngkir->getCost(
             $data['origin'],
             $data['destination'],
@@ -41,17 +37,13 @@ class RajaOngkirController extends Controller
         ));
     }
 
-    public function track(Request $request)
+    public function track(TrackRequest $request)
     {
-    $data = $request->validate([
-        'waybill' => 'required|string',
-        'courier' => 'required|string',
-    ]);
-
-    return response()->json($this->rajaOngkir->trackShipment(
-        $data['waybill'],
-        $data['courier']
-    ));
+        // ngelacak resi pengiriman pake API RajaOngkir
+        $data = $request->validated();
+        return response()->json($this->rajaOngkir->trackShipment(
+            $data['waybill'],
+            $data['courier']
+        ));
     }
-
 }

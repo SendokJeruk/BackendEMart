@@ -17,6 +17,7 @@ class ReportController extends Controller
 
     public function generateInvoice($kode_transaksi)
     {
+        // ngambil data transaksi utuh, trus di-render jadi file PDF invoice buat di-download
         $transaction = Transaction::with(['user', 'detail_transaction.product', 'shipment'])
             ->where('kode_transaksi', $kode_transaksi)
             ->firstOrFail();
@@ -31,6 +32,7 @@ class ReportController extends Controller
 
     public function adminMonthlyReport(Request $request)
     {
+        // ngambil semua transaksi di bulan tertentu buat dibikin laporan Excel admin
         $month = $request->get('month', Carbon::now()->month);
         $year = $request->get('year', Carbon::now()->year);
 
@@ -42,6 +44,7 @@ class ReportController extends Controller
 
     public function sellerTransactionReport($seller_id)
     {
+        // filter transaksi yang ada produk si seller, trus dibikinin laporan PDF-nya
         if ((int)$seller_id !== auth()->id()) {
             throw new AuthorizationException();
         }
@@ -68,6 +71,7 @@ class ReportController extends Controller
 
     public function userTransactionReport($user_id)
     {
+        // ngambil riwayat transaksi sukses punya user buat dicetak jadi PDF
         if ((int)$user_id !== auth()->id()) {
             throw new AuthorizationException();
         }
@@ -82,6 +86,7 @@ class ReportController extends Controller
 
     public function generatePdf($transactions, $fileName)
     {
+        // fungsi reusable buat ngerender HTML jadi PDF dan langsung di-download
         $pdf = Pdf::loadView('ReportPDF', compact('transactions'))
             ->setPaper('a4', 'portrait');
 
@@ -90,6 +95,7 @@ class ReportController extends Controller
 
     public function generateExcel($transactions, $fileName)
     {
+        // nge-generate file Excel dari data transaksi pake library PhpSpreadsheet
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 

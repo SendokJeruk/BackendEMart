@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use App\Models\Income;
@@ -12,6 +11,8 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Access\AuthorizationException;
+use App\Http\Requests\Shipment\StoreRequest;
+use App\Http\Requests\Shipment\UpdateRequest;
 
 class ShipmentController extends Controller
 {
@@ -19,11 +20,13 @@ class ShipmentController extends Controller
 
     public function __construct(ShipmentService $shipment)
     {
+        // ngejalanin fungsi __construct
         $this->shipment = $shipment;
     }
 
     public function getAllPengirimanSeller()
     {
+        // ngambil pengiriman yang isinya produk punya seller yang login
         $pengiriman = Shipment::with([
             'transaction.user',
             'detail_shipments.detail_transaction.product',
@@ -42,17 +45,13 @@ class ShipmentController extends Controller
 
     public function getAllPengirimanBuyer()
     {
-        // return Shipment::with(['transaction.user'])->paginate(10);
+        // ngambil daftar pengiriman dari transaksi yang dibikin user login
         $user = Auth::user();
-
         $pengiriman = Shipment::with([
             'transaction.user',
             'detail_shipments.detail_transaction.product',
             'detail_shipments.detail_transaction.rating:id,detail_transaction_id,rating'
         ])
-        // ->whereHas('detail_shipments.detail_transaction.product', function ($query) {
-        //     $query->where('user_id', Auth::id());
-        // })
         ->whereHas('transaction', function ($query) {
             $query->where('user_id', Auth::id());
         })
@@ -68,6 +67,7 @@ class ShipmentController extends Controller
 
     public function getPengirimanById($id)
     {
+        // ngambil detail pengiriman spesifik sekalian tracking via API kalo ada resinya
         $pengiriman = Shipment::with(['detail_shipments.detail_transaction.product.user.toko', 'transaction'])
             ->where('id', $id)
             ->firstOrFail();
@@ -91,6 +91,7 @@ class ShipmentController extends Controller
 
     public function getPengirimanByKodeTransaksi($kode_transaksi)
     {
+        // nyari pengiriman pake kode transaksi trus dikelompokkin per toko
         $shipments = Shipment::with([
             'transaction.user',
             'detail_shipments.detail_transaction.product.user.toko'
@@ -115,7 +116,6 @@ class ShipmentController extends Controller
                 $product = $detailTransaksi->product;
                 $toko = $product->user->toko;
 
-                // pakai ID toko sebagai group key
                 $group = $toko->id;
 
                 if (!isset($result[$group])) {
@@ -146,22 +146,12 @@ class ShipmentController extends Controller
         ]);
     }
 
-
-
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
+        // bikin data pengiriman baru, set status n masukin resi/kurirnya
         Log::info("INI CEK DATA YANG MASUK");
         Log::info($request);
-        $request->validate([
-            'kode_transaksi' => 'required|unique:shipments,kode_transaksi',
-            'status_pengiriman' => 'required|string|in:dibuat,dijadwalkan,kurir_ditugaskan,dalam_proses,tiba',
-            'kode_resi' => 'nullable|string',
-            'kurir' => 'nullable|string',
-            'plat_nomor' => 'nullable|string',
-            'estimasi_tiba' => 'nullable|date',
-            'bukti_pengiriman' => 'nullable|string',
-        ]);
-
+        
         $pengiriman = Shipment::create([
             'kode_transaksi' => $request->kode_transaksi,
             'status_pengiriman' => $request->status_pengiriman,
@@ -178,18 +168,9 @@ class ShipmentController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, Shipment $shipment)
+    public function update(UpdateRequest $request, Shipment $shipment)
     {
-        $request->validate([
-            'kode_transaksi' => 'required',
-            'status_pengiriman' => 'required|string|in:dibuat,dijadwalkan,kurir_ditugaskan,dalam_proses,tiba',
-            'resi' => 'nullable|string',
-            'ekspedisi' => 'nullable|string',
-            'plat_nomor' => 'nullable|string',
-            'estimasi_tiba' => 'nullable|date',
-            'bukti_pengiriman' => 'nullable|string',
-        ]);
-
+        // ngupdate rincian pengiriman kayak ganti status, resi, atau estimasi tiba
         $shipment->update([
             'kode_transaksi' => $request->kode_transaksi,
             'status_pengiriman' => $request->status_pengiriman,
@@ -208,6 +189,7 @@ class ShipmentController extends Controller
 
     public function delete(Shipment $shipment)
     {
+        // pastiin seller yang bersangkutan baru boleh ngapus data pengiriman
         $isOwner = $shipment->detail_shipments()
             ->whereHas('detail_transaction.product', function ($query) {
                 $query->where('user_id', auth()->id());
@@ -225,6 +207,7 @@ class ShipmentController extends Controller
 
     public function confirmReceived(Shipment $pengiriman)
     {
+        // verifikasi pengiriman nyampe, trus mindahin uang ke saldo income seller
         if ($pengiriman->transaction->user_id !== auth()->id()) {
             throw new AuthorizationException();
         }
@@ -242,5 +225,4 @@ class ShipmentController extends Controller
             'data' => $data
         ]);
     }
-
 }
