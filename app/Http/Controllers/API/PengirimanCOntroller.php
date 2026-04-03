@@ -13,7 +13,7 @@ class PengirimanController extends Controller
 
     public function getAllPengiriman()
     {
-        // return Pengiriman::with(['transaction.user'])->paginate(10);
+        // ngambil semua data pengiriman yang transaksinya punya user yang login
         $pengiriman = Pengiriman::with(['transaction.user'])
             ->whereHas('transaction', function ($query) {
                 $query->where('user_id', auth()->id());
@@ -29,6 +29,7 @@ class PengirimanController extends Controller
 
     public function getPengirimanByKodeTransaksi($kode_transaksi)
     {
+        // nyari info pengiriman spesifik berdasarkan kode transaksinya
         $pengiriman = Pengiriman::with(['transaction.user'])
             ->where('kode_transaksi', $kode_transaksi)
             ->whereHas('transaction', function ($query) {
@@ -52,6 +53,7 @@ class PengirimanController extends Controller
 
     public function store(Request $request)
     {
+        // nyimpen data pengiriman baru (kayak resi, kurir, dll) berdasarkan kode transaksi
         $request->validate([
             'kode_transaksi' => 'required|unique:pengirimen,kode_transaksi',
             'status_pengiriman' => 'required|string|in:dibuat,dijadwalkan,kurir_ditugaskan,dalam_proses,tiba',
@@ -81,6 +83,7 @@ class PengirimanController extends Controller
 
     public function update(Request $request, Pengiriman $pengiriman)
     {
+        // ngubah status atau detail pengiriman yang udah ada
         $request->validate([
             'kode_transaksi' => 'required|unique:pengirimen,kode_transaksi,' . $pengiriman->id,
             'status_pengiriman' => 'required|string|in:dibuat,dijadwalkan,kurir_ditugaskan,dalam_proses,tiba',
@@ -110,6 +113,7 @@ class PengirimanController extends Controller
 
     public function delete(Pengiriman $pengiriman)
     {
+        // ngapus data pengiriman dari database
         $pengiriman->delete();
         return response()->json([
             'status' => 'Success',
@@ -120,6 +124,7 @@ class PengirimanController extends Controller
     public function confirmReceived($kode_transaksi) {
         $pengiriman = Pengiriman::where('kode_transaksi', $kode_transaksi)
             ->whereHas('transaction', function ($query) {
+        // ngubah status pengiriman jadi 'diterima', trus nambahin saldo income buat sellernya
                 $query->where('user_id', auth()->id());
             })
             ->first();
