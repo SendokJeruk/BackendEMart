@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use Exception;
@@ -17,10 +16,12 @@ use App\Services\RajaOngkirService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use App\Repository\SuccessPaymentRepository;
 use Illuminate\Auth\Access\AuthorizationException;
 use App\Services\TransactionService;
+use App\Http\Requests\Transaction\CreateTransactionRequest;
+use App\Http\Requests\Transaction\StoreRequest;
+use App\Http\Requests\Transaction\UpdateRequest;
 
 class TransactionController extends Controller
 {
@@ -37,6 +38,7 @@ class TransactionController extends Controller
         ShipmentService $shipment,
         TransactionService $transactionService
     ) {
+        // ngejalanin fungsi __construct
         $this->midtransService = $midtransService;
         $this->rajaOngkir = $rajaOngkir;
         $this->successPayment = $successPaymentRepository;
@@ -44,20 +46,9 @@ class TransactionController extends Controller
         $this->transactionService = $transactionService;
     }
 
-    public function createTransaction(Transaction $transaction, Request $request)
+    public function createTransaction(Transaction $transaction, CreateTransactionRequest $request)
     {
-        $validate = Validator::make($request->all(), [
-            'payment_type' => 'nullable',
-            'data_ongkir' => 'required',
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
-
+        // minta token pembayaran sama URL dari Midtrans buat checkout
         if ($transaction->status == 'success') {
             return response()->json([
                 'message' => 'Transaksi sudah berhasil, silahkan cek riwayat transaksi anda'
@@ -86,29 +77,28 @@ class TransactionController extends Controller
 
     public function getAllTransaction()
     {
-
+        // ngambil daftar seluruh transaksi buat dipantau admin
         $transaction = Transaction::with('detail_transaction')->paginate(10);
         return response()->json([
             'message' => 'Berhasil Menampilkan transaksi',
             'data' => $transaction
         ]);
-
     }
 
     public function index()
     {
-
+        // ngambil daftar transaksi beserta detail barang n tokonya buat user login
         $user = Auth::user();
         $transaction = $user->transaction()->with('detail_transaction.product.user.toko.alamatToko')->paginate(5);
         return response()->json([
             'message' => 'Berhasil Menampilkan transaksi ' . $user->name,
             'data' => $transaction
         ]);
-
     }
 
     public function getTransactionDetail(Transaction $transaction)
     {
+        // ngambil rincian pesanan di satu transaksi trus di-grouping per toko
         if ($transaction->user_id != auth()->id()) {
             throw new AuthorizationException();
         }
@@ -117,8 +107,6 @@ class TransactionController extends Controller
 
         foreach ($transaction->detail_transaction as $detail) {
             $toko = $detail->product->user->toko;
-
-            // pakai id toko biar unik
             $group = $toko->id;
 
             if (!isset($result[$group])) {
@@ -147,21 +135,9 @@ class TransactionController extends Controller
         ]);
     }
 
-
-
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-
-        $validate = Validator::make($request->all(), [
-            'status' => 'required',
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
+        // bikin data transaksi awal (mentah) saat proses checkout berjalan
         $transaction = new Transaction();
         $transaction->user_id = auth()->id();
         $transaction->status = $request->status;
@@ -172,27 +148,11 @@ class TransactionController extends Controller
             'message' => 'Berhasil menambahkan transaksi',
             'data' => $transaction
         ], 200);
-
     }
 
-    public function update(Request $request, Transaction $transaction)
+    public function update(UpdateRequest $request, Transaction $transaction)
     {
-        if ($transaction->user_id !== auth()->id()) {
-            throw new AuthorizationException();
-        }
-
-        $validate = Validator::make($request->all(), [
-            'status' => 'nullable|string',
-            'total_ongkir' => 'nullable|numeric'
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
-
+        // ngupdate ongkos kirim atau status transaksi n ngitung total akhirnya
         if ($request->has('total_ongkir')) {
             $transaction->total_ongkir = $request->input('total_ongkir');
             $transaction->total_harga = $transaction->detail_transaction->sum('subtotal') + $transaction->total_ongkir;
@@ -208,12 +168,11 @@ class TransactionController extends Controller
             'message' => 'Berhasil Update transaksi',
             'data' => $transaction->fresh()
         ]);
-
     }
-
 
     public function delete(Transaction $transaction)
     {
+        // ngapus transaksi secara keseluruhan, pastinya ngecek akses usernya dulu
         if ($transaction->user_id !== auth()->id()) {
             throw new AuthorizationException();
         }
@@ -223,16 +182,15 @@ class TransactionController extends Controller
         return response()->json([
             'message' => 'Data berhasil dihapus'
         ]);
-
     }
 
     public function pesananMasuk(Request $request)
     {
-
-        $sellerId = auth()->id(); // atau ambil dari $request->user_id
+        // nampilin transaksi masuk yang isinya produk jualan si seller
+        $sellerId = auth()->id();
 
         $transactions = Transaction::whereHas('detail_transaction.product', function ($query) use ($sellerId) {
-            $query->where('user_id', $sellerId); // user_id adalah pemilik produk
+            $query->where('user_id', $sellerId);
         })
             ->with([
                 'detail_transaction' => function ($q) use ($sellerId) {
@@ -245,11 +203,9 @@ class TransactionController extends Controller
             ->latest()
             ->paginate(10);
 
-
         return response()->json([
             'message' => 'Berhasil menampilkan pesanan masuk',
             'data' => $transactions
         ]);
-
     }
 }

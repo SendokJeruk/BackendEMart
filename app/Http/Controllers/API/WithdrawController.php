@@ -1,16 +1,17 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Withdraw;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\Withdraw\SubmitWithdrawRequest;
+use App\Http\Requests\Withdraw\HandleWithdrawalRequest;
 
 class WithdrawController extends Controller
 {
     public function index()
     {
+        // nampilin daftar pengajuan penarikan dana dari user buat admin
         $withdraws = Withdraw::with('user:id,name,email')->orderBy('created_at', 'desc')->paginate(10);
 
         return response()->json([
@@ -22,6 +23,7 @@ class WithdrawController extends Controller
 
     public function selfWithdraw()
     {
+        // ngambil riwayat penarikan dana punya user yang lagi login aja
         $user = auth()->user();
         $withdraws = Withdraw::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(10);
 
@@ -32,16 +34,11 @@ class WithdrawController extends Controller
         ]);
     }
 
-    public function submitWithdraw(Request $request)
+    public function submitWithdraw(SubmitWithdrawRequest $request)
     {
+        // ngecek saldo cukup dan nggak ngelanggar limit, trus bikin request withdraw
         $user = auth()->user();
         $id = $user->id;
-        $validate = Validator::make($request->all(), [
-            'jumlah' => 'required|numeric|min:10000',
-            'metode' => 'required|string|in:bank_transfer,gopay,ovo,dana,shopeePay',
-            'rekening_tujuan' => 'required|string|max:50',
-            'catatan' => 'nullable|string|max:255',
-        ]);
 
         $pending = $user->withdraw()->where('status', 'pending')->first();
         if ($pending) {
@@ -64,13 +61,6 @@ class WithdrawController extends Controller
             ], 422);
         }
 
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
-
         $withdraw = new Withdraw();
         $withdraw->user_id = $id;
         $withdraw->jumlah = $request->input('jumlah');
@@ -86,19 +76,9 @@ class WithdrawController extends Controller
         ]);
     }
 
-    public function handleWithdrawal(Withdraw $withdraw, Request $request)
+    public function handleWithdrawal(Withdraw $withdraw, HandleWithdrawalRequest $request)
     {
-        $validate = Validator::make($request->all(), [
-            'status' => 'required|in:accepted,rejected',
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
-
+        // proses pengajuan ditarik atau ditolak admin, potong saldo kalo ACC
         if ($withdraw->status !== 'pending') {
             return response()->json([
                 'message' => 'This withdraw request has already been processed',

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use Exception;
@@ -7,7 +6,6 @@ use App\Models\Role;
 use App\Models\User;
 use App\Mail\VerifyEmail;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -17,36 +15,24 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Socialite\Facades\Socialite;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rules\Password;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\VerifyRequest;
+use App\Http\Requests\Auth\SendResetPasswordRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 
 class AuthController extends Controller
 {
     use HasApiTokens, Notifiable;
-    public function login(Request $request)
+
+    public function login(LoginRequest $request)
     {
-
-        $validate = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
-
+        // ngecek email sama password, kalo cocok bakal dibuatin token akses buat login
         if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json([
-                'message' => 'Unauthorized'
-            ], 401);
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
         $user = Auth::user();
-        // $user->tokens()->delete();
         $token = $user->createToken('auth_token')->plainTextToken;
         $user->access_token = $token;
         $user->token_type = 'Bearer';
@@ -58,65 +44,31 @@ class AuthController extends Controller
         ]);
     }
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-
-        $validate = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'no_telp' => 'required',
-            'password' => [
-                'required',
-                Password::min(8)
-                    ->mixedCase()
-                    ->letters()
-                    ->numbers()
-                    ->symbols()
-            ],
-            'role_id' => 'nullable',
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
-
+        // bikin akun baru dengan role buyer secara default, trus ngirim email verifikasi
         $findUserRole = Role::where('nama_role', 'buyer')->first();
         if (!$findUserRole) {
             $addUserRole = new Role();
             $addUserRole->nama_role = 'buyer';
             $addUserRole->save();
-
             $id = $addUserRole->id;
         } else {
             $id = $findUserRole->id;
         }
 
-        $data = $request->only([
-            'name',
-            'email',
-            'no_telp',
-        ]);
+        $data = $request->only(['name', 'email', 'no_telp']);
         $data['password'] = Hash::make($request->password);
         $data['role_id'] = $id;
 
         $token = Str::random(67);
-
         $temp_data = Cache::put('pending_user_' . $token, $data, 3600);
-
         $url = env('FRONTEND_URL', 'http://localhost:5173/') . 'verify?token=' . $token;
-
-        // return response()->json([
-        //     $data,
-        //     $url
-        // ]);
 
         try {
             Log::info('VERIFY DATA URL : ' . $url);
             Log::info('Queueing email via driver: ' . config('mail.default'));
-            Mail::to($data['email'])->send(new VerifyEmail($url, $data['name'])); //? SEMENTARA SEND SERVER GA BISA QUEUE JIR SYBAU
+            Mail::to($data['email'])->send(new VerifyEmail($url, $data['name']));
             Log::info('Email successfully queued for ' . $data['email']);
         } catch (Exception $e) {
             Log::error('GAGAL KIRIM EMAIL');
@@ -135,22 +87,18 @@ class AuthController extends Controller
 
     public function logout()
     {
-
+        // ngapus token akses user yang lagi dipake biar bener-bener keluar dari sistem
         auth()->user()->tokens()->delete();
-
         return response()->json([
             'status' => 'Success',
             'message' => 'Logout successful',
         ]);
     }
 
-    public function verify(Request $request)
+    public function verify(VerifyRequest $request)
     {
-        $request->validate([
-            'token' => 'required|string',
-        ]);
+        // ngecek token dari email, kalo bener datanya dipindah dari cache ke tabel user asli
         $token = $request->input('token');
-
         $data = Cache::get('pending_user_' . $token);
 
         if (!$data) {
@@ -177,25 +125,18 @@ class AuthController extends Controller
         ]);
     }
 
-    public function sendResetPassword(Request $request)
+    public function sendResetPassword(SendResetPasswordRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email|exists:users,email'
-        ]);
-
+        // nyari user dari email, trus bikin token n ngirim link reset password ke emailnya
         $user = User::where('email', $request->email)->first();
-
         if ($user) {
             $token = Str::random(67);
             $email = $user->email;
-
             Cache::put('pending_resetpass_' . $token, $email, now()->addMinutes(15));
-
             $url = env('FRONTEND_URL', 'http://localhost:5173/') . 'reset-password?token=' . $token . '&email=' . $email;
 
             Log::info('RESET PASS URL : ' . $url);
-
-            Mail::to($email)->send(new ResetPasswordEmail($url, $user->name)); //? SYBAU
+            Mail::to($email)->send(new ResetPasswordEmail($url, $user->name));
 
             return response()->json([
                 'status' => 'Success',
@@ -209,22 +150,9 @@ class AuthController extends Controller
         ], 404);
     }
 
-    public function resetPassword(Request $request)
+    public function resetPassword(ResetPasswordRequest $request)
     {
-        $request->validate([
-            'token' => 'required|string',
-            'email' => 'required|email',
-            'password' => [
-                'required',
-                'confirmed',
-                Password::min(8)
-                    ->mixedCase()
-                    ->letters()
-                    ->numbers()
-                    ->symbols()
-            ],
-        ]);
-
+        // validasi token reset, kalo valid langsung ganti password user di database
         $token = $request->input('token');
         $email = $request->input('email');
 
@@ -256,53 +184,4 @@ class AuthController extends Controller
             'message' => 'Password berhasil diubah!'
         ]);
     }
-
-    // GOOGLE AUTH
-    // public function redirect()
-    // {
-    //     return Socialite::driver('google')->redirect();
-    // }
-
-    // public function callback()
-    // {
-    //
-    //         $socialUser = Socialite::driver('google')->user();
-    //         $registeredUser = User::where("google_id", $socialUser->id)->first();
-    //         $roleId = Role::where('nama_role', 'user')->value('id');
-
-    //         if (!$registeredUser) {
-    //             $user = User::updateOrCreate(
-    //                 ['google_id' => $socialUser->id],
-    //                 [
-    //                     'name' => $socialUser->name,
-    //                     'email' => $socialUser->email,
-    //                     'no_telp' => '000000000000',
-    //                     'password' => Hash::make(Str::random(16)),
-    //                     'role_id' => $roleId,
-    //                     'google_token' => $socialUser->token,
-    //                     'google_refresh_token' => $socialUser->refreshToken,
-    //                 ]
-    //             );
-
-    //             Auth::login($user);
-    //         } else {
-    //             Auth::login($registeredUser);
-    //         }
-
-    //         // Buat token API untuk user
-    //         $token = Auth::user()->createToken('auth_token')->plainTextToken;
-
-    //         return response()->json([
-    //             'token' => $token,
-    //             'user' => Auth::user(),
-    //         ]);
-    //     } catch (Exception $e) {
-    //         return response()->json([
-    //             'error' => 'Google login failed!',
-    //             'message' => $e->getMessage(),
-    //             'trace' => $e->getTraceAsString() // Tambahkan trace untuk melihat detail error
-    //         ], 500);
-    //     }
-    // }
-    // GOOGLE AUTH
 }

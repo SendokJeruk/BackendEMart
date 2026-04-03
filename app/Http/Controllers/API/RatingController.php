@@ -1,14 +1,12 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use Exception;
 use App\Models\Rating;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
 use App\Repository\UploadRepository;
-
+use App\Http\Requests\Rating\StoreRequest;
 
 class RatingController extends Controller
 {
@@ -16,10 +14,13 @@ class RatingController extends Controller
 
     public function __construct()
     {
+        // ngejalanin fungsi __construct
         $this->upload = new UploadRepository();
     }
+
     public function index()
     {
+        // ngambil semua rating, bisa difilter per produk, beserta info user yang ngasih rating
         $ratings = Rating::when(request('product_id'), function ($query, $product_id) {
             return $query->where('product_id', $product_id);
         })->with('user')->get();
@@ -31,23 +32,9 @@ class RatingController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-
-        $validate = Validator::make($request->all(), [
-            'product_id' => 'required',
-            'rating' => 'required|integer',
-            'detail_transaction_id' => 'required',
-            'deskripsi' => 'nullable'
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
-
+        // ngupload foto review (kalo ada) trus nyimpen rating dan ulasan buat suatu produk
         $rating = new Rating();
 
         if ($request->has('foto_review')) {
@@ -66,7 +53,5 @@ class RatingController extends Controller
             'message' => 'Rating added successfully',
             'data' => $rating
         ], 201);
-
-
     }
 }
