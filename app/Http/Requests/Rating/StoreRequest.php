@@ -9,7 +9,7 @@ class StoreRequest extends FormRequest {
     public function rules() {
         return [
             'product_id' => 'required',
-            'rating' => 'required|integer',
+            'rating' => 'required|integer|min:1',
             'detail_transaction_id' => 'required',
             'deskripsi' => 'nullable'
         ];
@@ -26,6 +26,7 @@ class StoreRequest extends FormRequest {
         return [
             'required' => ':attribute wajib diisi.',
             'integer' => ':attribute harus berupa angka.',
+            'min' => ':attribute minimal :min.',
         ];
     }
 }

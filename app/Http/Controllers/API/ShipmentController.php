@@ -55,6 +55,7 @@ class ShipmentController extends Controller
         ->whereHas('transaction', function ($query) {
             $query->where('user_id', Auth::id());
         })
+        ->latest()
         ->paginate(10);
 
         Log::info($pengiriman);
@@ -151,7 +152,7 @@ class ShipmentController extends Controller
         // bikin data pengiriman baru, set status n masukin resi/kurirnya
         Log::info("INI CEK DATA YANG MASUK");
         Log::info($request);
-        
+
         $pengiriman = Shipment::create([
             'kode_transaksi' => $request->kode_transaksi,
             'status_pengiriman' => $request->status_pengiriman,
@@ -205,20 +206,20 @@ class ShipmentController extends Controller
         ]);
     }
 
-    public function confirmReceived(Shipment $pengiriman)
+public function confirmReceived(Shipment $shipment)
     {
         // verifikasi pengiriman nyampe, trus mindahin uang ke saldo income seller
-        if ($pengiriman->transaction->user_id !== auth()->id()) {
+        if ($shipment->transaction->user_id !== auth()->id()) {
             throw new AuthorizationException();
         }
 
-        if ($pengiriman->status_pengiriman !== 'tiba') {
+        if ($shipment->status_pengiriman !== 'tiba') {
             return response()->json([
                 'message' => 'Pengiriman belum tiba. Tidak dapat mengonfirmasi penerimaan.',
             ], 400);
         }
 
-        $data = $this->shipment->confirmReceived($pengiriman);
+        $data = $this->shipment->confirmReceived($shipment);
 
         return response()->json([
             'message' => 'Pengiriman telah dikonfirmasi sebagai diterima.',

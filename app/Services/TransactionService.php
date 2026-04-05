@@ -19,9 +19,9 @@ class TransactionService
         $this->shipmentService = $shipmentService;
     }
 
-    public function createPayment(Transaction $transaction, array $dataOngkir, ?string $paymentType = null)
+public function createPayment(Transaction $transaction, array $dataOngkir, ?string $paymentType = null, int $alamatid)
     {
-        return DB::transaction(function () use ($transaction, $dataOngkir, $paymentType) {
+        return DB::transaction(function () use ($transaction, $dataOngkir, $paymentType, $alamatid) {
             $transaction->load('detail_transaction.product', 'user');
 
             $products = $transaction->detail_transaction->map(function ($detail) {
@@ -69,7 +69,7 @@ class TransactionService
             }
 
             $transaction->save();
-            $this->shipmentService->createShipment($transaction, $dataOngkir);
+            $this->shipmentService->createShipment($transaction, $dataOngkir, $alamatid);
 
             return [
                 'payment_attempt' => $transaction->payment_attempt,
