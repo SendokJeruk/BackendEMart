@@ -56,10 +56,13 @@ class TransactionController extends Controller
         }
 
         try {
+            Log::info("ID ALAMAT");
+            Log::info($request->alamat_id);
             $result = $this->transactionService->createPayment(
                 $transaction,
                 $request->data_ongkir,
-                $request->payment_type
+                $request->payment_type,
+                $request->alamat_id
             );
 
             return response()->json([
