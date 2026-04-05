@@ -65,7 +65,10 @@ class Transaction extends Model
     {
         return $query
             ->when($request->has('kode_transaksi'), fn($q) =>
-                $q->where('kode_transaksi', $request->kode_transaksi));
+                $q->where('kode_transaksi', $request->kode_transaksi))
+            ->when($request->has('uncompleted'), fn($q) =>
+                $q->where('status', '!=', 'success'));
+
     }
 
 }

@@ -18,7 +18,7 @@ class ShipmentService
         $this->rajaOngkir = $rajaOngkir;
     }
 
-    public function createShipment(Transaction $transaction, array $dataOngkir)
+    public function createShipment(Transaction $transaction, array $dataOngkir, int $alamatid)
     {
         try {
             Log::info('Creating shipment for transaction: ' . $transaction->kode_transaksi);
@@ -43,11 +43,13 @@ class ShipmentService
                     Log::warning("No ongkir found for toko_id {$tokoId}");
                     continue;
                 }
+                Log::info($ongkirForToko);
 
                 $shipment = Shipment::updateOrCreate([
                     'kode_transaksi' => $transaction->kode_transaksi,
                     'kurir' => $ongkirForToko['kurir'],
                     'ongkir' => $ongkirForToko['ongkir'],
+                    'id_alamat_user' => $alamatid,
                     'status_pengiriman' => 'belum dibayar',
                 ]);
 

@@ -10,12 +10,14 @@ class CreateTransactionRequest extends FormRequest {
         return [
             'payment_type' => 'nullable',
             'data_ongkir' => 'required',
+            'alamat_id' => 'required'
         ];
     }
         public function attributes() {
         return [
             'payment_type' => 'tipe pembayaran',
             'data_ongkir' => 'data ongkir',
+            'alamat_id' => 'id alamat',
         ];
     }
     public function messages() {

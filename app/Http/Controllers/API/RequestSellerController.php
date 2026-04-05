@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Requests\RequestSeller\StoreRequest;
 use App\Http\Requests\RequestSeller\UpdateRequest;
+use Illuminate\Support\Facades\Log;
+
 
 class RequestSellerController extends Controller
 {
@@ -19,6 +21,16 @@ class RequestSellerController extends Controller
 
     public function __construct() {
         $this->ktp = new UploadKtpRepository();
+    }
+
+    private function safeDecrypt($value)
+    {
+        if (!$value) return null;
+        try {
+            return Crypt::decryptString($value);
+        } catch (Exception $e) {
+            return $value;
+        }
     }
 
     public function index()
@@ -29,9 +41,9 @@ class RequestSellerController extends Controller
         if ($user->role && $user->role->nama_role === 'admin') {
             $requestSeller = RequestSeller::all();
             foreach ($requestSeller as $seller) {
-                $seller->nik = Crypt::decryptString($seller->nik);
-                $seller->alamat_ktp = Crypt::decryptString($seller->alamat_ktp);
-                $seller->foto_ktp = Crypt::decryptString($seller->foto_ktp);
+                $seller->nik = $this->safeDecrypt($seller->nik);
+                $seller->alamat_ktp = $this->safeDecrypt($seller->alamat_ktp);
+                $seller->foto_ktp = $this->safeDecrypt($seller->foto_ktp);
             }
         } else {
             $requestSeller = RequestSeller::with('user')
@@ -40,9 +52,9 @@ class RequestSellerController extends Controller
                 ->first();
 
             if ($requestSeller) {
-                $requestSeller->nik = Crypt::decryptString($requestSeller->nik);
-                $requestSeller->alamat_ktp = Crypt::decryptString($requestSeller->alamat_ktp);
-                $requestSeller->foto_ktp = Crypt::decryptString($requestSeller->foto_ktp);
+                $requestSeller->nik = $this->safeDecrypt($requestSeller->nik);
+                $requestSeller->alamat_ktp = $this->safeDecrypt($requestSeller->alamat_ktp);
+                $requestSeller->foto_ktp = $this->safeDecrypt($requestSeller->foto_ktp);
             }
         }
 
@@ -56,25 +68,27 @@ class RequestSellerController extends Controller
     public function store(StoreRequest $request)
     {
         // ngecek request double, enkripsi KTP, trus simpen permohonan jadi seller
-        $existing = RequestSeller::where('user_id', Auth::id())->where('status', 'pending')->first();
+        $existing = RequestSeller::where('user_id', Auth::id())->where('status', '!=', 'rejected')->first();
         if ($existing) {
             return response()->json([
                 'message' => 'Kamu sudah pernah mengirim permohonan, mohon bersabar.'
             ], 409);
         }
 
-        $requestSeller = new RequestSeller();
-        $requestSeller->user_id = auth()->id();
-        $requestSeller->note = $request->note;
-        $requestSeller->nik = Crypt::encryptString($request->nik);
-        $requestSeller->nama_lengkap = $request->nama_lengkap;
-        $requestSeller->tempat_lahir = $request->tempat_lahir;
-        $requestSeller->tanggal_lahir = $request->tanggal_lahir;
-        $requestSeller->jenis_kelamin = $request->jenis_kelamin;
-        $requestSeller->alamat_ktp = Crypt::encryptString($request->alamat_ktp);
-        $requestSeller->foto_ktp = Crypt::encryptString($this->ktp->save($request->file('foto_ktp')));
-        $requestSeller->status = 'pending';
-        $requestSeller->save();
+        $requestSeller = RequestSeller::updateOrCreate(
+            ['user_id' => auth()->id()],
+            [
+                'note'          => $request->note,
+                'nik'           => Crypt::encryptString($request->nik),
+                'nama_lengkap'  => $request->nama_lengkap,
+                'tempat_lahir'  => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'alamat_ktp'    => Crypt::encryptString($request->alamat_ktp),
+                'foto_ktp'      => Crypt::encryptString($this->ktp->save($request->file('foto_ktp'))),
+                'status'        => 'pending',
+            ]
+        );
 
         return response()->json([
             'status' => 'Success',
