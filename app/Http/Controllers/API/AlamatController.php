@@ -43,11 +43,12 @@ class AlamatController extends Controller
             'label' => $request->label,
             'province_name' => $request->province_name,
             'city_name' => $request->city_name,
-            'district_name' => $request->district_name, 
+            'district_name' => $request->district_name,
             'subdistrict_name' => $request->subdistrict_name,
             'zip_code' => $request->zip_code,
-            'detail_alamat' => $request->detail_alamat
-        ]);
+            'detail_alamat' => $request->detail_alamat,
+            'nama_penerima' => $request->nama_penerima
+    ]);
 
         return response()->json([
             'status' => 'Success',

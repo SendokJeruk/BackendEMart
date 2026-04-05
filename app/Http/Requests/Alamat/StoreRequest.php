@@ -16,6 +16,7 @@ class StoreRequest extends FormRequest {
             'subdistrict_name' => 'required|string|max:100',
             'zip_code'         => 'required|digits:5',
             'detail_alamat'    => 'required|string|max:255',
+            'nama_penerima'    => 'required|string'
         ];
     }
 
@@ -29,6 +30,7 @@ class StoreRequest extends FormRequest {
             'subdistrict_name' => 'kelurahan/desa',
             'zip_code'         => 'kode pos',
             'detail_alamat'    => 'detail alamat',
+            'nama_penerima'    => 'nama penerima',
         ];
     }
 
