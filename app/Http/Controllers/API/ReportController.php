@@ -18,7 +18,7 @@ class ReportController extends Controller
     public function generateInvoice($kode_transaksi)
     {
         // ngambil data transaksi utuh, trus di-render jadi file PDF invoice buat di-download
-        $transaction = Transaction::with(['user', 'detail_transaction.product', 'shipment'])
+        $transaction = Transaction::with(['user', 'detail_transaction.product', 'shipment.alamat'])
             ->where('kode_transaksi', $kode_transaksi)
             ->firstOrFail();
 
@@ -27,7 +27,7 @@ class ReportController extends Controller
         }
 
         $pdf = Pdf::loadView('invoice', ['transaction' => $transaction]);
-        return $pdf->download("Invoice-{$transaction->kode_transaksi}-".now().".pdf");
+        return $pdf->download("Invoice-{$transaction->kode_transaksi}-".now()->format('Y-m-d_H-i-s').".pdf");
     }
 
     public function adminMonthlyReport(Request $request)
