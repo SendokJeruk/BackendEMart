@@ -85,11 +85,11 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function index()
+    public function index(Request $request)
     {
         // ngambil daftar transaksi beserta detail barang n tokonya buat user login
         $user = Auth::user();
-        $transaction = $user->transaction()->with('detail_transaction.product.user.toko.alamatToko')->paginate(5);
+        $transaction = $user->transaction()->with('detail_transaction.product.user.toko.alamatToko')->filter($request)->latest()->paginate(5);
         return response()->json([
             'message' => 'Berhasil Menampilkan transaksi ' . $user->name,
             'data' => $transaction

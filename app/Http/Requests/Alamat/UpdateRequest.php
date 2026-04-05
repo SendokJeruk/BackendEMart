@@ -18,6 +18,7 @@ class UpdateRequest extends FormRequest {
             'subdistrict_name' => 'required|string|max:100',
             'zip_code'         => 'required|digits:5',
             'detail_alamat'    => 'nullable',
+            'nama_penerima'    => 'required|string',
         ];
     }
         public function attributes() {
@@ -30,6 +31,7 @@ class UpdateRequest extends FormRequest {
             'subdistrict_name' => 'kelurahan/desa',
             'zip_code' => 'kode pos',
             'detail_alamat' => 'detail alamat',
+            'nama_penerima'    => 'nama penerima',
         ];
     }
     public function messages() {

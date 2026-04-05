@@ -76,6 +76,8 @@ class MidtransCallback extends Controller
                         $order->update(['status' => 'pending']);
                     } else {
                         $order->update(['status' => 'success']);
+                        Log::info('MASUK SETTLEMENT OTW IMPLEN KE DE BE');
+                        $this->successPayment->PaymentSuccess($kode);
                     }
                 }
                 break;
