@@ -44,7 +44,7 @@ class ShipmentService
                     continue;
                 }
 
-                $shipment = Shipment::create([
+                $shipment = Shipment::updateOrCreate([
                     'kode_transaksi' => $transaction->kode_transaksi,
                     'kurir' => $ongkirForToko['kurir'],
                     'ongkir' => $ongkirForToko['ongkir'],
@@ -68,7 +68,7 @@ class ShipmentService
         }
     }
 
-    
+
 
 
 

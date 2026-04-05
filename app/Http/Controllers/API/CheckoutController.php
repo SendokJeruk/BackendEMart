@@ -28,7 +28,7 @@ class CheckoutController extends Controller
 
         $transaction = new Transaction();
         $transaction->user_id = $user->id;
-        $transaction->status = "Proses";
+        $transaction->status = "pending";
         $transaction->tanggal_transaksi = now();
         $transaction->kode_transaksi = 'SJK-' . time() . strtoupper(Str::random(5));
         $transaction->total_harga = $user->cart->total_harga;
@@ -75,7 +75,7 @@ class CheckoutController extends Controller
 
         $transaction = new Transaction();
         $transaction->user_id = $user->id;
-        $transaction->status = "Proses";
+        $transaction->status = "pending";
         $transaction->tanggal_transaksi = now();
         $transaction->kode_transaksi = 'SJK-' . time() . strtoupper(Str::random(5));
         $transaction->total_harga = $totalHarga;
