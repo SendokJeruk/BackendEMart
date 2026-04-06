@@ -38,7 +38,7 @@ class UpdateRequest extends FormRequest {
             'min' => ':attribute minimal :min.',
             'integer' => ':attribute harus berupa bilangan bulat.',
             'image' => ':attribute harus berupa gambar.',
-            'mimes' => 'format foto tidak valid.',
+            'mimes' => 'format foto tidak valid. Harus berupa jpg, png, jpeg, atau webp',
             'in' => 'status produk tidak valid.',
         ];
     }

@@ -5,10 +5,10 @@ use Illuminate\Foundation\Http\FormRequest;
  * @mixin \Illuminate\Http\Request
  */
 class StoreRequest extends FormRequest {
-    public function authorize() {
-        $product = \App\Models\Product::find($this->product_id);
-        return $product && (int)$product->user_id === (int)auth()->id();
-    }
+    // public function authorize() {
+    //     $product = \App\Models\Product::find($this->product_id);
+    //     return $product && (int)$product->user_id === (int)auth()->id();
+    // }
     public function rules() {
         return [ 'category_id' => 'required|exists:categories,id', 'product_id' => 'required|exists:products,id' ];
     }

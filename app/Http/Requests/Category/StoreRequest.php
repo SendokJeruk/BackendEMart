@@ -6,11 +6,11 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class StoreRequest extends FormRequest {
     public function authorize() { return true; }
-    public function rules() { return [ 'nama_category' => 'required|max:100', ]; }
+    public function rules() { return [ 'nama_category' => 'required|max:100|min:3', ]; }
         public function attributes() {
         return [
             'nama_category' => 'nama kategori',
         ];
     }
-    public function messages() { return [ 'required' => ':attribute wajib diisi.', 'max' => 'maksimal :max karakter.' ]; }
+    public function messages() { return [ 'required' => ':attribute wajib diisi.', 'max' => 'maksimal :max karakter.', 'min' => 'minimal :min karakter' ]; }
 }
