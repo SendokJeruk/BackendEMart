@@ -29,6 +29,7 @@ class ShipmentController extends Controller
         // ngambil pengiriman yang isinya produk punya seller yang login
         $pengiriman = Shipment::with([
             'transaction.user',
+            'alamat',
             'detail_shipments.detail_transaction.product',
             'detail_shipments.detail_transaction.rating:id,detail_transaction_id,rating'
         ])
