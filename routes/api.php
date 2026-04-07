@@ -239,7 +239,11 @@ Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => [
 
 Route::group(['prefix' => 'report', 'as' => 'report.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
     Route::get('/admin', [ReportController::class, 'adminMonthlyReport'])->name('admin');
+    Route::get('/admin/statistic', [ReportController::class, 'getAdminPeriodStatistic']);
+    Route::get('/admin/periodic-excel', [ReportController::class, 'adminPeriodicExcelReport']);
 });
+Route::get('/report/seller/periodic-excel', [ReportController::class, 'sellerPeriodicExcelReport'])->middleware(['auth:sanctum', 'seller']);
+Route::get('/report/seller/statistic', [ReportController::class, 'getPeriodStatistic'])->middleware(['auth:sanctum', 'seller']);
 Route::get('report/seller/{seller_id}', [ReportController::class, 'sellerTransactionReport'])->middleware(['auth:sanctum', 'seller']);
 Route::get('report/user/{user_id}', [ReportController::class, 'userTransactionReport'])->middleware('auth:sanctum');
 Route::get('report/invoice/{kode_transaksi}', [ReportController::class, 'generateInvoice'])->middleware('auth:sanctum');

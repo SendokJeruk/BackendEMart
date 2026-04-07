@@ -10,7 +10,7 @@ class UpdateRequest extends FormRequest {
     public function rules() {
         return [
             'name'     => 'nullable|string|min:3|max:50',
-            'email'    => 'nullable|email|unique:users,email',
+            'email'    => 'nullable|email',
             'no_telp'  => 'nullable|numeric|digits_between:10,13',
             'password' => ['nullable', Password::min(8)->mixedCase()->letters()->numbers()->symbols()],
             'role_id'  => 'nullable',

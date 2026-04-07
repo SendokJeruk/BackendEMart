@@ -91,6 +91,8 @@ class ProductController extends Controller
 
     public function edit(UpdateRequest $request, Product $product)
     {
+        Log::info("UP EDIT PRODUK");
+        Log::info($product);
         // ngecek kepemilikan produk, ngupdate datanya, dan ganti foto cover kalo user upload yang baru
         $validated = $request->validated();
 
@@ -99,8 +101,10 @@ class ProductController extends Controller
         }
 
         $validated['user_id'] = auth()->id();
-
+        Log::info($validated);
         $product->update($validated);
+        Log::info($product);
+
 
         return response()->json([
             'status' => 'Success',

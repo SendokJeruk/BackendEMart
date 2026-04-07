@@ -9,10 +9,10 @@ use App\Http\Requests\Withdraw\HandleWithdrawalRequest;
 
 class WithdrawController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // nampilin daftar pengajuan penarikan dana dari user buat admin
-        $withdraws = Withdraw::with('user:id,name,email')->orderBy('created_at', 'desc')->paginate(10);
+        $withdraws = Withdraw::with('user:id,name,email')->orderByRaw("status = 'pending' DESC")->orderBy('created_at', 'desc')->filter($request)->paginate(8);
 
         return response()->json([
             'status' => 'Success',
@@ -21,11 +21,11 @@ class WithdrawController extends Controller
         ]);
     }
 
-    public function selfWithdraw()
+    public function selfWithdraw(Request $request)
     {
         // ngambil riwayat penarikan dana punya user yang lagi login aja
         $user = auth()->user();
-        $withdraws = Withdraw::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(10);
+        $withdraws = Withdraw::where('user_id', $user->id)->orderByRaw("status = 'pending' DESC")->orderBy('created_at', 'desc')->filter($request)->paginate(10);
 
         return response()->json([
             'status' => 'Success',

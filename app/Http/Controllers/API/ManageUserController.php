@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Repository\UploadProfileRepository;
 use App\Http\Requests\ManageUser\StoreRequest;
 use App\Http\Requests\ManageUser\UpdateRequest;
+use Illuminate\Support\Facades\Log;
+
 
 class ManageUserController extends Controller
 {
@@ -47,7 +49,7 @@ class ManageUserController extends Controller
         $manage_user->no_telp = $request->input('no_telp');
         $manage_user->role_id = $request->input('role_id');
         $manage_user->password = Hash::make($request->input('password'));
-        
+
         if ($request->hasFile('foto_profil')) {
             $manage_user->foto_profil = $this->upload->save($request->file('foto_profil'));
         } else {
@@ -64,6 +66,8 @@ class ManageUserController extends Controller
 
     public function update(UpdateRequest $request, User $manage_user)
     {
+        Log::info("PASS MASUK");
+        Log::info($request);
         // admin ngedit data user, termasuk ganti password sama update foto profil kalo ada
         $manage_user->update([
             'name' => $request->name,

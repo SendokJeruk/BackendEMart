@@ -18,7 +18,7 @@ class UpdateRequest extends FormRequest {
             'subdistrict_name' => 'required|string|max:100',
             'zip_code'         => 'required|digits:5',
             'detail_alamat'    => 'nullable',
-            'nama_penerima'    => 'required|string',
+            'nama_penerima'    => 'required|alpha',
         ];
     }
         public function attributes() {
@@ -41,6 +41,7 @@ class UpdateRequest extends FormRequest {
             'integer' => ':attribute harus berupa bilangan bulat.',
             'max' => ':attribute maksimal :max karakter.',
             'digits' => ':attribute harus terdiri dari :digits digit.',
+            'alpha' => ':attribute harus berupa alfabet.'
         ];
     }
 }
