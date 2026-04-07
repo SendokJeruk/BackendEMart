@@ -230,6 +230,7 @@ Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => [
     Route::get('/buyer', [ShipmentController::class, 'getAllPengirimanBuyer']);
     Route::get('/seller', [ShipmentController::class, 'getAllPengirimanSeller']);
     // Route::get('/{kode_transaksi}', [ShipmentController::class, 'getPengirimanByKodeTransaksi']);
+    Route::get('/cetak-struk/{shipment}', [ReportController::class, 'printStrukSeller']);
     Route::get('/{shipment}', [ShipmentController::class, 'getPengirimanById']);
     Route::post('/', [ShipmentController::class, 'store']);
     Route::post('/confirm-received/{shipment}', [ShipmentController::class, 'confirmReceived']);

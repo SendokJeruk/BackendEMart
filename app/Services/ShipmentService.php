@@ -24,14 +24,11 @@ class ShipmentService
             Log::info('Creating shipment for transaction: ' . $transaction->kode_transaksi);
             Log::info('Data Ongkir:', $dataOngkir);
 
-            $existingShipment = Shipment::where('kode_transaksi', $transaction->kode_transaksi)->first();
-            if ($existingShipment) {
-                return;
-            }
-
-            $groupedByUser = $transaction->detail_transaction->groupBy(fn($item) => $item->product->user_id);
+            $groupedByUser = $transaction->detail_transaction
+                ->groupBy(fn($item) => $item->product->user_id);
 
             foreach ($groupedByUser as $userId => $details) {
+
                 $tokoId = $details->first()->product->user->toko->id ?? null;
                 if (!$tokoId) {
                     Log::warning("No toko_id found for user_id {$userId}");
@@ -43,20 +40,24 @@ class ShipmentService
                     Log::warning("No ongkir found for toko_id {$tokoId}");
                     continue;
                 }
-                Log::info($ongkirForToko);
 
-                $shipment = Shipment::updateOrCreate([
-                    'kode_transaksi' => $transaction->kode_transaksi,
-                    'kurir' => $ongkirForToko['kurir'],
-                    'ongkir' => $ongkirForToko['ongkir'],
-                    'id_alamat_user' => $alamatid,
-                    'status_pengiriman' => 'belum dibayar',
-                ]);
+                $shipment = Shipment::updateOrCreate(
+                    [
+                        'kode_transaksi' => $transaction->kode_transaksi,
+                        'id_toko' => $tokoId,
+                    ],
+                    [
+                        'kurir' => $ongkirForToko['kurir'],
+                        'ongkir' => $ongkirForToko['ongkir'],
+                        'id_alamat_user' => $alamatid,
+                        'status_pengiriman' => 'belum dibayar',
+                    ]
+                );
 
-                Log::info('Created shipment with ID: ' . $shipment->id);
+                Log::info('Processed shipment ID: ' . $shipment->id);
 
                 foreach ($details as $detail) {
-                    DetailShipment::create([
+                    DetailShipment::firstOrCreate([
                         'id_shipment' => $shipment->id,
                         'detail_transaksi_id' => $detail->id,
                     ]);

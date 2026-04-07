@@ -18,7 +18,7 @@ class UpdateRequest extends FormRequest {
             'subdistrict_name' => 'required|string|max:100',
             'zip_code'         => 'required|digits:5',
             'detail_alamat'    => 'nullable',
-            'nama_penerima'    => 'required|alpha',
+            'nama_penerima' => ['required','string','max:100','regex:/^[a-zA-Z\s]+$/'],
         ];
     }
         public function attributes() {
@@ -41,7 +41,7 @@ class UpdateRequest extends FormRequest {
             'integer' => ':attribute harus berupa bilangan bulat.',
             'max' => ':attribute maksimal :max karakter.',
             'digits' => ':attribute harus terdiri dari :digits digit.',
-            'alpha' => ':attribute harus berupa alfabet.'
+            'nama_penerima.regex' => ':attribute hanya boleh berisi huruf dan spasi'
         ];
     }
 }

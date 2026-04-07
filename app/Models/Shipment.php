@@ -20,7 +20,8 @@ class Shipment extends Model
         'estimasi_tiba',
         'tiba_di_tujuan',
         'bukti_pengiriman',
-        'id_alamat_user'
+        'id_alamat_user',
+        'id_toko',
     ];
     public function transaction()
     {
@@ -40,6 +41,11 @@ class Shipment extends Model
     public function alamat()
     {
         return $this->belongsTo(AlamatUser::class, 'id_alamat_user')->withTrashed();
+    }
+
+    public function toko()
+    {
+        return $this->belongsTo(Toko::class, 'id_toko');
     }
 
 }
