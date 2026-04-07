@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->integer('jumlah');
             $table->enum('status', ['pending', 'accepted', 'rejected']);
-            $table->text('catatan');
+            $table->text('catatan')->nullable();
             $table->enum('metode', ['bank_transfer', 'gopay', 'ovo', 'dana','shopeePay'])->default('bank_transfer');
             $table->string('rekening_tujuan');
             $table->timestamps();

@@ -23,4 +23,11 @@ class Withdraw extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function scopeFilter($query, $request)
+    {
+        return $query
+            ->when($request->filled('status'), fn($q) =>
+            $q->where('status', $request->status));
+    }
 }
