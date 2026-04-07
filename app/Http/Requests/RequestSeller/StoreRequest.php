@@ -11,7 +11,7 @@ class StoreRequest extends FormRequest {
             'note'          => 'required|string|max:100',
             'nik'           => 'required|digits:16|unique:request_sellers,nik',
             'nama_lengkap'  => 'required|string|max:255',
-            'tempat_lahir'  => 'required|string|max:100',
+            'tempat_lahir'  => 'required|string|max:100|regex:/^[a-zA-Z\s]+$/',
             'tanggal_lahir' => 'required|date|before:today',
             'jenis_kelamin' => 'required|in:L,P',
             'alamat_ktp'    => 'required|string|max:500',
@@ -42,6 +42,7 @@ class StoreRequest extends FormRequest {
             'max' => ':attribute maksimal :max karakter.',
             'image' => ':attribute harus berupa gambar.',
             'mimes' => 'format gambar tidak valid.',
+            'tempat_lahir.regex' => ':attribute hanya boleh berisi huruf dan spasi'
         ];
     }
 }
