@@ -37,23 +37,26 @@ class AlamatController extends Controller
 
     public function update(UpdateRequest $request, AlamatUser $alamat)
     {
-        // ngecek dulu apa alamat ini beneran punya user, kalo iya baru deh diupdate datanya
-        $alamat->update([
-            'kode_domestik' => $request->kode_domestik,
-            'label' => $request->label,
-            'province_name' => $request->province_name,
-            'city_name' => $request->city_name,
-            'district_name' => $request->district_name,
+        // ? ini tuh jadinya kita hapus alamat dulu (soft delete le, di db tetep ada), ntar bikin baru
+        $userId = $alamat->user_id;
+        $alamat->delete();
+        $alamatBaru = AlamatUser::create([
+            'user_id'          => $userId,
+            'kode_domestik'    => $request->kode_domestik,
+            'label'            => $request->label,
+            'province_name'    => $request->province_name,
+            'city_name'        => $request->city_name,
+            'district_name'    => $request->district_name,
             'subdistrict_name' => $request->subdistrict_name,
-            'zip_code' => $request->zip_code,
-            'detail_alamat' => $request->detail_alamat,
-            'nama_penerima' => $request->nama_penerima
-    ]);
+            'zip_code'         => $request->zip_code,
+            'detail_alamat'    => $request->detail_alamat,
+            'nama_penerima'    => $request->nama_penerima,
+        ]);
 
         return response()->json([
             'status' => 'Success',
-            'message' => 'Data updated successfully',
-            'data' => $alamat
+            'message' => 'Alamat lama telah di-arsip dan alamat baru berhasil dibuat',
+            'data' => $alamatBaru
         ], 200);
     }
 

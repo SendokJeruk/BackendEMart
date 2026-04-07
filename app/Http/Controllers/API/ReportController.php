@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use Carbon\Carbon;
 use App\Models\Toko;
 use App\Models\User;
+use App\Models\Shipment;
 use App\Models\Transaction;
 use App\Models\DetailIncome;
 use Illuminate\Http\Request;
@@ -32,6 +33,65 @@ class ReportController extends Controller
 
         $pdf = Pdf::loadView('invoice', ['transaction' => $transaction]);
         return $pdf->download("Invoice-{$transaction->kode_transaksi}-".now()->format('Y-m-d_H-i-s').".pdf");
+    }
+
+    public function printStrukSeller($shipment_id)
+    {
+        $seller_id = auth()->id();
+
+        $shipment = Shipment::with([
+            'transaction.user',
+            'alamat',
+            'detail_shipments.detail_transaction.product'
+        ])->where('id', $shipment_id)->firstOrFail();
+
+        $isOwner = $shipment->detail_shipments()
+            ->whereHas('detail_transaction.product', function ($query) use ($seller_id) {
+                $query->where('user_id', $seller_id);
+            })->exists();
+
+        if (!$isOwner) {
+            throw new AuthorizationException();
+        }
+
+        $transaction = $shipment->transaction;
+
+        // cek detail transaksi punya seller (yg login)
+        $detail_transactions = $shipment->detail_shipments->map(function ($ds) use ($seller_id) {
+            if ($ds->detail_transaction->product->user_id == $seller_id) {
+                return $ds->detail_transaction;
+            }
+            return null;
+        })->filter()->values();
+
+        $subtotal_produk = $detail_transactions->sum('subtotal');
+        $ongkir = $shipment->ongkir ?? 0;
+
+        // Sikit map struktur array buat ke pdf
+        $dataForInvoice = $transaction->toArray();
+        $dataForInvoice['user'] = $transaction->user ? $transaction->user->toArray() : null;
+
+        $dataForInvoice['shipment'] = [
+            [
+                'kurir' => $shipment->kurir,
+                'kode_resi' => $shipment->kode_resi,
+                'alamat' => $shipment->alamat ? $shipment->alamat->toArray() : null,
+            ]
+        ];
+
+        $detail_transactions_array = [];
+        foreach ($detail_transactions as $dt) {
+            $dtArray = $dt->toArray();
+            $dtArray['product'] = $dt->product ? $dt->product->toArray() : null;
+            $detail_transactions_array[] = $dtArray;
+        }
+
+        $dataForInvoice['detail_transaction'] = $detail_transactions_array;
+        $dataForInvoice['total_harga'] = $subtotal_produk;
+        $dataForInvoice['total_ongkir'] = $ongkir;
+
+        $pdf = Pdf::loadView('invoice', ['transaction' => $dataForInvoice]);
+        return $pdf->download("Struk-Pengiriman-{$transaction->kode_transaksi}-".now()->format('Y-m-d_H-i-s').".pdf");
     }
 
     public function adminPeriodicExcelReport(Request $request)

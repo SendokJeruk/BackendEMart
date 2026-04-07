@@ -49,6 +49,7 @@ class ShipmentController extends Controller
         $user = Auth::user();
         $pengiriman = Shipment::with([
             'transaction.user',
+            'alamat',
             'detail_shipments.detail_transaction.product',
             'detail_shipments.detail_transaction.rating:id,detail_transaction_id,rating'
         ])
