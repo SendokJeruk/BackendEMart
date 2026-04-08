@@ -58,6 +58,14 @@ class ProductController extends Controller
             return $product;
         });
 
+        if ($request->has('count')) {
+            return response()->json([
+                'status' => 'Success',
+                'message' => 'Total products retrieved',
+                'data' => Product::where('user_id', auth()->id())->count()
+            ]);
+        }
+
         return response()->json([
             'status' => 'Success',
             'message' => 'Product data retrieved successfully',
