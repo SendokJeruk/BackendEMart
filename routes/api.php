@@ -202,6 +202,7 @@ Route::group(['prefix' => 'detailcart', 'as' => 'detailcart.', 'middleware' => [
 
 Route::group(['prefix' => 'cart', 'as' => 'cart.', 'middleware' => ['auth:sanctum']], function () {
     Route::get('/', [CartController::class, 'index']);
+    Route::get('/count', [CartController::class, 'count']);
     Route::post('/', [CartController::class, 'store']);
     Route::put('/{Cart_detail}', [CartController::class, 'update']);
     Route::delete('/{Cart_detail}', [CartController::class, 'delete']);
