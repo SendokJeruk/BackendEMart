@@ -202,6 +202,7 @@ Route::group(['prefix' => 'detailcart', 'as' => 'detailcart.', 'middleware' => [
 
 Route::group(['prefix' => 'cart', 'as' => 'cart.', 'middleware' => ['auth:sanctum']], function () {
     Route::get('/', [CartController::class, 'index']);
+    Route::get('/count', [CartController::class, 'count']);
     Route::post('/', [CartController::class, 'store']);
     Route::put('/{Cart_detail}', [CartController::class, 'update']);
     Route::delete('/{Cart_detail}', [CartController::class, 'delete']);
@@ -230,16 +231,21 @@ Route::group(['prefix' => 'pengiriman', 'as' => 'pengiriman.', 'middleware' => [
     Route::get('/buyer', [ShipmentController::class, 'getAllPengirimanBuyer']);
     Route::get('/seller', [ShipmentController::class, 'getAllPengirimanSeller']);
     // Route::get('/{kode_transaksi}', [ShipmentController::class, 'getPengirimanByKodeTransaksi']);
+    Route::get('/cetak-struk/{shipment}', [ReportController::class, 'printStrukSeller']);
     Route::get('/{shipment}', [ShipmentController::class, 'getPengirimanById']);
     Route::post('/', [ShipmentController::class, 'store']);
-    Route::post('/confirm-received/{kode_transaksi}', [ShipmentController::class, 'confirmReceived']);
+    Route::post('/confirm-received/{shipment}', [ShipmentController::class, 'confirmReceived']);
     Route::put('/{shipment}', [ShipmentController::class, 'update']);
     Route::delete('/{shipment}', [ShipmentController::class, 'delete']);
 });
 
 Route::group(['prefix' => 'report', 'as' => 'report.', 'middleware' => ['auth:sanctum', 'checkrole']], function () {
     Route::get('/admin', [ReportController::class, 'adminMonthlyReport'])->name('admin');
+    Route::get('/admin/statistic', [ReportController::class, 'getAdminPeriodStatistic']);
+    Route::get('/admin/periodic-excel', [ReportController::class, 'adminPeriodicExcelReport']);
 });
+Route::get('/report/seller/periodic-excel', [ReportController::class, 'sellerPeriodicExcelReport'])->middleware(['auth:sanctum', 'seller']);
+Route::get('/report/seller/statistic', [ReportController::class, 'getPeriodStatistic'])->middleware(['auth:sanctum', 'seller']);
 Route::get('report/seller/{seller_id}', [ReportController::class, 'sellerTransactionReport'])->middleware(['auth:sanctum', 'seller']);
 Route::get('report/user/{user_id}', [ReportController::class, 'userTransactionReport'])->middleware('auth:sanctum');
 Route::get('report/invoice/{kode_transaksi}', [ReportController::class, 'generateInvoice'])->middleware('auth:sanctum');

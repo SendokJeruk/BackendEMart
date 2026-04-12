@@ -1,11 +1,12 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use App\Models\Content;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repository\UploadRepository;
+use App\Http\Requests\Content\StoreRequest;
+use App\Http\Requests\Content\UpdateRequest;
 
 class ContentController extends Controller
 {
@@ -13,12 +14,12 @@ class ContentController extends Controller
 
     public function __construct()
     {
+        // ngejalanin fungsi __construct
         $this->upload = new UploadRepository();
     }
 
     public function getAllContent() {
         $contents = Content::paginate(10);
-
         return response()->json([
             'status' => 'Success',
             'message' => 'Get All successfully',
@@ -28,14 +29,12 @@ class ContentController extends Controller
 
     public function getContent(Request $request)
     {
+        // ngambil konten spesifik berdasarkan section (misal: login atau dashboard)
         $section = $request->query('section');
-
         $content = Content::where('section', $section)->get();
-
         if (!$content) {
             return response()->json(['message' => 'Content not found'], 404);
         }
-
         return response()->json([
             'status' => 'Success',
             'message' => 'Content get successfully',
@@ -43,20 +42,11 @@ class ContentController extends Controller
         ]);
     }
 
-    public function storeContent(Request $request)
+    public function storeContent(StoreRequest $request)
     {
-        $request->validate([
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'section' => 'required|in:login,dashboard',
-        ]);
-
-        $data = $request->only([
-            'image',
-            'section',
-        ]);
-
+        // ngupload gambar baru dan nyimpen data konten beserta section-nya
+        $data = $request->only(['image', 'section']);
         $data['image'] = $this->upload->save($request->file('image'));
-
         $content = Content::create($data);
 
         return response()->json([
@@ -66,22 +56,13 @@ class ContentController extends Controller
         ], 201);
     }
 
-    public function updateContent(Content $content, Request $request)
+    public function updateContent(Content $content, UpdateRequest $request)
     {
-        $request->validate([
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'section' => 'nullable|in:login,dashboard',
-        ]);
-
-        $data = $request->only([
-            'image',
-            'section',
-        ]);
-
+        // kalo ada gambar baru diupload, gambar lama diganti, trus update data kontennya
+        $data = $request->only(['image', 'section']);
         if ($request->hasFile('image')) {
             $data['image'] = $this->upload->update($content->image, $request->file('image'));
         }
-
         $content->update($data);
 
         return response()->json([
@@ -93,9 +74,9 @@ class ContentController extends Controller
 
     public function deleteContent(Content $content)
     {
+        // ngapus gambar dari storage dan hapus data konten dari database
         $this->upload->delete($content->image);
         $content->delete();
-
         return response()->json([
             'status' => 'Success',
             'message' => 'Content deleted successfully',

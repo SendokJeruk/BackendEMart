@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use Exception;
@@ -8,15 +7,15 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Models\DetailTransaction;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Access\AuthorizationException;
+use App\Http\Requests\DetailTransaction\StoreRequest;
+use App\Http\Requests\DetailTransaction\UpdateRequest;
 
 class DetailTransactionController extends Controller
 {
     public function index(Request $request)
     {
-
-
+        // nampilin detail transaksi beserta info produk dan tokonya
         $detailTransaction = DetailTransaction::with('product.user.toko')
             ->filter($request)
             ->paginate(10);
@@ -33,26 +32,11 @@ class DetailTransactionController extends Controller
             'message' => 'Transaction details retrieved successfully',
             'data' => $detailTransaction
         ], 200);
-
     }
 
-
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-
-        $validate = Validator::make($request->all(), [
-            'transaction_id' => 'required',
-            'product_id' => 'required',
-            'jumlah' => 'required|integer|min:1',
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
-
+        // nambahin rincian barang ke suatu transaksi dan ngitung ulang total harga serta berat transaksi
         $product = Product::find($request->product_id);
         $harga = $product->harga;
         $subtotal = $harga * $request->jumlah;
@@ -79,28 +63,11 @@ class DetailTransactionController extends Controller
             'message' => 'Transaction detail added successfully',
             'data' => $detailTransaction
         ], 201);
-
     }
 
-    public function update(Request $request, DetailTransaction $detailTransaction)
+    public function update(UpdateRequest $request, DetailTransaction $detailTransaction)
     {
-        if ($detailTransaction->transaction->user_id !== auth()->id()) {
-            throw new AuthorizationException();
-        }
-
-        $validate = Validator::make($request->all(), [
-            'transaction_id' => 'nullable',
-            'product_id' => 'nullable',
-            'jumlah' => 'nullable|integer|min:1',
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
-
+        // ngubah detail pesanan, ngitung ulang subtotal, dan update total belanjaan di transaksi
         $product = Product::find($request->product_id);
         $harga = $product->harga;
         $totalberat = $product->berat * $request->jumlah;
@@ -117,7 +84,6 @@ class DetailTransactionController extends Controller
 
         $total_harga = $transaction->detail_transaction->sum('subtotal');
         $total_berat = $transaction->detail_transaction->sum('totalberat');
-
         $transaction->total_harga = $total_harga;
         $transaction->total_berat = $total_berat;
         $transaction->save();
@@ -129,9 +95,9 @@ class DetailTransactionController extends Controller
         ]);
     }
 
-
     public function delete(DetailTransaction $detailTransaction)
     {
+        // ngapus detail pesanan dan otomatis ngurangin total harga dari transaksi utamanya
         if ($detailTransaction->transaction->user_id !== auth()->id()) {
             throw new AuthorizationException();
         }
@@ -146,6 +112,5 @@ class DetailTransactionController extends Controller
             'status' => 'Success',
             'message' => 'Data deleted successfully'
         ]);
-
     }
 }

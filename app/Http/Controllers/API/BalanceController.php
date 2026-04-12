@@ -10,6 +10,7 @@ class BalanceController extends Controller
 {
     public function index()
     {
+        // ngambil data saldo (balance) seller yang lagi login, sekalian total pemasukannya
 
         $user = auth()->user();
 

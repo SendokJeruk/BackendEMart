@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AlamatUser extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -34,6 +35,11 @@ class AlamatUser extends Model
     public function transactions(): HasMany
     {
         return $this->HasMany(Transaction::class, 'id_alamat_user');
+    }
+
+    public function shipments(): HasMany
+    {
+        return $this->HasMany(Shipment::class, 'id_alamat_user');
     }
 
 }

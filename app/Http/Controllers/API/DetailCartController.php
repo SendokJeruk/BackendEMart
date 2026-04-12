@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use Exception;
@@ -8,43 +7,26 @@ use App\Models\Product;
 use App\Models\Cart_detail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Access\AuthorizationException;
+use App\Http\Requests\DetailCart\StoreRequest;
+use App\Http\Requests\DetailCart\UpdateRequest;
 
 class DetailCartController extends Controller
 {
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        $validate = Validator::make($request->all(), [
-            'product_id' => 'required|exists:products,id',
-            'jumlah' => 'required|integer|min:1',
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
-
+        // ngecek stok produk, kalo aman ditambahin ke keranjang, trus update total harga keranjang
         $product = Product::find($request->product_id);
         if (!$product) {
-            return response()->json([
-                'message' => 'Produk Not Found.'
-            ], 404);
+            return response()->json(['message' => 'Produk Not Found.'], 404);
         }
 
         if ($request->jumlah > $product->stock) {
-            return response()->json([
-                'message' => 'Not enough stock available.',
-            ], 422);
+            return response()->json(['message' => 'Not enough stock available.'], 422);
         }
 
         $userId = auth()->id();
-        $cart = Cart::firstOrCreate(
-            ['user_id' => $userId],
-            ['total_harga' => 0, 'total_jumlah' => 0]
-        );
+        $cart = Cart::firstOrCreate(['user_id' => $userId], ['total_harga' => 0, 'total_jumlah' => 0]);
 
         $cartDetail = Cart_detail::where('cart_id', $cart->id)
             ->where('product_id', $request->product_id)
@@ -71,44 +53,23 @@ class DetailCartController extends Controller
             'status' => 'Success',
             'message' => 'Item added to cart successfully.',
             'data' => $cartDetail
-        ],201);
+        ], 201);
     }
 
-
-    public function update(Request $request, Cart_detail $Cart_detail)
+    public function update(UpdateRequest $request, Cart_detail $Cart_detail)
     {
-        if ($Cart_detail->cart->user_id !== auth()->id()) {
-            throw new AuthorizationException();
-        }
-
-        $validate = Validator::make($request->all(), [
-            'product_id' => 'required',
-            'jumlah' => 'required|integer|min:1',
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Invalid Data',
-                'errors' => $validate->errors()
-            ], 422);
-        }
-
+        // ngubah jumlah barang di keranjang, cek stok lagi, dan itung ulang total harga
         $product = Product::find($request->product_id);
         if (!$product) {
-            return response()->json([
-                'message' => 'Product not found'
-            ], 404);
+            return response()->json(['message' => 'Product not found'], 404);
         }
 
         if ($request->jumlah > $product->stock) {
-            return response()->json([
-                'message' => 'Not enough product stock',
-            ], 422);
+            return response()->json(['message' => 'Not enough product stock'], 422);
         }
 
         $oldAmount = $Cart_detail->harga;
         $oldJumlah = $Cart_detail->jumlah;
-
         $newAmount = $product->harga * $request->jumlah;
 
         $Cart_detail->product_id = $request->product_id;
@@ -128,28 +89,23 @@ class DetailCartController extends Controller
             'message' => 'Cart details updated successfully',
             'data' => $Cart_detail
         ]);
-
     }
-
 
     public function delete(Cart_detail $Cart_detail)
     {
+        // ngapus satu barang dari keranjang, sekalian ngurangin total harga dan jumlah di keranjang
         if ($Cart_detail->cart->user_id !== auth()->id()) {
             throw new AuthorizationException();
         }
 
         $cart = $Cart_detail->cart;
-
         if ($cart) {
             $cart->total_harga -= $Cart_detail->harga;
             $cart->total_jumlah -= $Cart_detail->jumlah;
-
             $cart->total_harga = max(0, $cart->total_harga);
             $cart->total_jumlah = max(0, $cart->total_jumlah);
-
             $cart->save();
         }
-
         $Cart_detail->delete();
 
         return response()->json([

@@ -12,6 +12,7 @@ class EncryptController extends Controller
 
     public function __construct()
     {
+        // ngejalanin fungsi __construct
         $this->enkrypt = new EncryptRepository();
     }
     public function enkrypt(Request $request) {
@@ -23,6 +24,7 @@ class EncryptController extends Controller
         ], );
     }
     public function decrypt(Request $request) {
+        // ngetes decrypt data buat balikin jadi teks asli
         $value = $request->nilai;
         $hasil = $this->enkrypt->decryptor($value);
         return response()->json([
