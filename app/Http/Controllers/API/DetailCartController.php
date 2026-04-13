@@ -32,8 +32,13 @@ class DetailCartController extends Controller
             ->where('product_id', $request->product_id)
             ->first();
 
+        // ngecek stock
         if ($cartDetail) {
-            $cartDetail->jumlah += $request->jumlah;
+            if ($cartDetail->jumlah >= $product->stock) {
+                $cartDetail->jumlah = $product->stock;
+            } else {
+                $cartDetail->jumlah += $request->jumlah;
+            }
             $cartDetail->harga = $cartDetail->jumlah * $product->harga;
             $cartDetail->save();
         } else {

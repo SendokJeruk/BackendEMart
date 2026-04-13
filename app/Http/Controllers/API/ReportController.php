@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Toko;
 use App\Models\User;
 use App\Models\Shipment;
+use Carbon\CarbonPeriod;
 use App\Models\Transaction;
 use App\Models\DetailIncome;
 use Illuminate\Http\Request;
@@ -414,28 +415,34 @@ class ReportController extends Controller
             ? Carbon::parse($request->input('end_date'))->endOfDay()
             : now()->endOfMonth();
 
-        // $startDate = Carbon::createFromFormat('d-m-Y', '06-04-2026')->startOfDay();
-        // $endDate   = Carbon::createFromFormat('d-m-Y', '07-04-2026')->endOfDay(); //! ini nyoba hardcoded buat test
         $sellerId = auth()->id();
 
-        $transactions = DetailTransaction::with('transaction')
-        // Cari detail transaksi yang barangnya milik seller ini
-        ->whereHas('product', function ($query) use ($sellerId) {
-            $query->where('user_id', $sellerId);
-        })
-        // Cek transaksi di rentang tanggal start dan end yang statusnya success
-        ->whereHas('transaction', function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('created_at', [$startDate, $endDate])
-                  ->where('status', 'success');
-        })
-        // Grup per hari terus dijumlahkan subtotalnya
-        ->selectRaw('DATE(created_at) as date, SUM(subtotal) as total')
-        ->groupBy('date')
-        ->pluck('total', 'date');
+        // Ambil data dari DB
+        $transactionsFromDb = DetailTransaction::whereHas('product', function ($query) use ($sellerId) {
+                $query->where('user_id', $sellerId);
+            })
+            ->whereHas('transaction', function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate])
+                      ->where('status', 'success');
+            })
+            ->selectRaw('DATE(created_at) as date, SUM(subtotal) as total')
+            ->groupBy('date')
+            ->pluck('total', 'date');
+
+        // --- MODIFIKASI CARBON PERIOD ---
+        $period = CarbonPeriod::create($startDate, $endDate);
+
+        $finalData = [];
+        foreach ($period as $date) {
+            $formattedDate = $date->format('Y-m-d');
+            // Ambil dari DB kalau ada, kalau nggak ada kasih 0
+            $finalData[$formattedDate] = $transactionsFromDb[$formattedDate] ?? 0;
+        }
+        // --------------------------------
 
         return response()->json([
             'message' => 'Berhasil menampilkan data statistik seller',
-            'data' => $transactions
+            'data' => $finalData // Struktur tetap sama: {"2026-04-01": 5000, "2026-04-02": 0}
         ]);
     }
 
@@ -462,21 +469,21 @@ class ReportController extends Controller
             $sqlFormatTrx = 'DATE(tanggal_transaksi)';
             $sqlFormatUser = 'DATE(created_at)';
             $labelFormat = 'Harian';
-            $period = \Carbon\CarbonPeriod::create($startDate, '1 day', $endDate);
+            $period = CarbonPeriod::create($startDate, '1 day', $endDate);
             $phpFormat = 'Y-m-d';
         } elseif ($jarakHari <= 365) {
             // Jika lebih dari sebulan sampai setahun, grouping per bulan
             $sqlFormatTrx = 'DATE_FORMAT(tanggal_transaksi, "%Y-%m")';
             $sqlFormatUser = 'DATE_FORMAT(created_at, "%Y-%m")';
             $labelFormat = 'Bulanan';
-            $period = \Carbon\CarbonPeriod::create($startDate->copy()->startOfMonth(), '1 month', $endDate->copy()->startOfMonth());
+            $period = CarbonPeriod::create($startDate->copy()->startOfMonth(), '1 month', $endDate->copy()->startOfMonth());
             $phpFormat = 'Y-m';
         } else {
             // Jika lebih dari setahun, grouping per tahun
             $sqlFormatTrx = 'YEAR(tanggal_transaksi)';
             $sqlFormatUser = 'YEAR(created_at)';
             $labelFormat = 'Tahunan';
-            $period = \Carbon\CarbonPeriod::create($startDate->copy()->startOfYear(), '1 year', $endDate->copy()->startOfYear());
+            $period = CarbonPeriod::create($startDate->copy()->startOfYear(), '1 year', $endDate->copy()->startOfYear());
             $phpFormat = 'Y';
         }
 
