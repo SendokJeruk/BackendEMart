@@ -555,4 +555,59 @@ class ReportController extends Controller
             ]
         ]);
     }
+
+    public function adminPeriodicPdfReport(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date'   => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date'))->startOfDay() : now()->startOfMonth();
+        $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date'))->endOfDay() : now()->endOfMonth();
+
+        $transactions = Transaction::with('user')
+            ->whereBetween('tanggal_transaksi', [$startDate, $endDate])
+            ->get();
+
+        $withdraws = \App\Models\Withdraw::with('user.toko')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+
+        $pdf = Pdf::loadView('admin_periodic_report', compact('startDate', 'endDate', 'transactions', 'withdraws'))->setPaper('a4', 'landscape');
+        $fileName = "Laporan-Admin-EMart-" . $startDate->format('Ymd') . "-" . $endDate->format('Ymd') . ".pdf";
+
+        return $pdf->download($fileName);
+    }
+
+    public function sellerPeriodicPdfReport(Request $request)
+    {
+        $seller_id = auth()->id();
+
+        $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date'   => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date'))->startOfDay() : now()->startOfMonth();
+        $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date'))->endOfDay() : now()->endOfMonth();
+
+        // Get seller info
+        $seller = User::with('toko')->find($seller_id);
+        $namaToko = $seller->toko ? $seller->toko->nama_toko : $seller->name;
+
+        // Ambil dari DetailIncome, karena income baru masuk jika shipment sudah diterima
+        $details = DetailIncome::with(['detailTransaction.transaction', 'detailTransaction.product'])
+            ->whereHas('detailTransaction.product', fn($q) => $q->where('user_id', $seller_id))
+            ->whereHas('detailTransaction.transaction', function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('tanggal_transaksi', [$startDate, $endDate])
+                  ->where('status', 'success');
+            })
+            ->get();
+
+        $pdf = Pdf::loadView('seller_periodic_report', compact('startDate', 'endDate', 'namaToko', 'details'))->setPaper('a4', 'portrait');
+        $fileName = "laporan-pendapatan-seller-" . $startDate->format('Ymd') . "-" . $endDate->format('Ymd') . ".pdf";
+
+        return $pdf->download($fileName);
+    }
 }

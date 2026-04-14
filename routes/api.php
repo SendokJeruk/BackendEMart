@@ -243,8 +243,10 @@ Route::group(['prefix' => 'report', 'as' => 'report.', 'middleware' => ['auth:sa
     Route::get('/admin', [ReportController::class, 'adminMonthlyReport'])->name('admin');
     Route::get('/admin/statistic', [ReportController::class, 'getAdminPeriodStatistic']);
     Route::get('/admin/periodic-excel', [ReportController::class, 'adminPeriodicExcelReport']);
+    Route::get('/admin/periodic-pdf', [ReportController::class, 'adminPeriodicPdfReport']);
 });
 Route::get('/report/seller/periodic-excel', [ReportController::class, 'sellerPeriodicExcelReport'])->middleware(['auth:sanctum', 'seller']);
+Route::get('/report/seller/periodic-pdf', [ReportController::class, 'sellerPeriodicPdfReport'])->middleware(['auth:sanctum', 'seller']);
 Route::get('/report/seller/statistic', [ReportController::class, 'getPeriodStatistic'])->middleware(['auth:sanctum', 'seller']);
 Route::get('report/seller/{seller_id}', [ReportController::class, 'sellerTransactionReport'])->middleware(['auth:sanctum', 'seller']);
 Route::get('report/user/{user_id}', [ReportController::class, 'userTransactionReport'])->middleware('auth:sanctum');
