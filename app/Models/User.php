@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\Withdraw;
 use App\Models\AlamatUser;
 use App\Models\RequestSeller;
+use App\Models\SellerBalance;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -29,7 +30,8 @@ class User extends Authenticatable
         'email',
         'password',
         'no_telp',
-        'role',
+        'role_id',
+        'foto_profil',
         'google_id',
         'google_token',
         'google_refresh_token',
@@ -38,16 +40,16 @@ class User extends Authenticatable
 
     public function product(): HasMany
     {
-        return $this->hasMany(related: Product::class, foreignKey: 'user_id');
+        return $this->hasMany( Product::class,  'user_id');
     }
     public function transaction(): HasMany
     {
-        return $this->hasMany(related: Transaction::class, foreignKey: 'user_id');
+        return $this->hasMany( Transaction::class,  'user_id');
     }
 
     public function rating(): HasMany
     {
-        return $this->hasMany(related: rating::class, foreignKey: 'rating_id');
+        return $this->hasMany( rating::class,  'rating_id');
     }
 
     public function role()
@@ -62,7 +64,7 @@ class User extends Authenticatable
 
     public function alamat(): HasMany
     {
-        return $this->hasMany(related: AlamatUser::class, foreignKey: 'user_id');
+        return $this->hasMany( AlamatUser::class,  'user_id');
     }
 
     public function cart(): hasOne
@@ -70,9 +72,14 @@ class User extends Authenticatable
         return $this->hasOne(Cart::class, 'user_id');
     }
 
-    public function income(): hasMany
+    public function income(): hasOne
     {
-        return $this->hasMany(Income::class, 'user_id');
+        return $this->hasOne(Income::class, 'user_id');
+    }
+
+    public function balance(): hasOne
+    {
+        return $this->hasOne(SellerBalance::class, 'user_id');
     }
 
     public function RequestSeller(): hasOne

@@ -11,9 +11,15 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Toko extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'nama_toko',
+        'deskripsi',
+        'no_telp',
+        'alamat_toko_id',
+    ];
     protected $hidden = ['timestamps', 'created_at', 'updated_at'];
-    
+
     public function user(): BelongsTo
     {
         return $this->BelongsTo(User::class, 'user_id');
@@ -27,6 +33,11 @@ class Toko extends Model
     public function products(): HasMany
     {
         return $this->HasMany(Product::class, 'user_id', 'user_id');
+    }
+
+    public function shipments(): HasMany
+    {
+        return $this->HasMany(Shipment::class);
     }
 
 }

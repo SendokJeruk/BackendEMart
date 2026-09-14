@@ -10,6 +10,7 @@ class TestController extends Controller
 {
     public function test(Request $request)
     {
+        // ngetes hash file foto KTP buat keperluan debugging
         $path = $request->file('foto_ktp')->getRealPath();
         $hash = hash_file('sha256', $path);
 

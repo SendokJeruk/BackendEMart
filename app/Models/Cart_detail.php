@@ -9,7 +9,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Cart_detail extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'cart_id',
+        'product_id',
+        'jumlah',
+        'harga',
+    ];
     protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 
     public function product(): BelongsTo

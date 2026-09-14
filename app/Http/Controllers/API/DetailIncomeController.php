@@ -12,6 +12,7 @@ class DetailIncomeController extends Controller
 {
     public function index()
     {
+        // ngambil riwayat rincian pendapatan dari transaksi yang udah beres, khusus buat seller
         $user = auth()->user();
 
         $detailIncomes = DetailIncome::with(['income', 'detailTransaksi.product'])

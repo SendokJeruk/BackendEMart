@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Foto extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'foto',
+    ];
     protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 
     public function product(): BelongsToMany

@@ -10,7 +10,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Cart extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'total_jumlah',
+        'total_harga',
+    ];
     protected $hidden = ['timestamps', 'created_at', 'updated_at'];
 
     public function user(): BelongsTo
@@ -19,7 +23,7 @@ class Cart extends Model
     }
     public function cart_detail(): HasMany
     {
-        return $this->HasMany(cart_detail::class);
+        return $this->HasMany(Cart_detail::class);
     }
     public function toko()
     {

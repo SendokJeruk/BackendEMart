@@ -12,6 +12,7 @@ class IncomeController extends Controller
 {
     public function index()
     {
+        // ngambil total pendapatan (income) buat user yang login
 
         $user = auth()->user();
 

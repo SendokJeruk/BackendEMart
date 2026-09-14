@@ -13,11 +13,12 @@ class MidtransCallback extends Controller
     protected $successPayment;
     public function __construct(SuccessPaymentRepository $successPaymentRepository)
     {
+        // ngejalanin fungsi __construct
         $this->successPayment = $successPaymentRepository;
     }
     public function callback(Request $request)
     {
-        // $method = $request->input('_method') ?? $request->method();
+        // nangkep notifikasi dari midtrans, ngecek signature key, trus update status transaksi
 
         // if (strtoupper($method) !== 'PUT' && strtoupper($method) !== 'POST') {
         //     return response()->json(['message' => 'Invalid method'], 405);
@@ -75,6 +76,8 @@ class MidtransCallback extends Controller
                         $order->update(['status' => 'pending']);
                     } else {
                         $order->update(['status' => 'success']);
+                        Log::info('MASUK SETTLEMENT OTW IMPLEN KE DE BE');
+                        $this->successPayment->PaymentSuccess($kode);
                     }
                 }
                 break;

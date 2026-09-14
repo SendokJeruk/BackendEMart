@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('zip_code');
             $table->text('detail_alamat');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
